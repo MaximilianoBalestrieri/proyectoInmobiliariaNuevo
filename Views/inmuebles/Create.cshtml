@@ -403,11 +403,11 @@
                                 data.forEach(p => {
                                     const row = document.createElement("tr");
                                     row.innerHTML = `
-                                      <td>${p.DniPropietario}</td>
-                                      <td>${p.ApellidoPropietario}</td>
-                                      <td>${p.NombrePropietario}</td>
+                                      <td>${p.dniPropietario}</td>
+                                      <td>${p.apellidoPropietario}</td>
+                                      <td>${p.nombrePropietario}</td>
                                       <td>
-                                          <button class="btn btn-success" onclick="seleccionarPropietario('${p.DniPropietario}', '${p.NombrePropietario}', '${p.ApellidoPropietario}')">
+                                          <button class="btn btn-success" onclick="seleccionarPropietario('${p.dniPropietario}', '${p.nombrePropietario}', '${p.apellidoPropietario}')">
                                                 Seleccionar
                                           </button>
                                       </td>

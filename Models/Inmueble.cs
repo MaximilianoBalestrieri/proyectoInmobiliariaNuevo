@@ -52,10 +52,7 @@ namespace proyectoInmobiliariaNuevo.Models
 
         // Si querés guardar una cadena de rutas para insertarlas luego
         public string FotosCarrusel { get; set; } // <-- AGREGAR ESTO si lo vas a usar como string con ;
-
-        
-
-
+        public string Nombre { get; internal set; }
     }
 
 

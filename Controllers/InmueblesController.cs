@@ -8,20 +8,17 @@ using System.Collections.Generic;
 using static proyectoInmobiliariaNuevo.Models.ConexionDB;
 using proyectoInmobiliariaNuevo.Models;
 using System.Linq;
+using MySql.Data.MySqlClient;
+
 
 namespace proyectoInmobiliariaNuevo.Controllers
 {
-    public class InmueblesController : Controller
+    public class InmueblesController(IWebHostEnvironment env) : Controller
     {
-      private readonly IWebHostEnvironment _env;
-    private readonly ConexionDB conexionDB;
+      private readonly IWebHostEnvironment _env = env;
+    private readonly ConexionDB conexionDB = new ConexionDB();
 
-    public InmueblesController(IWebHostEnvironment env)
-    {
-        _env = env;
-        conexionDB = new ConexionDB();
-    }
-      public IActionResult Index()
+        public IActionResult Index()
     {
         // Aquí puedes obtener los inmuebles desde la base de datos, por ejemplo:
         var inmuebles = conexionDB.ObtenerInmuebles();  // Suponiendo que tienes este método en ConexionDB
@@ -34,6 +31,7 @@ namespace proyectoInmobiliariaNuevo.Controllers
   {
       return View();
   }
+
 
   public ActionResult Edit(int id)
   {
@@ -56,8 +54,7 @@ namespace proyectoInmobiliariaNuevo.Controllers
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Edit(InmuebleEditViewModel model, IFormFile FotoPortada, List<IFormFile> FotosCarrusel)
     {
-        System.Diagnostics.Debug.WriteLine("¿ModelState válido?: " + ModelState.IsValid);
-
+        ViewBag.Mensaje = "🏡 entro al edit de inmueble.";
         if (ModelState.IsValid)
         {
             try
@@ -190,63 +187,67 @@ public IActionResult DeleteConfirmed(int id)
 }
 
 
-        // POST: Inmuebles/Create
-       [HttpPost]
-[ValidateAntiForgeryToken]
-public IActionResult Create(Models.Inmueble inmueble, IFormFile FotoPortada, List<IFormFile> fotosCarrusel)
+      public int AgregarInmueble(Inmueble inmueble)
 {
-    if (ModelState.IsValid)
+    int idInmueble = 0;
+
+    using (MySqlConnection conexion = new MySqlConnection(ConexionDB))
     {
-        // Guardar la imagen de portada
-        if (FotoPortada != null && FotoPortada.Length > 0)
+        string query = @"
+        INSERT INTO Inmueble 
+            (DniPropietario, Calle, Nro, Piso, Dpto, Localidad, Provincia, Uso, Tipo, Ambientes, Precio, Latitud, Longitud, Pileta, Parrilla, Garage, ImagenPortada, vigente)
+        VALUES 
+            (@DniPropietario, @Calle, @Nro, @Piso, @Dpto, @Localidad, @Provincia, @Uso, @Tipo, @Ambientes, @Precio, @Latitud, @Longitud, @Pileta, @Parrilla, @Garage, @ImagenPortada, @vigente);
+        SELECT LAST_INSERT_ID();";
+
+        MySqlCommand cmd = new MySqlCommand(query, conexion);
+
+        cmd.Parameters.AddWithValue("@DniPropietario", inmueble.DniPropietario);
+        cmd.Parameters.AddWithValue("@Calle", inmueble.Calle);
+        cmd.Parameters.AddWithValue("@Nro", inmueble.Nro);
+        cmd.Parameters.AddWithValue("@Piso", inmueble.Piso);
+        cmd.Parameters.AddWithValue("@Dpto", inmueble.Dpto);
+        cmd.Parameters.AddWithValue("@Localidad", inmueble.Localidad);
+        cmd.Parameters.AddWithValue("@Provincia", inmueble.Provincia);
+        cmd.Parameters.AddWithValue("@Uso", inmueble.Uso);
+        cmd.Parameters.AddWithValue("@Tipo", inmueble.Tipo);
+        cmd.Parameters.AddWithValue("@Ambientes", inmueble.Ambientes);
+        cmd.Parameters.AddWithValue("@Precio", inmueble.Precio);
+        cmd.Parameters.AddWithValue("@Latitud", inmueble.Latitud);
+        cmd.Parameters.AddWithValue("@Longitud", inmueble.Longitud);
+        cmd.Parameters.AddWithValue("@Pileta", inmueble.Pileta);
+        cmd.Parameters.AddWithValue("@Parrilla", inmueble.Parrilla);
+        cmd.Parameters.AddWithValue("@Garage", inmueble.Garage);
+        cmd.Parameters.AddWithValue("@ImagenPortada", inmueble.ImagenPortada);
+        cmd.Parameters.AddWithValue("@vigente", inmueble.Vigente);
+
+        conexion.Open();
+        idInmueble = Convert.ToInt32(cmd.ExecuteScalar());
+
+        // Guardar fotos del carrusel si hay
+        if (!string.IsNullOrEmpty(inmueble.FotosCarrusel))
         {
-            string uploadsFolder = Path.Combine(_env.WebRootPath, "Uploads", "Portadas");
-            Directory.CreateDirectory(uploadsFolder); // Por si no existe
+            var rutas = inmueble.FotosCarrusel.Split(';');
 
-            string fileName = Path.GetFileName(FotoPortada.FileName);
-            string filePath = Path.Combine(uploadsFolder, fileName);
-
-            using (var stream = new FileStream(filePath, FileMode.Create))
+            foreach (var ruta in rutas)
             {
-                FotoPortada.CopyTo(stream);
-            }
-
-            inmueble.ImagenPortada = "/Uploads/Portadas/" + fileName;
-        }
-
-        // Guardar imágenes del carrusel
-        List<string> rutasCarrusel = new List<string>();
-        if (fotosCarrusel != null && fotosCarrusel.Count > 0)
-        {
-            string carruselFolder = Path.Combine(_env.WebRootPath, "Uploads", "Carrusel");
-            Directory.CreateDirectory(carruselFolder);
-
-            foreach (var foto in fotosCarrusel)
-            {
-                if (foto != null && foto.Length > 0)
+                if (!string.IsNullOrWhiteSpace(ruta))
                 {
-                    string fileName = Path.GetFileName(foto.FileName);
-                    string filePath = Path.Combine(carruselFolder, fileName);
+                    var cmdCarrusel = new MySqlCommand(
+                        "INSERT INTO InmuebleFotoCarrusel (IdInmueble, RutaFoto) VALUES (@IdInmueble, @RutaFoto)",
+                        conexion);
 
-                    using (var stream = new FileStream(filePath, FileMode.Create))
-                    {
-                        foto.CopyTo(stream);
-                    }
-
-                    rutasCarrusel.Add("/Uploads/Carrusel/" + fileName);
+                    cmdCarrusel.Parameters.AddWithValue("@IdInmueble", idInmueble);
+                    cmdCarrusel.Parameters.AddWithValue("@RutaFoto", ruta);
+                    cmdCarrusel.ExecuteNonQuery();
                 }
             }
-
-            // inmueble.FotosCarrusel = string.Join(";", rutasCarrusel); // Si lo necesitás
         }
-
-        int idGenerado = conexionDB.AgregarInmueble(inmueble);
-
-        return RedirectToAction("Index");
     }
 
-    return View(inmueble);
+    return idInmueble;
 }
+
 
 
         [HttpGet]
@@ -289,12 +290,6 @@ public JsonResult Ocupados(DateTime desde, DateTime hasta)
         return Json(new { error = ex.Message });
     }
 }
-
-
-
-
-
-
 
 
     }

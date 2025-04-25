@@ -557,61 +557,64 @@ namespace proyectoInmobiliariaNuevo.Models
 
 
         // Agregar nuevo inmueble
-        public int AgregarInmueble(Inmueble inmueble)
-        {
-            int idInmueble = 0;
+     public int AgregarInmueble(Inmueble inmueble)
+{
+    int idInmueble = 0;
 
-            using (var conn = ObtenerConexion())
-            {
-                conn.Open();
-                var cmd = new MySqlCommand(@"
+    using (MySqlConnection conexion = new MySqlConnection(_connectionString))
+    {
+        string query = @"
             INSERT INTO Inmueble 
                 (DniPropietario, Calle, Nro, Piso, Dpto, Localidad, Provincia, Uso, Tipo, Ambientes, Precio, Latitud, Longitud, Pileta, Parrilla, Garage, ImagenPortada, vigente)
             VALUES 
                 (@DniPropietario, @Calle, @Nro, @Piso, @Dpto, @Localidad, @Provincia, @Uso, @Tipo, @Ambientes, @Precio, @Latitud, @Longitud, @Pileta, @Parrilla, @Garage, @ImagenPortada, @vigente);
-            SELECT LAST_INSERT_ID();", conn);
+            SELECT LAST_INSERT_ID();";
 
-                cmd.Parameters.AddWithValue("@DniPropietario", inmueble.DniPropietario);
-                cmd.Parameters.AddWithValue("@Calle", inmueble.Calle);
-                cmd.Parameters.AddWithValue("@Nro", inmueble.Nro);
-                cmd.Parameters.AddWithValue("@Piso", inmueble.Piso);
-                cmd.Parameters.AddWithValue("@Dpto", inmueble.Dpto);
-                cmd.Parameters.AddWithValue("@Localidad", inmueble.Localidad);
-                cmd.Parameters.AddWithValue("@Provincia", inmueble.Provincia);
-                cmd.Parameters.AddWithValue("@Uso", inmueble.Uso);
-                cmd.Parameters.AddWithValue("@Tipo", inmueble.Tipo);
-                cmd.Parameters.AddWithValue("@Ambientes", inmueble.Ambientes);
-                cmd.Parameters.AddWithValue("@Precio", inmueble.Precio);
-                cmd.Parameters.AddWithValue("@Latitud", inmueble.Latitud);
-                cmd.Parameters.AddWithValue("@Longitud", inmueble.Longitud);
-                cmd.Parameters.AddWithValue("@Pileta", inmueble.Pileta);
-                cmd.Parameters.AddWithValue("@Parrilla", inmueble.Parrilla);
-                cmd.Parameters.AddWithValue("@Garage", inmueble.Garage);
-                cmd.Parameters.AddWithValue("@ImagenPortada", inmueble.ImagenPortada);
-                cmd.Parameters.AddWithValue("@vigente", inmueble.Vigente);
-                idInmueble = Convert.ToInt32(cmd.ExecuteScalar());
+        MySqlCommand cmd = new MySqlCommand(query, conexion);
+        cmd.Parameters.AddWithValue("@DniPropietario", inmueble.DniPropietario);
+        cmd.Parameters.AddWithValue("@Calle", inmueble.Calle);
+        cmd.Parameters.AddWithValue("@Nro", inmueble.Nro);
+        cmd.Parameters.AddWithValue("@Piso", inmueble.Piso);
+        cmd.Parameters.AddWithValue("@Dpto", inmueble.Dpto);
+        cmd.Parameters.AddWithValue("@Localidad", inmueble.Localidad);
+        cmd.Parameters.AddWithValue("@Provincia", inmueble.Provincia);
+        cmd.Parameters.AddWithValue("@Uso", inmueble.Uso);
+        cmd.Parameters.AddWithValue("@Tipo", inmueble.Tipo);
+        cmd.Parameters.AddWithValue("@Ambientes", inmueble.Ambientes);
+        cmd.Parameters.AddWithValue("@Precio", inmueble.Precio);
+        cmd.Parameters.AddWithValue("@Latitud", inmueble.Latitud);
+        cmd.Parameters.AddWithValue("@Longitud", inmueble.Longitud);
+        cmd.Parameters.AddWithValue("@Pileta", inmueble.Pileta);
+        cmd.Parameters.AddWithValue("@Parrilla", inmueble.Parrilla);
+        cmd.Parameters.AddWithValue("@Garage", inmueble.Garage);
+        cmd.Parameters.AddWithValue("@ImagenPortada", inmueble.ImagenPortada);
+        cmd.Parameters.AddWithValue("@vigente", inmueble.Vigente);
 
-                // Guardar fotos del carrusel si hay
-                if (!string.IsNullOrEmpty(inmueble.FotosCarrusel))
+        conexion.Open();
+        idInmueble = Convert.ToInt32(cmd.ExecuteScalar());
+
+        // Guardar fotos del carrusel si hay
+        if (!string.IsNullOrEmpty(inmueble.FotosCarrusel))
+        {
+            var rutas = inmueble.FotosCarrusel.Split(';');
+
+            foreach (var ruta in rutas)
+            {
+                if (!string.IsNullOrWhiteSpace(ruta))
                 {
-                    var rutas = inmueble.FotosCarrusel.Split(';');
-
-                    foreach (var ruta in rutas)
-                    {
-                        if (!string.IsNullOrWhiteSpace(ruta))
-                        {
-                            var cmdCarrusel = new MySqlCommand(
-                                "INSERT INTO InmuebleFotoCarrusel (IdInmueble, RutaFoto) VALUES (@IdInmueble, @RutaFoto)", conn);
-                            cmdCarrusel.Parameters.AddWithValue("@IdInmueble", idInmueble);
-                            cmdCarrusel.Parameters.AddWithValue("@RutaFoto", ruta);
-                            cmdCarrusel.ExecuteNonQuery();
-                        }
-                    }
+                    var cmdCarrusel = new MySqlCommand(
+                        "INSERT INTO InmuebleFotoCarrusel (IdInmueble, RutaFoto) VALUES (@IdInmueble, @RutaFoto)", conexion);
+                    cmdCarrusel.Parameters.AddWithValue("@IdInmueble", idInmueble);
+                    cmdCarrusel.Parameters.AddWithValue("@RutaFoto", ruta);
+                    cmdCarrusel.ExecuteNonQuery();
                 }
             }
-
-            return idInmueble;
         }
+    }
+
+    return idInmueble;
+}
+
 
 
 
@@ -619,10 +622,9 @@ namespace proyectoInmobiliariaNuevo.Models
         // Actualizar inmueble existente
         public void ActualizarInmueble(Inmueble inmueble)
         {
-            System.Diagnostics.Debug.WriteLine("📌 Entrando a ActualizarInmueble: " + inmueble.IdInmueble);
-            using (MySqlConnection conexion = new MySqlConnection(_connectionString))
-            {
-                string query = @"UPDATE inmueble SET 
+             using (MySqlConnection conexion = new MySqlConnection(_connectionString))
+             {
+            string query = @"UPDATE inmueble SET 
             dniPropietario = @dni,
             calle = @calle,
             nro = @nro,
@@ -643,32 +645,31 @@ namespace proyectoInmobiliariaNuevo.Models
             vigente=@vigente
         WHERE idInmueble = @id";
 
-                MySqlCommand cmd = new MySqlCommand(query, conexion);
+            MySqlCommand cmd = new MySqlCommand(query, conexion);
 
-                cmd.Parameters.AddWithValue("@id", inmueble.IdInmueble);
-                cmd.Parameters.AddWithValue("@dni", inmueble.DniPropietario);
-                cmd.Parameters.AddWithValue("@calle", inmueble.Calle);
-                cmd.Parameters.AddWithValue("@nro", inmueble.Nro);
-                cmd.Parameters.AddWithValue("@piso", inmueble.Piso);
-                cmd.Parameters.AddWithValue("@dpto", inmueble.Dpto);
-                cmd.Parameters.AddWithValue("@localidad", inmueble.Localidad);
-                cmd.Parameters.AddWithValue("@provincia", inmueble.Provincia);
-                cmd.Parameters.AddWithValue("@uso", inmueble.Uso);
-                cmd.Parameters.AddWithValue("@tipo", inmueble.Tipo);
-                cmd.Parameters.AddWithValue("@ambientes", inmueble.Ambientes);
-                cmd.Parameters.AddWithValue("@pileta", inmueble.Pileta);
-                cmd.Parameters.AddWithValue("@parrilla", inmueble.Parrilla);
-                cmd.Parameters.AddWithValue("@garage", inmueble.Garage);
-                cmd.Parameters.AddWithValue("@latitud", inmueble.Latitud);
-                cmd.Parameters.AddWithValue("@longitud", inmueble.Longitud);
-                cmd.Parameters.AddWithValue("@precio", inmueble.Precio);
-                cmd.Parameters.AddWithValue("@ImagenPortada", inmueble.ImagenPortada);
-                cmd.Parameters.AddWithValue("@vigente", inmueble.Vigente);
-                conexion.Open();
-                System.Diagnostics.Debug.WriteLine("Actualizando inmueble con ruta: " + inmueble.ImagenPortada);
+            cmd.Parameters.AddWithValue("@id", inmueble.IdInmueble);
+            cmd.Parameters.AddWithValue("@dni", inmueble.DniPropietario);
+            cmd.Parameters.AddWithValue("@calle", inmueble.Calle);
+            cmd.Parameters.AddWithValue("@nro", inmueble.Nro);
+            cmd.Parameters.AddWithValue("@piso", inmueble.Piso);
+            cmd.Parameters.AddWithValue("@dpto", inmueble.Dpto);
+            cmd.Parameters.AddWithValue("@localidad", inmueble.Localidad);
+            cmd.Parameters.AddWithValue("@provincia", inmueble.Provincia);
+            cmd.Parameters.AddWithValue("@uso", inmueble.Uso);
+            cmd.Parameters.AddWithValue("@tipo", inmueble.Tipo);
+            cmd.Parameters.AddWithValue("@ambientes", inmueble.Ambientes);
+            cmd.Parameters.AddWithValue("@pileta", inmueble.Pileta);
+            cmd.Parameters.AddWithValue("@parrilla", inmueble.Parrilla);
+            cmd.Parameters.AddWithValue("@garage", inmueble.Garage);
+            cmd.Parameters.AddWithValue("@latitud", inmueble.Latitud);
+            cmd.Parameters.AddWithValue("@longitud", inmueble.Longitud);
+            cmd.Parameters.AddWithValue("@precio", inmueble.Precio);
+            cmd.Parameters.AddWithValue("@ImagenPortada", inmueble.ImagenPortada);
+            cmd.Parameters.AddWithValue("@vigente", inmueble.Vigente);
+            conexion.Open();
 
-                cmd.ExecuteNonQuery();
-            }
+            cmd.ExecuteNonQuery();
+        }
         }
 
         public void EliminarInmueble(int id)

@@ -219,11 +219,11 @@
 
                         <!-- Vista previa a la derecha -->
                         <div style="width: 200px; height: 200px; border: 2px dashed #ccc; display: flex; align-items: center; justify-content: center;">
-                            <img id="previewPortada"
-                             src="@Url.Content("~/Uploads/Portadas/" + Model.Inmueble.ImagenPortada)"
-                             alt="Vista previa"
-                             class="img-fluid @(string.IsNullOrEmpty(Model.Inmueble.ImagenPortada) ? "d-none" : "")"
-                             style="max-height: 100%; max-width: 100%; object-fit: contain;" />
+                           <img id="previewPortada"
+                              src="@Url.Content(Model.Inmueble.ImagenPortada)"
+                              alt="Vista previa"
+                              class="img-fluid @(string.IsNullOrEmpty(Model.Inmueble.ImagenPortada) ? "d-none" : "")"
+                              style="max-height: 100%; max-width: 100%; object-fit: contain;" />
                         </div>
                     </div>
 
@@ -236,7 +236,7 @@
                             <div class="input-group">
                                 @Html.TextBoxFor(model => model.Inmueble.DniPropietario, new { @class = "form-control", maxlength = "12", style = "max-width: 150px;", type = "number", id = "dniPropietarioInput" })
 
-                                <div class="col-auto mb-3 d-flex align-items-center" style="margin-top: -32px;">
+                               
                                     <button type="button" class="btn btn-primary me-3" data-bs-toggle="modal" data-bs-target="#modalBuscarPropietario">
                                         Buscar Propietario
                                     </button>
@@ -245,7 +245,7 @@
                                         @Html.LabelFor(model => Model.Inmueble.Vigente, "Apta para alquilarse", new { @class = "form-check-label" })
                                     </div>
 
-                                </div>
+                                
 
                             </div>
                             <div id="nombrePropietarioSeleccionado" class="mt-2 text-success fw-bold"></div>
@@ -390,7 +390,14 @@
         </div>
     </div>
 
-   
+@if (ViewBag.Mensaje != null)
+{
+    <div class="alert alert-success">
+        @ViewBag.Mensaje
+    </div>
+}
+
+   }
 
         <script>
             document.addEventListener("DOMContentLoaded", function () {
@@ -422,13 +429,14 @@
                                     }
 
                                     data.forEach(p => {
+
                                         const row = document.createElement("tr");
                                         row.innerHTML = `
-                                                        <td>${p.DniPropietario}</td>
-                                                        <td>${p.ApellidoPropietario}</td>
-                                                        <td>${p.NombrePropietario}</td>
+                                                        <td>${p.dniPropietario}</td>
+                                                        <td>${p.apellidoPropietario}</td>
+                                                        <td>${p.nombrePropietario}</td>
                                                         <td>
-                                                            <button class="btn btn-success" onclick="seleccionarPropietario('${p.DniPropietario}', '${p.NombrePropietario}', '${p.ApellidoPropietario}')">
+                                                            <button class="btn btn-success" onclick="seleccionarPropietario('${p.dniPropietario}', '${p.nombrePropietario}', '${p.apellidoPropietario}')">
                                                                 Seleccionar
                                                             </button>
                                                         </td>`;
@@ -490,7 +498,7 @@
             }
         }
         </script>
-    }
+    
 
 </body>
 </html>
