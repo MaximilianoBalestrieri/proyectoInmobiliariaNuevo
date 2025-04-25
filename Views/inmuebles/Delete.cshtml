@@ -1,0 +1,66 @@
+﻿@model proyectoInmobiliariaNuevo.Models.Inmueble
+@{
+    ViewData["Title"] = "Eliminar Inmueble";
+}
+
+<h2>Eliminar Inmueble</h2>
+
+<div class="alert alert-danger">
+    <strong>¿Estás seguro que deseas eliminar este inmueble?</strong>
+</div>
+
+<div>
+    <h4>Detalles del Inmueble</h4>
+    <dl class="row">
+        <dt class="col-sm-3">ID</dt>
+        <dd class="col-sm-9">@Model.IdInmueble</dd>
+
+        <dt class="col-sm-3">DNI Propietario</dt>
+        <dd class="col-sm-9">@Model.DniPropietario</dd>
+
+        <dt class="col-sm-3">Dirección</dt>
+        <dd class="col-sm-9">@Model.Calle @Model.Nro, Piso @Model.Piso, Dpto @Model.Dpto</dd>
+
+        <dt class="col-sm-3">Localidad</dt>
+        <dd class="col-sm-9">@Model.Localidad</dd>
+
+        <dt class="col-sm-3">Provincia</dt>
+        <dd class="col-sm-9">@Model.Provincia</dd>
+
+        <dt class="col-sm-3">Uso</dt>
+        <dd class="col-sm-9">@Model.Uso</dd>
+
+        <dt class="col-sm-3">Tipo</dt>
+        <dd class="col-sm-9">@Model.Tipo</dd>
+
+        <dt class="col-sm-3">Ambientes</dt>
+        <dd class="col-sm-9">@Model.Ambientes</dd>
+
+        <dt class="col-sm-3">Pileta</dt>
+        <dd class="col-sm-9">@(Model.Pileta ? "Sí" : "No")</dd>
+
+        <dt class="col-sm-3">Parrilla</dt>
+        <dd class="col-sm-9">@(Model.Parrilla ? "Sí" : "No")</dd>
+
+        <dt class="col-sm-3">Garage</dt>
+        <dd class="col-sm-9">@(Model.Garage ? "Sí" : "No")</dd>
+
+        <dt class="col-sm-3">Latitud</dt>
+        <dd class="col-sm-9">@Model.Latitud</dd>
+
+        <dt class="col-sm-3">Longitud</dt>
+        <dd class="col-sm-9">@Model.Longitud</dd>
+
+        <dt class="col-sm-3">Precio</dt>
+        <dd class="col-sm-9">$@Model.Precio</dd>
+    </dl>
+</div>
+
+<form asp-action="Delete" asp-route-id="@Model.IdInmueble" method="post">
+    @Html.AntiForgeryToken()  <!-- ESTA LÍNEA ES LA CLAVE -->
+
+    <input type="hidden" asp-for="IdInmueble" />
+    <button type="submit" class="btn btn-danger">Eliminar</button>
+    <a href="@Url.Action("Index", "Inmuebles")" class="btn btn-secondary">Cancelar</a>
+</form>
+

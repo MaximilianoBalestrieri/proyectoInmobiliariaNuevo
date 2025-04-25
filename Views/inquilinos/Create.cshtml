@@ -1,0 +1,70 @@
+﻿@{
+    Layout = null;
+}
+
+@model proyectoInmobiliariaNuevo.Models.Inquilino
+
+<head>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <style>
+        /* Estilo personalizado para el título */
+        .titulo-formulario {
+            background-color: #000; /* Fondo negro */
+            color: #fff; /* Texto blanco */
+            padding: 10px 20px; /* Espaciado interno */
+            border-radius: 5px; /* Bordes redondeados */
+            text-align: center; /* Centrar el texto */
+        }
+    </style>
+</head>
+
+<!-- Contenedor para centrar el formulario en la página, con un ancho de la mitad de la pantalla -->
+<div class="container my-5">
+    <!-- Card para darle un cuadro con borde y fondo al formulario -->
+    <div class="card shadow-lg w-50 mx-auto">
+        <div class="card-body">
+            <!-- Aplicamos la clase personalizada al título -->
+            <h2 class="titulo-formulario mb-4">Crear Inquilino</h2>
+
+            @using (Html.BeginForm("Create", "Inquilinos", FormMethod.Post, new { @class = "needs-validation", novalidate = "novalidate" }))
+            {
+                @Html.AntiForgeryToken()
+
+                <div class="form-row">
+                    <div class="col-md-12 mb-3">
+                        <label class="form-label">Nombre del Inquilino</label>
+                        @Html.TextBoxFor(model => model.NombreInquilino, new { @class = "form-control", placeholder = "Ingrese el nombre", required = "required" })
+                        @Html.ValidationMessageFor(model => model.NombreInquilino, "", new { @class = "text-danger" })
+                    </div>
+
+                    <div class="col-md-12 mb-3">
+                        <label class="form-label">Apellido del Inquilino</label>
+                        @Html.TextBoxFor(model => model.ApellidoInquilino, new { @class = "form-control", placeholder = "Ingrese el apellido", required = "required" })
+                        @Html.ValidationMessageFor(model => model.ApellidoInquilino, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="col-md-12 mb-3">
+                        <label class="form-label">DNI del Inquilino</label>
+                        @Html.TextBoxFor(model => model.DniInquilino, new { @class = "form-control", placeholder = "Ingrese el DNI", required = "required", type = "number" })
+                        @Html.ValidationMessageFor(model => model.DniInquilino, "", new { @class = "text-danger" })
+                    </div>
+
+                    <div class="col-md-12 mb-3">
+                        <label class="form-label">Contacto del Inquilino</label>
+                        @Html.TextBoxFor(model => model.ContactoInquilino, new { @class = "form-control", placeholder = "Ingrese el contacto", required = "required" })
+                        @Html.ValidationMessageFor(model => model.ContactoInquilino, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group text-center">
+                    <button type="submit" class="btn btn-success btn-lg">Guardar</button>
+                    <a href="@Url.Action("Index", "Inquilinos")" class="btn btn-outline-secondary btn-lg">Cancelar</a>
+                </div>
+            }
+
+            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        </div>
+    </div>
+</div>

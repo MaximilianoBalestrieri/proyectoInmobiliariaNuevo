@@ -1,0 +1,56 @@
+﻿@model proyectoInmobiliariaNuevo.Models.Contrato
+
+@{
+    ViewBag.Title = "Eliminar Contrato";
+}
+
+<h2>Eliminar Contrato</h2>
+
+<h4>¿Estás seguro que deseas eliminar el siguiente contrato?</h4>
+<hr />
+
+<div class="mb-3">
+    <dl class="row">
+        <dt class="col-sm-3">DNI Propietario</dt>
+        <dd class="col-sm-9">@Model.DniPropietario</dd>
+
+        <dt class="col-sm-3">Nombre Propietario</dt>
+        <dd class="col-sm-9">@Model.NombrePropietario</dd>
+
+        <dt class="col-sm-3">DNI Inquilino</dt>
+        <dd class="col-sm-9">@Model.DniInquilino</dd>
+
+        <dt class="col-sm-3">Nombre Inquilino</dt>
+        <dd class="col-sm-9">@Model.NombreInquilino</dd>
+
+        <dt class="col-sm-3">Dirección</dt>
+        <dd class="col-sm-9">@Model.Direccion</dd>
+
+        <dt class="col-sm-3">Fecha Inicio</dt>
+        <dd class="col-sm-9">@Model.FechaInicio.ToString("dd/MM/yyyy")</dd>
+
+        <dt class="col-sm-3">Fecha Final</dt>
+        <dd class="col-sm-9">@Model.FechaFinal.ToString("dd/MM/yyyy")</dd>
+
+        <dt class="col-sm-3">Monto</dt>
+        <dd class="col-sm-9">$@Model.Monto.ToString("N2")</dd>
+
+        <dt class="col-sm-3">Vigente</dt>
+        <dd class="col-sm-9">@(Model.Vigente ? "Sí" : "No")</dd>
+    </dl>
+</div>
+
+@using (Html.BeginForm("DeleteConfirmed", "Contratos", FormMethod.Post))
+{
+    @Html.AntiForgeryToken()
+
+    <!-- Campo oculto para pasar correctamente el ID al controlador -->
+    @Html.HiddenFor(model => model.IdContrato)
+    <!-- Alternativa segura adicional -->
+    <input type="hidden" name="id" value="@Model.IdContrato" />
+
+    <div class="d-flex gap-2">
+        <input type="submit" value="Eliminar" class="btn btn-danger" />
+        @Html.ActionLink("Cancelar", "Index", null, new { @class = "btn btn-secondary" })
+    </div>
+}

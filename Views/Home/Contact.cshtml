@@ -1,0 +1,40 @@
+﻿@{
+    ViewBag.Title = "Contact";
+}
+
+<head>
+    <style>
+
+        body {
+     background-image: url('@Url.Content("~/Imagenes/FondoInmobiliaria.jpg")');
+
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    background-repeat: no-repeat;
+   /* color: #fff; /* Esto es opcional, solo si quieres que el texto sea blanco para mayor contraste */
+}
+
+    </style>
+
+
+</head>
+
+<body>
+    <main aria-labelledby="title">
+        <!--  <h2 id="title">@ViewBag.Title.</h2>-->
+        <h3>@ViewBag.Message</h3>
+
+        <address>
+            Inmobiliaria BALESTRIERI<br />
+            Merlo, San Luis, Argentina<br />
+            <abbr title="Telefono">P:</abbr>
+            02664.555.0100
+        </address>
+
+        <address>
+            <strong>Email:</strong>   <a href="mailto:maximiliano_balestrieri@hotmail.com">maximiliano_balestrieri@hotmail.com</a><br />
+
+        </address>
+    </main>
+</body>

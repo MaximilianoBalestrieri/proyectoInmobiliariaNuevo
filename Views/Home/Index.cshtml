@@ -1,8 +1,108 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Página Principal";
 }
+<head>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" />
+    
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+    <style>
+
+        .section-border {
+            border: 1px solid #ccc; /* Borde gris claro */
+            padding: 20px; /* Espaciado interno */
+            margin-bottom: 15px; /* Espaciado entre secciones */
+            border-radius: 5px; /* Bordes redondeados */
+            background-color: rgba(255, 255, 255, 0.5); /* Fondo blanco con un 80% de opacidad */
+                 }
+        /* Estilo para los botones por defecto */
+        .custom-btn {
+            background-color: #f0f0f0; /* Gris claro */
+            color: #333; /* Texto oscuro */
+            border: 1px solid #ccc; /* Borde gris claro */
+        }
+
+            /* Estilo para el hover (cuando el mouse pasa sobre el botón) */
+            .custom-btn:hover {
+                background-color: #000; /* Fondo negro */
+                color: #fff; /* Texto blanco */
+                border-color: #000; /* Borde negro */
+            }
+
+        body {
+             background-image: url('@Url.Content("~/Imagenes/FondoInmobiliaria2.jpg")');
+
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            background-repeat: no-repeat;
+           /* color: #fff; /* Esto es opcional, solo si quieres que el texto sea blanco para mayor contraste */
+        }
+    </style>
+                                                 <!--  PAGINA PRINCIPAL -->
+</head>
+<body>
+    <main>
+        <section class="row" aria-labelledby="aspnetTitle">
+            <h1 id="title" style="text-align: center; margin-right: auto; margin-left: auto;">INMOBILIARIA.NET</h1>
+            <p class="lead">Proyecto Inmobiliaria para la Universidad de la Punta.</p>
+
+        </section>
+
+        <div class="row">
+            <section class="col-md-3 section-border" aria-labelledby="gettingStartedTitle">
+                <div class="d-flex align-items-center">
+                    <img src="~/imagenes/casa.png" alt="Icono de Propietarios" class="me-2" style="width: 40px; height: 40px;">
+                    <h2 id="gettingStartedTitle">Propietarios</h2>
+                </div>
+                <p>Alta, baja, modificación y consulta de los propietarios ingresados en el sistema.</p>
+                <p>
+                    <a class="btn btn-outline-dark custom-btn" href="@Url.Action("Index", "Propietarios")">Ver Propietarios &raquo;</a>
+                </p>
+            </section>
+
+            <section class="col-md-3 section-border" aria-labelledby="librariesTitle">
+                <div class="d-flex align-items-center">
+                    <img src="~/Imagenes/inquilino.png" alt="Icono de Inquilinos" class="me-2" style="width: 40px; height: 40px;">
+                    <h2 id="librariesTitle">Inquilinos</h2>
+                </div>
+                <p>Alta, baja, modificación y consulta de los inquilinos ingresados en el sistema.</p>
+                <p>
+                    <a class="btn btn-outline-dark custom-btn" href="@Url.Action("Index", "Inquilinos")">Ver Inquilinos &raquo;</a>
+                </p>
+            </section>
+
+            <section class="col-md-3 section-border" aria-labelledby="hostingTitle">
+                <div class="d-flex align-items-center">
+
+                    <img src="~/Imagenes/edificio.png" alt="Icono de Inmuebles" class="me-2" style="width: 40px; height: 40px;">
+                    <h2 id="hostingTitle">Inmuebles</h2>
+                </div>
+                <p>Alta, baja, modificación y consulta de los Inmuebles ingresados en el sistema.</p>
+                <p>
+                    <a class="btn btn-outline-dark custom-btn" href="@Url.Action("Index", "Inmuebles")">Ver Inmuebles &raquo;</a>
+                </p>
+            </section>
+
+            <section class="col-md-3 section-border" aria-labelledby="contractsTitle">
+                <div class="d-flex align-items-center">
+                    <img src="~/Imagenes/contrato.png" alt="Icono de Contratos" class="me-2" style="width: 40px; height: 40px;">
+                    <h2 id="contractsTitle">Contratos</h2>
+                </div>
+                <p>Alta, baja, modificación y consulta de los contratos ingresados en el sistema.</p>
+                <p>
+                    <a class="btn btn-outline-dark custom-btn" href="@Url.Action("Index", "Contratos")">Ir a contratos &raquo;</a>
+                </p>
+            </section>
+
+            <section class="row" aria-labelledby="aspnetTitle">
+
+                <p>
+                    <a href="https://www.instagram.com" class="btn btn-primary btn-md" target="_blank">
+                        <img src="~/Imagenes/instagram.png" alt="Instagram" style="width: 20px; height: 20px; margin-right: 10px;">
+                        Seguinos en Instagram
+                    </a>
+                </p>
+            </section>
+        </div>
+    </main>
+</body>

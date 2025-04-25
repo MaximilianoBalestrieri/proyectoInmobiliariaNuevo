@@ -1,0 +1,493 @@
+﻿@model List<proyectoInmobiliariaNuevo.Models.Inmueble>
+@{
+    ViewData["Title"] = "Inmuebles";
+}
+
+<style>
+
+    th[onclick] {
+        cursor: pointer;
+    }
+
+        th[onclick]:hover {
+            position: relative;
+        }
+
+            th[onclick]:hover::after {
+                content: "Ordenar";
+                position: absolute;
+                bottom: -1.5em;
+                left: 50%;
+                transform: translateX(-50%);
+                background-color: #333;
+                color: white;
+                padding: 2px 6px;
+                font-size: 0.7rem;
+                border-radius: 4px;
+                white-space: nowrap;
+                z-index: 10;
+            }
+
+    thead {
+        background-color: black;
+        color: white;
+    }
+
+    table {
+        padding: 10px;
+        border-collapse: separate;
+        border-spacing: 0;
+        border-radius: 5px;
+        overflow: hidden;
+    }
+
+    thead tr:first-child th:first-child {
+        border-top-left-radius: 5px;
+    }
+
+    thead tr:first-child th:last-child {
+        border-top-right-radius: 5px;
+    }
+
+    th, td {
+        padding: 5px 10px;
+        font-size: 14px;
+    }
+
+    tr {
+        height: 30px;
+    }
+
+    .tabla-personalizada tbody tr:nth-child(odd) {
+        background-color: #f2f2f2; /* gris clarito */
+    }
+
+    .tabla-personalizada tbody tr:nth-child(even) {
+        background-color: #ffffff; /* blanco */
+    }
+
+    .tabla-personalizada thead {
+        background-color: black !important;
+        color: white !important;
+    }
+
+    .tabla-personalizada {
+        padding: 10px;
+        border-collapse: separate;
+        border-spacing: 0;
+        border-radius: 5px;
+        overflow: hidden;
+    }
+
+        .tabla-personalizada thead tr:first-child th:first-child {
+            border-top-left-radius: 5px;
+        }
+
+        .tabla-personalizada thead tr:first-child th:last-child {
+            border-top-right-radius: 5px;
+        }
+
+        .tabla-personalizada th,
+        .tabla-personalizada td {
+            font-size: 14px !important;
+            padding-top: 4px !important;
+            padding-bottom: 4px !important;
+        }
+
+
+        .tabla-personalizada tr {
+            height: 25px;
+        }
+
+    .tabla-personalizada {
+        font-size: 0.75rem;
+    }
+</style>
+
+<h2>Inmuebles</h2>
+
+<div class="d-flex justify-content-between align-items-center mb-2">
+    <input type="text" id="buscadorInmuebles" class="form-control w-25" placeholder="Buscar...">
+
+    <div class="form-check mx-3">
+        <input class="form-check-input" type="checkbox" id="checkHabilitado">
+        <label class="form-check-label" for="checkHabilitado">Inmueble habilitado</label>
+    </div>
+
+
+    <div id="paginacionInmuebles" class="btn-group"></div>
+</div>
+
+<div class="row mb-3">
+    <div class="col-md-3">
+        <label for="fechaInicio">Desde:</label>
+        <input type="date" id="fechaInicio" class="form-control" />
+    </div>
+    <div class="col-md-3">
+        <label for="fechaFin">Hasta:</label>
+        <input type="date" id="fechaFin" class="form-control" />
+    </div>
+    <div class="col-md-3 d-flex align-items-end">
+        <button onclick="buscarOcupados()" class="btn btn-outline-success">Buscar Desocupados</button>
+
+    </div>
+</div>
+
+
+<a href="@Url.Action("Create", "Inmuebles")" class="btn btn-primary mb-3">Agregar Inmueble</a>
+
+@if (ViewBag.Mensaje != null)
+{
+    <div class="alert alert-info">@ViewBag.Mensaje</div>
+}
+
+@if (Model != null && Model.Count > 0)
+{
+    <table class="tabla-personalizada table table-bordered">
+
+        <thead>
+            <tr>
+                <th onclick="ordenarPor('DniPropietario')" class="text-center" style="width: 80px;">DNI Propietario</th>
+                <th onclick="ordenarPor('Calle')">Calle</th>
+                <th onclick="ordenarPor('Nro')" class="text-center">Número</th>
+                <th onclick="ordenarPor('Piso')" class="text-center" style="width: 40px;">Piso</th>
+                <th onclick="ordenarPor('Dpto')" class="text-center" style="width: 40px;">Dpto</th>
+                <th onclick="ordenarPor('Localidad')" class="text-center">Localidad</th>
+                <th onclick="ordenarPor('Provincia')" class="text-center">Provincia</th>
+                <th onclick="ordenarPor('Precio')" class="text-center" style="width: 80px;">Precio</th>
+                <th onclick="ordenarPor('Vigente')" class="text-center" style="width: 60px;">Habilitada</th>
+                <th style="width: 140px;" class="text-center">Acciones</th>
+            </tr>
+        </thead>
+        <tbody id="tablaInmuebles">
+            @foreach (var inmueble in Model)
+            {
+                <tr>
+                    <td class="text-center">
+                        <a href="#" class="ver-propietario" data-dni="@inmueble.DniPropietario">@(inmueble.DniPropietario)</a>
+                    </td>
+                    <td>@inmueble.Calle</td>
+                    <td class="text-center">@inmueble.Nro</td>
+                    <td class="text-center">@inmueble.Piso</td>
+                    <td class="text-center">@inmueble.Dpto</td>
+                    <td class="text-center">@inmueble.Localidad</td>
+                    <td class="text-center">@inmueble.Provincia</td>
+                    <td class="text-end">$@inmueble.Precio</td>
+                    <td class="text-center">@(inmueble.Vigente ? "Sí" : "No")</td>
+
+                    <td>
+                        <a href="@Url.Action("Edit", "Inmuebles", new { id = inmueble.IdInmueble })" class="btn btn-warning btn-sm">Editar</a>
+                        <a href="@Url.Action("Delete", "Inmuebles", new { id = inmueble.IdInmueble })" class="btn btn-danger btn-sm">Eliminar</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+}
+else
+{
+    <p>No hay inmuebles disponibles para mostrar.</p>
+}
+
+<!-- Modal Bootstrap 5 -->
+<div class="modal fade" id="modalPropietario" tabindex="-1" aria-labelledby="modalPropietarioLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalPropietarioLabel">Datos del Propietario</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body">
+                <p><strong>DNI:</strong> <span id="dniModal"></span></p>
+                <p><strong>Apellido:</strong> <span id="apellidoModal"></span></p>
+                <p><strong>Nombre:</strong> <span id="nombreModal"></span></p>
+                <p><strong>Celular:</strong> <span id="celularModal"></span></p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de búsqueda de propietario -->
+<div class="modal fade" id="modalBuscarPropietario" tabindex="-1" aria-labelledby="modalBuscarPropietarioLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalBuscarPropietarioLabel">Buscar Propietario</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body">
+                <div class="input-group mb-3">
+                    <input type="text" id="busquedaPropietario" class="form-control" placeholder="Buscar por DNI, Apellido o Nombre">
+                    <button type="button" class="btn btn-primary" onclick="buscarPropietarios()">Buscar</button>
+
+                </div>
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>DNI</th>
+                            <th>Nombre</th>
+                            <th>Acción</th>
+                        </tr>
+                    </thead>
+                    <tbody id="resultadoBusquedaPropietario">
+                        <!-- Aquí se cargan los resultados -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const checkbox = document.getElementById("checkHabilitado");
+
+            if (checkbox) {
+                checkbox.addEventListener("change", function () {
+                    const mostrarSoloHabilitados = this.checked;
+                    const filas = document.querySelectorAll(".tabla-personalizada tbody tr");
+
+
+                    filas.forEach(fila => {
+                        const celdaVigente = fila.children[8];
+                        const textoVigente = celdaVigente ? celdaVigente.textContent.trim().toLowerCase() : '';
+
+                        const esHabilitado = textoVigente === "sí";
+
+                        if (mostrarSoloHabilitados && !esHabilitado) {
+                            fila.style.display = "none";
+                        } else {
+                            fila.style.display = "";
+                        }
+                    });
+                });
+            }
+        });
+
+
+
+        function buscarOcupados() {
+            var fechaInicio = document.getElementById("fechaInicio").value;
+            var fechaFin = document.getElementById("fechaFin").value;
+
+            if (!fechaInicio || !fechaFin) {
+                alert("Por favor, selecciona ambas fechas.");
+                return;
+            }
+
+            var url = "/Inmuebles/Ocupados?desde=" + fechaInicio + "&hasta=" + fechaFin;
+
+            fetch(url)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Error en la respuesta del servidor: ' + response.statusText);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log("Datos recibidos:", data);
+
+                    // Verificamos que data sea un array antes de usar forEach
+                    if (Array.isArray(data)) {
+                        var tabla = '';
+
+                        console.log("Datos recibidos del servidor:", data);
+                        data.forEach(inmueble => {
+                            console.log("Inmueble:", inmueble);
+                        });
+
+
+
+                        data.forEach(inmueble => {
+                            tabla += `
+                        <tr>
+                            <td class="text-center">${inmueble.DniPropietario}</td>
+                            <td>${inmueble.Calle}</td>
+                            <td class="text-center">${inmueble.Nro}</td>
+                            <td class="text-center">${inmueble.Piso}</td>
+                            <td class="text-center">${inmueble.Dpto}</td>
+                            <td class="text-center">${inmueble.Localidad}</td>
+                            <td class="text-center">${inmueble.Provincia}</td>
+                            <td class="text-end">$${inmueble.Precio}</td>
+                            <td class="text-center">${inmueble.Vigente ? "Sí" : "No"}</td>
+                            <td class="text-center">
+                                <a href="/Inmuebles/Edit/${inmueble.IdInmueble}" class="btn btn-warning btn-sm">Editar</a>
+                                <a href="/Inmuebles/Delete/${inmueble.IdInmueble}" class="btn btn-danger btn-sm">Eliminar</a>
+                            </td>
+                        </tr>
+                    `;
+                        });
+                        document.getElementById("tablaInmuebles").innerHTML = tabla;
+                    } else {
+                        console.error("La respuesta no es un array:", data);
+                        alert("Ups, ocurrió un error buscando inmuebles ocupados");
+                    }
+                })
+                .catch(error => {
+                    console.error("Error al obtener inmuebles ocupados:", error);
+                    alert("Ups, ocurrió un error buscando inmuebles ocupados");
+                });
+        }
+
+
+
+
+        let ordenAscendente = true;
+
+        function ordenarPor(columna) {
+            const tabla = document.getElementById("tablaInmuebles");
+            const filas = Array.from(tabla.querySelectorAll("tr"));
+
+            const indice = {
+                "DniPropietario": 0,
+                "Calle": 1,
+                "Nro": 2,
+                "Piso": 3,
+                "Dpto": 4,
+                "Localidad": 5,
+                "Provincia": 6,
+                "Precio": 7,
+                "Vigente": 8
+            }[columna];
+
+            filas.sort((a, b) => {
+                let aText = a.children[indice].innerText.trim().replace("$", "");
+                let bText = b.children[indice].innerText.trim().replace("$", "");
+
+                // Si es un número, comparamos como número
+                if (!isNaN(aText) && !isNaN(bText)) {
+                    return ordenAscendente ? aText - bText : bText - aText;
+                }
+
+                return ordenAscendente
+                    ? aText.localeCompare(bText)
+                    : bText.localeCompare(aText);
+            });
+
+            ordenAscendente = !ordenAscendente;
+
+            // Limpiar y volver a insertar
+            tabla.innerHTML = "";
+            filas.forEach(fila => tabla.appendChild(fila));
+        }
+
+
+        $(document).ready(function () {
+            $(".ver-propietario").on("click", function (e) {
+                e.preventDefault();
+                var dni = $(this).data("dni");
+                console.log("DNI clickeado:", dni); // Ver si llega
+
+                // Este es el bloque que deberías reemplazar o actualizar:
+                $.get("/Propietarios/ObtenerPorDni", { dni: dni }, function (data) {
+                    console.log("Datos recibidos del servidor:", data);
+                    if (data) {
+                        $("#dniModal").text(data.dniPropietario);
+                        $("#apellidoModal").text(data.apellidoPropietario);
+                        $("#nombreModal").text(data.nombrePropietario);
+                        $("#celularModal").text(data.contactoPropietario);
+
+                        var modal = new bootstrap.Modal(document.getElementById('modalPropietario'));
+                        modal.show();
+                    } else {
+                        alert("No se encontraron datos del propietario.");
+                    }
+                });
+            });
+        });
+
+        // 💖 NUEVO BLOQUE: búsqueda + paginación
+        document.addEventListener("DOMContentLoaded", function () {
+            const rows = Array.from(document.querySelectorAll("#tablaInmuebles tr"));
+            const buscador = document.getElementById("buscadorInmuebles");
+            const paginacion = document.getElementById("paginacionInmuebles");
+
+            let filasPorPagina = 5;
+            let paginaActual = 1;
+
+            function renderTabla() {
+                let filtro = buscador.value.toLowerCase();
+                let filasFiltradas = rows.filter(row =>
+                    row.innerText.toLowerCase().includes(filtro)
+                );
+
+                let inicio = (paginaActual - 1) * filasPorPagina;
+                let fin = inicio + filasPorPagina;
+
+                rows.forEach(row => row.style.display = "none");
+                filasFiltradas.slice(inicio, fin).forEach(row => row.style.display = "");
+
+                generarBotonesPaginacion(filasFiltradas.length);
+            }
+
+            function generarBotonesPaginacion(totalFiltradas) {
+                paginacion.innerHTML = "";
+                let totalPaginas = Math.ceil(totalFiltradas / filasPorPagina);
+
+                for (let i = 1; i <= totalPaginas; i++) {
+                    let btn = document.createElement("button");
+                    btn.textContent = i;
+                    btn.classList.add("btn", "btn-sm", "btn-outline-primary");
+                    if (i === paginaActual) btn.classList.add("active");
+                    btn.addEventListener("click", function () {
+                        paginaActual = i;
+                        renderTabla();
+                    });
+                    paginacion.appendChild(btn);
+                }
+            }
+
+            buscador.addEventListener("input", () => {
+                paginaActual = 1;
+                renderTabla();
+            });
+
+            renderTabla();
+        });
+
+        //  BLOQUE ACTUAL QUE TENÉS FUNCIONANDO
+        $(document).ready(function () {
+            $(".ver-propietario").on("click", function (e) {
+                // ...
+            });
+        });
+
+
+
+        function buscarPropietarios() {
+            const termino = document.getElementById("terminoBusqueda").value;
+
+            fetch(`/Propietarios/Buscar?termino=${encodeURIComponent(termino)}`)
+                .then(response => response.json())
+                .then(data => {
+                    const lista = document.getElementById("listaPropietarios");
+                    lista.innerHTML = "";
+                    data.forEach(p => {
+                        const row = document.createElement("tr");
+                        row.innerHTML = `
+                                                                                                                                                                                                                                                                                                                                            <td>${p.dniPropietario}</td>
+                                                                                                                                                                                                                                                                                                                                            <td>${p.apellidoPropietario}</td>
+                                                                                                                                                                                                                                                                                                                                            <td>${p.nombrePropietario}</td>
+                                                                                                                                                                                                                                                                                                                                            <td><button class="btn btn-success" onclick="seleccionarPropietario('${p.dniPropietario}')">Seleccionar</button></td>
+                                                                                                                                                                                                                                                                                                                                        `;
+                        lista.appendChild(row);
+                    });
+                });
+        }
+
+
+        // Insertar el DNI al input
+        $(document).on("click", ".seleccionar-propietario", function () {
+            var dniSeleccionado = $(this).data("dni");
+            $("#dniPropietarioInput").val(dniSeleccionado);
+            var modal = bootstrap.Modal.getInstance(document.getElementById('modalBuscarPropietario'));
+            modal.hide();
+        });
+
+    </script>
+}
+
+

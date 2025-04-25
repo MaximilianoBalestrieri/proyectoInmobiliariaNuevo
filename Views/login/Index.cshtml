@@ -1,0 +1,67 @@
+﻿@{
+    ViewBag.Title = "Iniciar Sesión";
+    Layout = "~/Views/Shared/_Layout.cshtml"; // Asegurate que tu layout cargue Bootstrap
+}
+
+<style>
+    body {
+        background: linear-gradient(to bottom right, #e0f7fa, #b2ebf2);
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-family: 'Segoe UI', sans-serif;
+    }
+
+    .login-card {
+        width: 100%;
+        max-width: 400px;
+        background-color: #ffffff;
+        padding: 2rem;
+        border-radius: 1rem;
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .form-label {
+        font-weight: 600;
+    }
+
+    .form-control::placeholder {
+        color: #9e9e9e;
+        opacity: 0.8;
+    }
+
+    .btn-primary {
+        background-color: #00acc1;
+        border-color: #00acc1;
+    }
+
+        .btn-primary:hover {
+            background-color: #00838f;
+            border-color: #00838f;
+        }
+</style>
+
+<div class="login-card">
+    <h3 class="text-center mb-4 text-primary">💼 Iniciar Sesión</h3>
+
+    @if (ViewBag.Error != null)
+    {
+        <div class="alert alert-danger text-center">@ViewBag.Error</div>
+    }
+
+    @using (Html.BeginForm("Login", "Login", FormMethod.Post))
+    {
+        <div class="mb-3">
+            <label class="form-label">Usuario</label>
+            @Html.TextBox("usuario", null, new { @class = "form-control", placeholder = "Ingrese su usuario" })
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Contraseña</label>
+            @Html.TextBox("contraseña", null, new { @class = "form-control", placeholder = "Ingrese su contraseña", type = "text" })
+        </div>
+
+        <button type="submit" class="btn btn-primary w-100">Ingresar</button>
+    }
+</div>

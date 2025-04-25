@@ -1,31 +1,55 @@
-using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using proyectoInmobiliariaNuevo.Models;
+using Microsoft.AspNetCore.Http;  // Necesario para usar HttpContext.Session
 
-namespace proyectoInmobiliariaNuevo.Controllers;
-
-public class HomeController : Controller
+namespace proyectoInmobiliariaNuevo.Controllers
 {
-    private readonly ILogger<HomeController> _logger;
-
-    public HomeController(ILogger<HomeController> logger)
+    public class HomeController : Controller
     {
-        _logger = logger;
-    }
+        public ActionResult Index()
+        {
+            if (HttpContext.Session.GetString("Usuario") == null)
+            {
+                // Si no hay nadie logueado, lo mandamos al login
+                return RedirectToAction("Index", "Login");
+            }
 
-    public IActionResult Index()
-    {
-        return View();
-    }
+            // Si hay alguien logueado, pasamos su info a la vista
+            ViewBag.Usuario = HttpContext.Session.GetString("Usuario");
+            ViewBag.Rol = HttpContext.Session.GetString("Rol");
+            return View();
+        }
 
-    public IActionResult Privacy()
-    {
-        return View();
-    }
+        public ActionResult About()
+        {
+            ViewBag.Message = "Descripción del Software.";
+            return View();
+        }
 
-    [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-    public IActionResult Error()
-    {
-        return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+        public ActionResult Contact()
+        {
+            ViewBag.Message = "CONTACTO";
+            return View();
+        }
+
+        public ActionResult Inquilinos()
+        {
+            return View();
+        }
+
+        public ActionResult Propietarios()
+        {
+            return View();
+        }
+
+        public ActionResult Inmuebles()
+        {
+            return View();
+        }
+
+        public ActionResult Contratos()
+        {
+            return View();
+        }
     }
 }

@@ -1,0 +1,436 @@
+﻿@model proyectoInmobiliariaNuevo.Models.Inmueble
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <title>Agregar Inmueble</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <style>
+
+        .carousel-control-prev-icon,
+        .carousel-control-next-icon {
+            background-image: none; /* Quitamos el ícono por defecto */
+        }
+
+            .carousel-control-prev-icon::after,
+            .carousel-control-next-icon::after {
+                content: '';
+                display: inline-block;
+                width: 30px;
+                height: 30px;
+                border-top: 4px solid orange;
+                border-right: 4px solid orange;
+            }
+
+            .carousel-control-prev-icon::after {
+                transform: rotate(-135deg);
+            }
+
+            .carousel-control-next-icon::after {
+                transform: rotate(45deg);
+            }
+        .carousel-inner img {
+            max-height: 470px; /* Ajustá el valor a gusto */
+            object-fit: contain;
+            margin: 0 auto; /* Centra horizontalmente */
+        }
+        .titulo-formulario {
+            background-color: #000;
+            color: #fff;
+            padding: 10px 20px;
+            border-radius: 5px;
+            text-align: center;
+        }
+
+        .modal-content * {
+            font-size: 0.7rem !important;
+        }
+
+        .modal-content .btn {
+            font-size: 0.75rem !important;
+            padding: 0.25rem 0.5rem !important;
+        }
+
+        .modal-content input,
+        .modal-content table {
+            font-size: 0.7rem !important;
+        }
+
+       
+        .formulario-chico {
+            font-size: 0.75rem !important;
+            margin-top: 5px;
+        }
+
+            .formulario-chico .form-control,
+            .formulario-chico .form-check-label,
+            .formulario-chico .form-check-input,
+            .formulario-chico .btn {
+                font-size: 0.75rem !important;
+            }
+
+            .formulario-chico h2 {
+                font-size: 1.2rem !important;
+            }
+
+            .formulario-chico label {
+                font-size: 0.75rem !important;
+            }
+
+            .formulario-chico .btn-lg {
+                font-size: 0.8rem !important;
+                padding: 0.5rem 1rem !important;
+            }
+
+            /* Achicar el margen inferior entre inputs */
+            .formulario-chico .mb-3 {
+                margin-bottom: 0.3rem !important;
+            }
+
+            /* Ajustar separación entre filas si hace falta */
+            .formulario-chico .row {
+                margin-bottom: 0.5rem !important;
+            }
+
+        .form-label-carrusel{
+            padding-top:30px;
+        }
+
+
+    </style>
+
+</head>
+<body>
+    <div class="container my-2">
+        <div class="card shadow-lg w-75 mx-auto">
+            <div class="card-body formulario-chico">
+                <h2 class="titulo-formulario mb-4">Agregar Inmueble</h2>
+
+                @using (Html.BeginForm("Create", "Inmuebles", FormMethod.Post, new { enctype = "multipart/form-data", @class = "needs-validation", novalidate = "novalidate" }))
+
+                {
+                    @Html.AntiForgeryToken()
+
+                    <div class="row align-items-start">
+                        <!-- Inputs a la izquierda -->
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label mb-1">Foto de Portada</label>
+                                <input type="file" name="FotoPortada" class="form-control" accept="image/*" onchange="mostrarVistaPrevia(event)" />
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label-carrusel mb-1">Fotos del Carrusel </label>
+                                <input type="file" name="FotosCarrusel" class="form-control" accept="image/*" multiple />
+                            </div>
+                        </div>
+
+                        <!-- Vista previa a la derecha -->
+                        <div class="col-md-6 d-flex justify-content-center">
+                            <div style="width: 200px; height: 200px; border: 2px dashed #ccc; display: flex; align-items: center; justify-content: center;">
+                                <img id="previewPortada" src="#" alt="Vista previa" class="img-fluid d-none" style="max-height: 100%; max-width: 100%; object-fit: contain;" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <button type="button" class="btn btn-secondary" style="margin-top: -80px" onclick="mostrarCarrusel()">
+                        Ver más fotos
+                    </button>
+
+
+
+                    <!-- Línea 1: DNI + botón Buscar -->
+                    <div class="row align-items-end">
+                        <div class="col-md-4 mb-2">
+                            <label class="form-label-dni" style="margin-top: -120px;">DNI Propietario</label>
+                            @Html.TextBoxFor(model => model.DniPropietario, new { @class = "form-control", type = "number", id = "dniPropietarioInput" })
+                            @Html.ValidationMessageFor(model => model.DniPropietario, "", new { @class = "text-danger" })
+                            <small id="nombrePropietarioSeleccionado" class="text-muted d-block mt-1"></small>
+                        </div>
+                        <div class="col-auto mb-3 d-flex align-items-center" style="margin-top: -32px;">
+    <button type="button" class="btn btn-primary me-3" data-bs-toggle="modal" data-bs-target="#modalBuscarPropietario">
+        Buscar Propietario
+    </button>
+    <div class="form-check">
+        @Html.CheckBoxFor(model => model.Vigente, new { @class = "form-check-input", id = "vigenteCheckbox" })
+        <label class="form-check-label" for="vigenteCheckbox">Apta para alquilarse</label>
+    </div>
+</div>
+
+                    </div>
+
+                    <!-- Línea 2: Calle, Nro, Piso, Dpto, Localidad -->
+                    <div class="row">
+                        <div class="col-md-4 mb-0">
+                            <label class="form-label mb-1">Calle</label>
+                            @Html.TextBoxFor(model => model.Calle, new { @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.Calle, "", new { @class = "text-danger" })
+                        </div>
+                        <div class="col-md-2 mb-3">
+                            <label class="form-label mb-1">Número</label>
+                            @Html.TextBoxFor(model => model.Nro, new { @class = "form-control", maxlength = "4" })
+                            @Html.ValidationMessageFor(model => model.Nro, "", new { @class = "text-danger" })
+                        </div>
+                        <div class="col-md-2 mb-3">
+                            <label class="form-label mb-1">Piso</label>
+                            @Html.TextBoxFor(model => model.Piso, new { @class = "form-control", maxlength = "4" })
+                        </div>
+                        <div class="col-md-2 mb-3">
+                            <label class="form-label mb-1">Dpto</label>
+                            @Html.TextBoxFor(model => model.Dpto, new { @class = "form-control", maxlength = "4" })
+                        </div>
+                        <div class="col-md-2 mb-3">
+                            <label class="form-label mb-1">Localidad</label>
+                            @Html.TextBoxFor(model => model.Localidad, new { @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.Localidad, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+                    <!-- Línea 3: Provincia, Uso, Tipo, Ambientes, Precio -->
+                    <div class="row">
+                        <div class="col-md-3 mb-3">
+                            <label class="form-label mb-1">Provincia</label>
+                            @Html.TextBoxFor(model => model.Provincia, new { @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.Provincia, "", new { @class = "text-danger" })
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label class="form-label mb-1">Uso</label>
+                            @Html.TextBoxFor(model => model.Uso, new { @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.Uso, "", new { @class = "text-danger" })
+                        </div>
+                        <div class="col-md-2 mb-3">
+                            <label class="form-label mb-1">Tipo</label>
+                            @Html.TextBoxFor(model => model.Tipo, new { @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.Tipo, "", new { @class = "text-danger" })
+                        </div>
+                        <div class="col-md-2 mb-3">
+                            <label class="form-label mb-1">Ambientes</label>
+                            @Html.TextBoxFor(model => model.Ambientes, new { @class = "form-control", maxlength = "4" })
+                            @Html.ValidationMessageFor(model => model.Ambientes, "", new { @class = "text-danger" })
+                        </div>
+                        <div class="col-md-2 mb-3">
+                            <label class="form-label mb-1">Precio</label>
+                            @Html.TextBoxFor(model => model.Precio, new { @class = "form-control", type = "number", step = "any" })
+                            @Html.ValidationMessageFor(model => model.Precio, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+                    <!-- Línea 4: Latitud, Longitud, Pileta, Parrilla, Garage -->
+                    <div class="row">
+                        <div class="col-md-2 mb-3">
+                            <label class="form-label mb-1">Latitud</label>
+                            @Html.TextBoxFor(model => model.Latitud, new { @class = "form-control", maxlength = "4" })
+                        </div>
+                        <div class="col-md-2 mb-3">
+                            <label class="form-label mb-1">Longitud</label>
+                            @Html.TextBoxFor(model => model.Longitud, new { @class = "form-control", maxlength = "4" })
+                        </div>
+                        <div class="col-md-2 mb-3 form-check d-flex align-items-center">
+                            @Html.CheckBoxFor(model => model.Pileta, new { @class = "form-check-input me-2" })
+                            @Html.LabelFor(model => model.Pileta, new { @class = "form-check-label" })
+                        </div>
+                        <div class="col-md-3 mb-3 form-check d-flex align-items-center">
+                            @Html.CheckBoxFor(model => model.Parrilla, new { @class = "form-check-input me-2" })
+                            @Html.LabelFor(model => model.Parrilla, new { @class = "form-check-label" })
+                        </div>
+                        <div class="col-md-3 mb-3 form-check d-flex align-items-center">
+                            @Html.CheckBoxFor(model => model.Garage, new { @class = "form-check-input me-2" })
+                            @Html.LabelFor(model => model.Garage, new { @class = "form-check-label" })
+                        </div>
+                    </div>
+
+                    <div class="form-group text-center mt-4">
+                        <button type="submit" class="btn btn-success btn-lg">Guardar</button>
+                        <a href="@Url.Action("Index", "Inmuebles")" class="btn btn-outline-secondary btn-lg">Cancelar</a>
+                    </div>
+                }
+
+                @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Modal para buscar propietarios -->
+    <div class="modal fade" id="modalBuscarPropietario" tabindex="-1" aria-labelledby="buscarPropietarioLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content" style="font-size: 0.7rem !important;">
+
+                <div class="modal-header">
+                    <h5 class="modal-title">Buscar Propietario</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="text" id="terminoBusqueda" class="form-control mb-3" placeholder="Buscar por DNI, nombre o apellido..." />
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>DNI</th>
+                                <th>Apellido</th>
+                                <th>Nombre</th>
+                                <th>Acción</th>
+                            </tr>
+                        </thead>
+                        <tbody id="listaPropietarios">
+                            <!-- Resultados se insertan aquí -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modalCarrusel" tabindex="-1" aria-labelledby="modalCarruselLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalCarruselLabel">Fotos del Inmueble</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="carruselFotos" class="carousel slide" data-bs-ride="carousel">
+                        <div class="carousel-inner" id="contenedorCarrusel">
+                            <!-- Las imágenes se insertarán aquí con JS -->
+                        </div>
+                        <button class="carousel-control-prev" type="button" data-bs-target="#carruselFotos" data-bs-slide="prev">
+                            <span class="carousel-control-prev-icon"></span>
+                            <span class="visually-hidden">Anterior</span>
+                        </button>
+                        <button class="carousel-control-next" type="button" data-bs-target="#carruselFotos" data-bs-slide="next">
+                            <span class="carousel-control-next-icon"></span>
+                            <span class="visually-hidden">Siguiente</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    <script>
+
+        document.querySelector('input[name="FotosCarrusel"]').addEventListener('change', function (e) {
+            const files = e.target.files;
+            const carrusel = document.getElementById('contenedorCarrusel');
+            carrusel.innerHTML = ''; // Limpiar contenido anterior
+
+            Array.from(files).forEach((file, index) => {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    const divItem = document.createElement('div');
+                    divItem.classList.add('carousel-item');
+                    if (index === 0) divItem.classList.add('active');
+
+                    const img = document.createElement('img');
+                    img.src = e.target.result;
+                    img.className = "d-block w-100";
+                    img.style.objectFit = 'contain';
+                    img.style.maxHeight = '500px';
+
+                    divItem.appendChild(img);
+                    carrusel.appendChild(divItem);
+                };
+                reader.readAsDataURL(file);
+            });
+        });
+
+        document.querySelector('input[name="FotoPortada"]').addEventListener('change', function (event) {
+            const file = event.target.files[0];
+            const preview = document.getElementById('previewPortada');
+
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    preview.src = e.target.result;
+                    preview.classList.remove("d-none");
+                }
+                reader.readAsDataURL(file);
+            } else {
+                preview.src = "#";
+                preview.classList.add("d-none");
+            }
+        });
+
+        function mostrarCarrusel() {
+            const fotos = document.querySelector('input[name="FotosCarrusel"]').files;
+
+            if (fotos.length === 0) {
+                alert("No se han cargado fotos para el carrusel.");
+                return;
+            }
+
+            const modal = new bootstrap.Modal(document.getElementById('modalCarrusel'));
+            modal.show();
+        }
+
+
+        document.addEventListener("DOMContentLoaded", function () {
+            const inputBusqueda = document.getElementById("terminoBusqueda");
+            let timeout;
+
+            const modal = document.getElementById('modalBuscarPropietario');
+            modal.addEventListener('shown.bs.modal', function () {
+                inputBusqueda.focus();
+            });
+
+            if (inputBusqueda) {
+                inputBusqueda.addEventListener("input", function () {
+                    clearTimeout(timeout);
+                    timeout = setTimeout(() => {
+                        const termino = inputBusqueda.value;
+
+                        fetch('/Propietarios/Buscar?termino=' + encodeURIComponent(termino))
+                            .then(response => {
+                                if (!response.ok) throw new Error("Error en la respuesta");
+                                return response.json();
+                            })
+                            .then(data => {
+                                const lista = document.getElementById("listaPropietarios");
+                                lista.innerHTML = "";
+
+                                if (data.length === 0) {
+                                    lista.innerHTML = `<tr><td colspan="4" class="text-center text-muted">No se encontraron resultados.</td></tr>`;
+                                    return;
+                                }
+
+                                data.forEach(p => {
+                                    const row = document.createElement("tr");
+                                    row.innerHTML = `
+                                      <td>${p.DniPropietario}</td>
+                                      <td>${p.ApellidoPropietario}</td>
+                                      <td>${p.NombrePropietario}</td>
+                                      <td>
+                                          <button class="btn btn-success" onclick="seleccionarPropietario('${p.DniPropietario}', '${p.NombrePropietario}', '${p.ApellidoPropietario}')">
+                                                Seleccionar
+                                          </button>
+                                      </td>
+                                     `;
+                                    lista.appendChild(row);
+                                });
+                            })
+                            .catch(error => {
+                                console.error("Error en la búsqueda:", error);
+                            });
+                    }, 300);
+                });
+            }
+        });
+
+        function seleccionarPropietario(dni, nombre, apellido) {
+            document.getElementById("dniPropietarioInput").value = dni;
+            document.getElementById("nombrePropietarioSeleccionado").innerText = `Seleccionado: ${nombre} ${apellido}`;
+
+            const modal = bootstrap.Modal.getInstance(document.getElementById('modalBuscarPropietario'));
+            modal.hide();
+        }
+
+    </script>
+</body>
+</html>
