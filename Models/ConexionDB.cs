@@ -22,7 +22,7 @@ namespace proyectoInmobiliariaNuevo.Models
         public ConexionDB()
         {
             string servidor = "localhost";
-            string baseDatos = "inmobiliaria";  // Nombre de tu base de datos
+            string baseDatos = "proyectoinmobiliaria";  // Nombre de tu base de datos
             string usuario = "root";  // Usuario por defecto en XAMPP
             string contrasena = "";   // En XAMPP no suele tener contraseña por defecto
 
@@ -298,6 +298,7 @@ namespace proyectoInmobiliariaNuevo.Models
                     Calle = reader.GetString("calle"),
                     Nro = reader.GetInt32("nro"),
                     Piso = reader.IsDBNull(reader.GetOrdinal("piso")) ? 0 : reader.GetInt32("piso"),
+                    
                     Dpto = reader.IsDBNull(reader.GetOrdinal("dpto")) ? null : reader.GetString("dpto"),
                     Localidad = reader.GetString("localidad"),
                     Provincia = reader.GetString("provincia"),
@@ -313,6 +314,7 @@ namespace proyectoInmobiliariaNuevo.Models
                     Vigente = reader["vigente"].ToString() == "1",
                     ImagenPortada = reader["ImagenPortada"] != DBNull.Value ? reader["ImagenPortada"].ToString() : null,
                     FotosCarruselLista = new List<string>()
+                    
                 };
 
                 inmuebles.Add(inmueble);
@@ -343,7 +345,8 @@ namespace proyectoInmobiliariaNuevo.Models
                         {
                             Id = reader.GetInt32("Id"),
                             IdInmueble = reader.GetInt32("IdInmueble"),
-                            RutaFoto = reader.GetString("RutaFoto")
+                            RutaFoto = reader.IsDBNull(reader.GetOrdinal("RutaFoto")) ? "" : reader.GetString("RutaFoto")
+
                         });
                     }
                 }
@@ -467,7 +470,8 @@ namespace proyectoInmobiliariaNuevo.Models
                     lista.Add(new proyectoInmobiliariaNuevo.Models.FotoCarrusel
                     {
                         Id = Convert.ToInt32(reader["Id"]),
-                        RutaFoto = reader["RutaFoto"].ToString()
+                        RutaFoto = reader.IsDBNull(reader.GetOrdinal("RutaFoto")) ? null : reader["RutaFoto"].ToString()
+
                     });
                 }
             }
@@ -527,7 +531,8 @@ namespace proyectoInmobiliariaNuevo.Models
                         {
                             Id = reader.GetInt32("Id"),
                             IdInmueble = reader.GetInt32("IdInmueble"),
-                            RutaFoto = reader.GetString("RutaFoto")
+                           RutaFoto = reader.IsDBNull(reader.GetOrdinal("RutaFoto")) ? "" : reader.GetString("RutaFoto")
+
                         };
                     }
                 }
@@ -1041,6 +1046,7 @@ namespace proyectoInmobiliariaNuevo.Models
 
         public bool EditarContrato(int idContrato, DateTime fechaInicio, DateTime fechaFinal, decimal monto)
         {
+             Console.WriteLine($"Actualizando contrato: {idContrato}, {fechaInicio}, {fechaFinal}, {monto}");
             using (var conexion = new MySqlConnection(_connectionString))
             {
                 conexion.Open();
@@ -1107,6 +1113,52 @@ namespace proyectoInmobiliariaNuevo.Models
             }
             return lista;
         }
+
+ public List<Contrato> BuscarContratos(DateTime desde, DateTime hasta)
+ {
+     List<Contrato> contratos = new List<Contrato>();
+
+     using (MySqlConnection conexion = new MySqlConnection(_connectionString))
+     {
+         conexion.Open();
+         string query = @"SELECT * FROM Contrato 
+                  WHERE FechaInicio <= @hasta AND FechaFinal >= @desde";
+
+         using (MySqlCommand cmd = new MySqlCommand(query, conexion))
+         {
+             cmd.Parameters.AddWithValue("@desde", desde);
+             cmd.Parameters.AddWithValue("@hasta", hasta);
+
+             using (MySqlDataReader reader = cmd.ExecuteReader())
+             {
+                 while (reader.Read())
+                 {
+                     Contrato contrato = new Contrato
+                     {
+                         IdContrato = Convert.ToInt32(reader["IdContrato"]),
+                         DniPropietario = reader["DniPropietario"].ToString(),
+                         DniInquilino = reader["DniInquilino"].ToString(),
+                         IdInmueble = Convert.ToInt32(reader["IdInmueble"]),
+                         Direccion = reader["Direccion"].ToString(),
+                         FechaInicio = Convert.ToDateTime(reader["FechaInicio"]),
+                         FechaFinal = Convert.ToDateTime(reader["FechaFinal"]),
+                         Monto = Convert.ToDecimal(reader["Monto"]),
+                         Vigente = Convert.ToBoolean(reader["Vigente"])
+                     };
+                     contratos.Add(contrato);
+                 }
+             }
+         }
+     }
+
+     return contratos;
+ }
+
+
+
+
+
+
 
         public bool ExisteContratoEnFechas(int idInmueble, DateTime fechaInicio, DateTime fechaFinal)
         {
@@ -1196,7 +1248,7 @@ namespace proyectoInmobiliariaNuevo.Models
                     });
                 }
             }
-
+            Console.WriteLine("Pagos encontrados: " + lista.Count);  // Depuración
             return lista;
         }
 
@@ -1246,6 +1298,15 @@ namespace proyectoInmobiliariaNuevo.Models
         {
             try
             {
+
+        Console.WriteLine("Datos recibidos para agregar pago:");
+        Console.WriteLine($"IdContrato: {pago.IdContrato}");
+        Console.WriteLine($"NroPago: {pago.NroPago}");
+        Console.WriteLine($"FechaPago: {pago.FechaPago}");
+        Console.WriteLine($"Importe: {pago.Importe}");
+        Console.WriteLine($"Detalle: {pago.Detalle}");
+        Console.WriteLine($"Estado: {pago.Estado}");
+
                 using (var conexion = ObtenerConexion())
                 {
                     conexion.Open(); // 
@@ -1266,6 +1327,7 @@ namespace proyectoInmobiliariaNuevo.Models
 
                     return filasAfectadas > 0;
                 }
+                
             }
             catch (Exception ex)
             {
@@ -1290,22 +1352,36 @@ namespace proyectoInmobiliariaNuevo.Models
             }
         }
 
-
-        public void ActualizarDetalle(int idPago, string nuevoDetalle)
+public void ActualizarDetalle(int idPago, string nuevoDetalle)
+{
+    using (MySqlConnection conexion = new MySqlConnection(_connectionString))
+    {
+        conexion.Open();
+        
+        // Verificar si el idPago existe
+        string checkQuery = "SELECT COUNT(*) FROM Pagos WHERE idPago = @idPago";
+        using (MySqlCommand checkCommand = new MySqlCommand(checkQuery, conexion))
         {
-            using (MySqlConnection conexion = new MySqlConnection(_connectionString))
-            {
-                conexion.Open();
-                string query = "UPDATE Pagos SET detalle = @detalle WHERE idPago = @idPago";
+            checkCommand.Parameters.AddWithValue("@idPago", idPago);
+            var count = Convert.ToInt32(checkCommand.ExecuteScalar());
 
-                using (MySqlCommand comando = new MySqlCommand(query, conexion))
-                {
-                    comando.Parameters.AddWithValue("@detalle", nuevoDetalle);
-                    comando.Parameters.AddWithValue("@idPago", idPago);
-                    comando.ExecuteNonQuery();
-                }
+            if (count == 0)
+            {
+                throw new Exception("El pago con el id proporcionado no existe.");
             }
         }
+
+        // Ejecutar la actualización
+        string query = "UPDATE Pagos SET detalle = @detalle WHERE idPago = @idPago";
+        using (MySqlCommand comando = new MySqlCommand(query, conexion))
+        {
+            comando.Parameters.AddWithValue("@detalle", nuevoDetalle);
+            comando.Parameters.AddWithValue("@idPago", idPago);
+            comando.ExecuteNonQuery();
+        }
+    }
+}
+
 
 
 
@@ -1375,15 +1451,18 @@ public List<Inmueble> ObtenerInmueblesOcupados(DateTime desde, DateTime hasta)
     {
         conexion.Open();
         string query = @"
-        SELECT *
-        FROM Inmueble i
-        WHERE NOT EXISTS (
-            SELECT 1
-            FROM Contrato c
-            WHERE c.idInmueble = i.idInmueble
-              AND c.fechaInicio <= @hasta
-              AND c.fechaFinal >= @desde
-        )";
+    SELECT *
+    FROM Inmueble i
+    WHERE i.Vigente = 1
+      AND NOT EXISTS (
+        SELECT 1
+        FROM Contrato c
+        WHERE c.idInmueble = i.idInmueble
+          AND c.fechaInicio <= @hasta
+          AND c.fechaFinal >= @desde
+          AND c.vigente = 1
+    )";
+
 
         using (var comando = new MySqlCommand(query, conexion))
         {
@@ -1487,46 +1566,6 @@ public List<Inmueble> ObtenerInmueblesOcupados(DateTime desde, DateTime hasta)
         }
 
 
-
-        public List<Contrato> BuscarContratos(DateTime desde, DateTime hasta)
-        {
-            List<Contrato> contratos = new List<Contrato>();
-
-            using (MySqlConnection conexion = new MySqlConnection(_connectionString))
-            {
-                conexion.Open();
-                string query = @"SELECT * FROM Contrato 
-                         WHERE FechaInicio <= @hasta AND FechaFinal >= @desde";
-
-                using (MySqlCommand cmd = new MySqlCommand(query, conexion))
-                {
-                    cmd.Parameters.AddWithValue("@desde", desde);
-                    cmd.Parameters.AddWithValue("@hasta", hasta);
-
-                    using (MySqlDataReader reader = cmd.ExecuteReader())
-                    {
-                        while (reader.Read())
-                        {
-                            Contrato contrato = new Contrato
-                            {
-                                IdContrato = Convert.ToInt32(reader["IdContrato"]),
-                                DniPropietario = reader["DniPropietario"].ToString(),
-                                DniInquilino = reader["DniInquilino"].ToString(),
-                                IdInmueble = Convert.ToInt32(reader["IdInmueble"]),
-                                Direccion = reader["Direccion"].ToString(),
-                                FechaInicio = Convert.ToDateTime(reader["FechaInicio"]),
-                                FechaFinal = Convert.ToDateTime(reader["FechaFinal"]),
-                                Monto = Convert.ToDecimal(reader["Monto"]),
-                                Vigente = Convert.ToBoolean(reader["Vigente"])
-                            };
-                            contratos.Add(contrato);
-                        }
-                    }
-                }
-            }
-
-            return contratos;
-        }
 
 
         public void MarcarComoNoVigente(int idContrato)

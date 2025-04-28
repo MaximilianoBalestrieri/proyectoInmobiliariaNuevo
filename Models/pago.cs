@@ -18,5 +18,10 @@ namespace proyectoInmobiliariaNuevo.Models
 
         }
 
-    
+    public class PagoUpdateRequest
+{
+    public int idPago { get; set; }
+    public string detalle { get; set; }
+}
+
 }

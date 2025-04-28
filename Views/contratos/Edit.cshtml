@@ -1,10 +1,11 @@
 ﻿@model proyectoInmobiliariaNuevo.Models.Contrato
 
-@{
-    ViewBag.Title = "Editar Contrato";
-}
 
-<head>
+ @{
+    ViewBag.Title = "Editar Contrato";
+ }
+
+ <head>
     <style>
 
         .modal {
@@ -139,158 +140,174 @@
 
     </style>
 
-</head>
-<body>
+ </head>
+ <body>
 
+ @using (Html.BeginForm("Edit", "Contratos", new { id = Model.IdContrato }, FormMethod.Post))
+ {
+    @Html.AntiForgeryToken()
 
+    @Html.HiddenFor(model => model.IdContrato)
 
+    <div class="row align-items-center mb-3">
+        <div class="col-auto">
+            <h2>Editar Contrato</h2>
+        </div>
+        <div class="col-auto">
+            <button type="button" class="btn btn-primary btn-sm btn-renovar"
+                    onclick="abrirModalRenovacion(this)"
+                    data-id-contrato="@Model.IdContrato"
+                    data-id-inmueble="@Model.IdInmueble"
+                    data-direccion="@Model.Direccion"
+                    data-dni-propietario="@Model.DniPropietario"
+                    data-nombre-propietario="@Model.NombrePropietario"
+                    data-dni-inquilino="@Model.DniInquilino"
+                    data-nombre-inquilino="@Model.NombreInquilino"
+                    data-fecha-inicio="@Model.FechaInicio.ToString("yyyy-MM-dd")"
+                    data-fecha-final="@Model.FechaFinal.ToString("yyyy-MM-dd")"
+                    data-monto="@Model.Monto">
+                Renovación
+            </button>
+        </div>
+    </div>
 
-    @using (Html.BeginForm("Edit", "Contratos", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
-    {
-        @Html.AntiForgeryToken()
-
-        <!-- Campo oculto para IdContrato -->
-        @Html.HiddenFor(model => model.IdContrato)
-
-        <div class="row align-items-center mb-3">
+    <div class="form-horizontal">
+        <hr />
+        <!-- Propietario -->
+        <div class="row align-items-end mb-3 g-2">
             <div class="col-auto">
-                <h2>Editar Contrato</h2>
+                <label class="form-label">DNI Propietario</label>
+                @Html.TextBoxFor(model => model.DniPropietario, new
+                {
+                    @class = "form-control form-control-sm",
+                    style = "width: 150px;",
+                    id = "dniPropietarioInput",
+                    @readonly = "readonly"
+                })
             </div>
             <div class="col-auto">
-                <button type="button" class="btn btn-primary btn-sm btn-renovar"
-                        onclick="abrirModalRenovacion(this)"
-                        data-id-contrato="@Model.IdContrato"
-                        data-id-inmueble="@Model.IdInmueble"
-                        data-direccion="@Model.Direccion"
-                        data-dni-propietario="@Model.DniPropietario"
-                        data-nombre-propietario="@Model.NombrePropietario"
-                        data-dni-inquilino="@Model.DniInquilino"
-                        data-nombre-inquilino="@Model.NombreInquilino"
-                        data-fecha-inicio="@Model.FechaInicio.ToString("yyyy-MM-dd")"
-                        data-fecha-final="@Model.FechaFinal.ToString("yyyy-MM-dd")"
-                        data-monto="@Model.Monto">
-                    Renovación
-                   
-
-                </button>
+                <label class="form-label">Nombre Propietario</label>
+                @Html.TextBoxFor(model => model.NombrePropietario, new
+                {
+                    @class = "form-control form-control-sm",
+                    style = "width: 300px;",
+                    id = "nombrePropietarioInput",
+                    @readonly = "readonly"
+                })
             </div>
         </div>
 
-
-
-
-
-        <div class="form-horizontal">
-            <hr />
-
-            <!--  PROPIETARIO -->
-            <div class="row align-items-end mb-3 g-2">
-                <div class="col-auto">
-                    <label class="form-label">DNI Propietario</label>
-                    @Html.TextBoxFor(model => model.DniPropietario, new
-               {
-                   @class = "form-control form-control-sm",
-                   style = "width: 150px;",
-                   id = "dniPropietarioInput",
-                   @readonly = "readonly"
-               })
-                </div>
-                <div class="col-auto">
-                    <label class="form-label">Nombre Propietario</label>
-                    @Html.TextBoxFor(model => model.NombrePropietario, new
-               {
-                   @class = "form-control form-control-sm",
-                   id = "nombrePropietarioInput",
-                   @readonly = "readonly",
-                   style = "width: 300px;"
-               })
-                </div>
+        <!-- Inquilino -->
+        <div class="row align-items-end mb-3 g-2">
+            <div class="col-auto">
+                <label class="form-label">DNI Inquilino</label>
+                @Html.TextBoxFor(model => model.DniInquilino, new
+                {
+                    @class = "form-control form-control-sm",
+                    style = "width: 150px;",
+                    type = "number",
+                    id = "dniInquilinoInput"
+                })
             </div>
-
-            <!--  INQUILINO -->
-            <div class="row align-items-end mb-3 g-2">
-                <div class="col-auto">
-                    <label class="form-label">DNI Inquilino</label>
-                    @Html.TextBoxFor(model => model.DniInquilino, new
-               {
-                   @class = "form-control form-control-sm",
-                   style = "width: 150px;",
-                   type = "number",
-                   id = "dniInquilinoInput"
-               })
-                </div>
-                <div class="col-auto">
-                    <label class="form-label">Nombre Inquilino</label>
-                    @Html.TextBoxFor(model => model.NombreInquilino, new
-               {
-                   @class = "form-control form-control-sm",
-                   @readonly = "readonly",
-                   style = "width: 300px;"
-               })
-                </div>
+            <div class="col-auto">
+                <label class="form-label">Nombre Inquilino</label>
+                @Html.TextBoxFor(model => model.NombreInquilino, new
+                {
+                    @class = "form-control form-control-sm",
+                    style = "width: 300px;",
+                    @readonly = "readonly"
+                })
             </div>
-
-            <!-- Dirección -->
-            @Html.HiddenFor(model => model.IdInmueble)
-            <div class="row align-items-end mb-3">
-                <div class="col-md-8">
-                    <label class="form-label">Dirección</label>
-                    @Html.TextBoxFor(model => model.Direccion, new { @class = "form-control form-control-sm", @readonly = "readonly", id = "direccion" })
-                </div>
-                <div class="col-md-4 d-flex align-items-end">
-                    <!--   <button type="button" class="btn btn-outline-primary btn-sm w-100" id="btnBuscarDireccion">
-                        Buscar Dirección
-                    </button> -->
-                </div>
-            </div>
-
-            <!-- Fecha Inicio / Fecha Final / Monto / Vigente -->
-            <div class="row mb-3 g-2">
-                <div class="col-auto d-flex flex-column">
-                    <label class="form-label">Fecha Inicio</label>
-                    @Html.TextBoxFor(model => model.FechaInicio, "{0:yyyy-MM-dd}", new
-               {
-                   @class = "form-control form-control-sm",
-                   type = "date",
-                   style = "width: 150px;"
-               })
-                </div>
-                <div class="col-auto d-flex flex-column">
-                    <label class="form-label">Fecha Final</label>
-                    @Html.TextBoxFor(model => model.FechaFinal, "{0:yyyy-MM-dd}", new
-               {
-                   @class = "form-control form-control-sm",
-                   type = "date",
-                   style = "width: 150px;"
-               })
-                </div>
-                <div class="col-auto d-flex flex-column">
-                    <label class="form-label">Monto</label>
-                    @Html.TextBoxFor(model => model.Monto, new
-               {
-                   @class = "form-control form-control-sm",
-                   type = "number",
-                   step = "0.01",
-                   style = "width: 100px;"
-               })
-                </div>
-                <div class="d-none">
-                    @Html.CheckBoxFor(model => model.Vigente)
-                </div>
-            </div>
-
-            <!-- Botones -->
-            <div class="d-flex justify-content-end mt-4" style="margin-right: 800px;">
-                <input type="submit" value="Guardar Cambios" class="btn btn-success me-2" />
-                @Html.ActionLink("Cancelar", "Index", null, new { @class = "btn btn-secondary" })
-            </div>
-
         </div>
-    }
+
+        <!-- Dirección -->
+        @Html.HiddenFor(model => model.IdInmueble)
+        <div class="row align-items-end mb-3">
+            <div class="col-md-8">
+                <label class="form-label">Dirección</label>
+                @Html.TextBoxFor(model => model.Direccion, new
+                {
+                    @class = "form-control form-control-sm",
+                    id = "direccion",
+                    @readonly = "readonly"
+                })
+            </div>
+        </div>
+
+        <!-- Fecha Inicio, Fecha Final, Monto, Vigente -->
+        <div class="row mb-3 g-2">
+            <div class="col-auto d-flex flex-column">
+                <label class="form-label">Fecha Inicio</label>
+                @Html.TextBoxFor(model => model.FechaInicio, "{0:yyyy-MM-dd}", new
+                {
+                    @class = "form-control form-control-sm",
+                    type = "date",
+                    style = "width: 150px;"
+                })
+            </div>
+            <div class="col-auto d-flex flex-column">
+                <label class="form-label">Fecha Final</label>
+                @Html.TextBoxFor(model => model.FechaFinal, "{0:yyyy-MM-dd}", new
+                {
+                    @class = "form-control form-control-sm",
+                    type = "date",
+                    style = "width: 150px;"
+                })
+            </div>
+            <div class="col-auto d-flex flex-column">
+                <label class="form-label">Monto</label>
+                @Html.TextBoxFor(model => model.Monto, new
+                {
+                    @class = "form-control form-control-sm",
+                    type = "number",
+                    step = "0.01",
+                    style = "width: 100px;"
+                })
+            </div>
+            <div class="d-none">
+                @Html.CheckBoxFor(model => model.Vigente)
+            </div>
+        </div>
+
+        <!-- Botones Guardar y Cancelar del Editar  -->
+        <div class="d-flex justify-content-end mt-4" style="margin-right: 800px;">
+            <input type="submit" value="Guardar Cambios" class="btn btn-success me-2" />
+            @Html.ActionLink("Cancelar", "Index", null, new { @class = "btn btn-secondary" })
+        </div>
+    </div>
+
+<!-- muestra Datos no se usas   -->
+<!-- <div style="border: 1px solid black; padding: 10px;">
+    <h3>Datos del contrato:</h3>
+    <p>IdContrato: @Model.IdContrato</p>
+    <p>Fecha Inicio: @Model.FechaInicio</p>
+    <p>Fecha Final: @Model.FechaFinal</p>
+    <p>Monto: @Model.Monto</p>
+    <p>DNI Propietario: @Model.DniPropietario</p>
+    <p>Nombre Propietario: @Model.NombrePropietario</p>
+    <p>DNI Inquilino: @Model.DniInquilino</p>
+    <p>Nombre Inquilino: @Model.NombreInquilino</p>
+</div>    
+        -->
+
+@if (!ViewData.ModelState.IsValid)
+{
+    <div style="color: red; border: 1px solid red; padding: 10px;">
+        <h3>Errores en el formulario:</h3>
+        <ul>
+            @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+            {
+                <li>@error.ErrorMessage</li>
+            }
+        </ul>
+    </div>
+}
 
 
+}
     <!--  -------------------------------------  -->
-    <!-- Modal Renovación -->
+    <!--  -----------Modal Renovación ---------  -->
+    <!--  -------------------------------------  -->
     <div class="modal fade" id="modalRenovacion" tabindex="-1" aria-labelledby="modalRenovacionLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered" style="max-width: 500px;">
             <!-- Cambié el tamaño aquí -->
@@ -360,129 +377,168 @@
         </div>
     </div>
 
-    <!-- --------------------------------------  -->
-    <!-- CIERRE del formulario principal -->
-    <!-- Acá empieza el divPagos, ya fuera del form principal -->
-    <div id="divPagos" class="fixed-right">
-        <div class="card" style="width: 680px;">
-            <div class="card-header">
-                <h5 class="card-title">Pagos</h5>
-            </div>
-            <div class="card-body">
-                <!-- Formulario de pago -->
-                <form id="formularioPagos" onsubmit="crearPago(event)" novalidate>
-
-                    <!-- Campo oculto para el idContrato -->
-                    <input type="hidden" id="idContrato" name="idContrato" value="@Model.IdContrato" />
-
-                    <!-- Fila 1 -->
-                    <div class="d-flex gap-2 mb-2">
-                        <div>
-                            <label for="nuevoNroPago" class="form-label mb-1" style="font-size: 0.75rem;">N° Pago</label>
-                            <input type="number" id="nuevoNroPago" name="nuevoNroPago" class="form-control" style="width: 120px; font-size: 0.75rem;" required>
-                        </div>
-                        <div>
-                            <label for="nuevoFecha" class="form-label mb-1" style="font-size: 0.75rem;">Fecha</label>
-                            <input type="date" id="nuevoFecha" name="nuevoFecha" class="form-control" style="width: 120px; font-size: 0.75rem;" required>
-                        </div>
-                        <div>
-                            <label for="nuevoImporte" class="form-label mb-1" style="font-size: 0.75rem;">Importe</label>
-                            <input type="number" step="0.01" id="nuevoImporte" name="nuevoImporte" class="form-control" style="width: 120px; font-size: 0.75rem;" required>
-                        </div>
-                        <div>
-                            <label for="estadoPago" class="form-label mb-1" style="font-size: 0.75rem;">Estado</label>
-                            <select id="estadoPago" name="estadoPago" class="form-control" style="width: 80px; font-size: 0.75rem; margin-right: 30px;">
-                                <option value="Pagado">Pagado</option>
-                                <option value="Pendiente">Pendiente</option>
-                                <option value="Anulado">Anulado</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <!-- Fila 2 -->
-                    <div class="mb-3">
-                        <label for="nuevoDetalle" class="form-label mb-1" style="font-size: 0.75rem;">Detalle</label>
-                        <div class="d-flex" style="gap: 8px;">
-                            <input type="text" id="nuevoDetalle" name="nuevoDetalle" class="form-control" style="font-size: 0.75rem;">
-                            <button type="submit" class="btn btn-success btn-sm">Agregar</button>
-                        </div>
-                    </div>
-
-                </form>
-
-                @if (ViewBag.Pagos != null && ((List<proyectoInmobiliariaNuevo.Models.Pago>)ViewBag.Pagos).Count > 0)
-                {
-                    <table class="table table-striped mt-4">
-                        <thead class="table-success text-black">
-
-                            <tr>
-                                <th class="text-center" onclick="ordenarPor('NroPago')">N° Pago</th>
-                                <th onclick="ordenarPor('Fecha')">Fecha</th>
-                                <th class="text-end" onclick="ordenarPor('Importe')">Importe</th>
-                                <th onclick="ordenarPor('Detalle')">Detalle</th>
-                                <th onclick="ordenarPor('Estado')">Estado</th>
-                                <th>Acciones</th>
-
-                            </tr>
-
-                        </thead>
-                        <tbody id="tablaPagos">
-                            @foreach (var pago in (List<proyectoInmobiliariaNuevo.Models.Pago>)ViewBag.Pagos)
-                            {
-                                bool esAnulado = pago.Estado == "Anulado";
-
-                                <tr id="fila-pago-@pago.IdPago">
-                                    <td class="text-center">@pago.NroPago</td>
-                                    <td>@pago.FechaPago.ToString("yyyy-MM-dd")</td>
-                                    <td class="text-end">@pago.Importe</td>
-                                    <td>@pago.Detalle</td>
-                                    <td class="estado">@pago.Estado</td>
-                                    <td>
-                                        <button class="btn btn-sm btn-primary me-1"
-                                                onclick="editarPago(@pago.IdPago)"
-                                                data-id="@pago.IdPago"
-                                                @(esAnulado ? "disabled" : "")>
-                                            Editar
-                                        </button>
-
-                                        <button class="btn btn-sm btn-danger eliminar-btn"
-                                                onclick="eliminarPago(@pago.IdPago)"
-                                                @(esAnulado ? "disabled" : "")>
-                                            Eliminar
-                                        </button>
-                                    </td>
-                                </tr>
-                            }
-                        </tbody>
-                    </table>
-
-
-                }
-                else
-                {
-                    <p>No hay pagos aún para este contrato</p>
-                }
-
-            </div>
+   <!-- CIERRA el formulario principal -->
+   <!-- -------------------------------------  Acá empieza el PAGOS, ya fuera del form principal---------------- -->
+  <div id="divPagos" class="fixed-right">
+    <div class="card" style="width: 680px;">
+        <div class="card-header">
+            <h5 class="card-title">Pagos</h5>
         </div>
-    </div>
+        <div class="card-body">
+            <!-- Detalles del pago -->
+            <div id="detalle-pago"></div>
+
+            <!-- Formulario de pago -->
+            <form id="formularioPagos" onsubmit="crearPago(event)" novalidate>
+                <input type="hidden" id="idContrato" name="idContrato" value="@Model.IdContrato" />
+
+                <div class="d-flex gap-2 mb-2">
+                    <div>
+                        <label for="nuevoNroPago" class="form-label mb-1" style="font-size: 0.75rem;">N° Pago</label>
+                        <input type="number" id="nuevoNroPago" name="nuevoNroPago" class="form-control" style="width: 120px; font-size: 0.75rem;" required>
+                    </div>
+                    <div>
+                        <label for="nuevoFecha" class="form-label mb-1" style="font-size: 0.75rem;">Fecha</label>
+                        <input type="date" id="nuevoFecha" name="nuevoFecha" class="form-control" style="width: 120px; font-size: 0.75rem;" required>
+                    </div>
+                    <div>
+                        <label for="nuevoImporte" class="form-label mb-1" style="font-size: 0.75rem;">Importe</label>
+                        <input type="number" step="0.01" id="nuevoImporte" name="nuevoImporte" class="form-control" style="width: 120px; font-size: 0.75rem;" required>
+                    </div>
+                    <div>
+                        <label for="estadoPago" class="form-label mb-1" style="font-size: 0.75rem;">Estado</label>
+                        <select id="estadoPago" name="estadoPago" class="form-control" style="width: 80px; font-size: 0.75rem;">
+                            <option value="Pagado">Pagado</option>
+                            <option value="Pendiente">Pendiente</option>
+                            <option value="Anulado">Anulado</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="nuevoDetalle" class="form-label mb-1" style="font-size: 0.75rem;">Detalle</label>
+                    <div class="d-flex" style="gap: 8px;">
+                        <input type="text" id="nuevoDetalle" name="nuevoDetalle" class="form-control" style="font-size: 0.75rem;">
+                        <button type="submit" class="btn btn-success btn-sm">Agregar</button>
+                    </div>
+                </div>
+            </form>
+
+            <div id="contenedorTabla">
+    @if (ViewBag.Pagos != null && ((List<proyectoInmobiliariaNuevo.Models.Pago>)ViewBag.Pagos).Count > 0)
+    {
+       <table class="table table-striped mt-4">
+    <thead class="table-success text-black">
+        <tr>
+            <th class="text-center" onclick="ordenarPor('NroPago')" id="headerNroPago">N° Pago</th>
+            <th onclick="ordenarPor('Fecha')" id="headerFecha">Fecha</th>
+            <th class="text-end" onclick="ordenarPor('Importe')" id="headerImporte">Importe</th>
+            <th onclick="ordenarPor('Detalle')" id="headerDetalle">Detalle</th>
+            <th onclick="ordenarPor('Estado')" id="headerEstado">Estado</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody id="tablaPagos">
+        @foreach (var pago in (List<proyectoInmobiliariaNuevo.Models.Pago>)ViewBag.Pagos)
+        {
+            bool esAnulado = pago.Estado == "Anulado";
+            <tr id="fila-pago-@pago.IdPago">
+                <td class="text-center">@pago.NroPago</td>
+                <td>@pago.FechaPago.ToString("dd-MM-yyyy")</td>
+                <td class="text-end">@pago.Importe</td>
+                <td>@pago.Detalle</td>
+                <td class="estado">@pago.Estado</td>
+                <td>
+                    <button class="btn btn-sm btn-primary me-1" onclick="editarPago(@pago.IdPago)" data-id="@pago.IdPago" @(esAnulado ? "disabled" : "")>Editar</button>
+                    <button class="btn btn-sm btn-danger eliminar-btn" onclick="eliminarPago(@pago.IdPago)" @(esAnulado ? "disabled" : "")>Eliminar</button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+    }
+    else
+    {
+        <p>No hay pagos aún para este contrato</p>
+    }
+</div>
 
 
+        </div> <!-- cierre de card-body -->
+    </div> <!-- cierre de card -->
+</div> <!-- cierre de divPagos -->
 
+<!------------------------------------------- Script  ------------------------------------------------> 
 
-    <script>
+ <script>
+let ordenAscendente = true;  // Empezamos en orden ascendente
 
-        function actualizarCabeceras(campo) {
-    const ths = document.querySelectorAll("thead th");
-    ths.forEach(th => {
-        th.classList.remove("th-orden-asc", "th-orden-desc");
-        if (th.innerText.toLowerCase().includes(campo.toLowerCase())) {
-            th.classList.add(ordenAscendente ? "th-orden-asc" : "th-orden-desc");
+function ordenarPor(columna) {
+    const tabla = document.getElementById('tablaPagos');
+    const filas = Array.from(tabla.getElementsByTagName('tr')).slice(1); // Excluimos el encabezado
+
+    // Determinamos la dirección del orden
+    const columnaIndex = {
+        'NroPago': 0,
+        'Fecha': 1,
+        'Importe': 2,
+        'Detalle': 3,
+        'Estado': 4
+    }[columna];
+
+    // Ordenamos las filas dependiendo de la columna
+    filas.sort((a, b) => {
+        const celdaA = a.cells[columnaIndex].textContent.trim();
+        const celdaB = b.cells[columnaIndex].textContent.trim();
+
+        // Si la columna es "Fecha", comparamos como fechas
+        if (columna === 'Fecha') {
+            const fechaA = new Date(celdaA);
+            const fechaB = new Date(celdaB);
+            return ordenAscendente ? fechaA - fechaB : fechaB - fechaA;
+        }
+
+        // Si la columna es "Importe", comparamos como números
+        if (columna === 'Importe') {
+            const importeA = parseFloat(celdaA.replace('$', '').replace(',', ''));
+            const importeB = parseFloat(celdaB.replace('$', '').replace(',', ''));
+            return ordenAscendente ? importeA - importeB : importeB - importeA;
+        }
+
+        // Para las demás columnas, comparamos como cadenas
+        return ordenAscendente ? celdaA.localeCompare(celdaB) : celdaB.localeCompare(celdaA);
+    });
+
+    // Vaciamos la tabla y agregamos las filas ordenadas
+    filas.forEach(fila => tabla.appendChild(fila));
+
+    // Alternamos el estado de la ordenación
+    ordenAscendente = !ordenAscendente;
+
+    // Actualizamos los iconos o clases de orden en los encabezados
+    actualizarIconosOrden(columna, ordenAscendente);
+}
+
+// Función para actualizar los iconos de orden en los encabezados
+function actualizarIconosOrden(columna, ascendente) {
+    const headers = document.querySelectorAll('th');
+    headers.forEach(header => {
+        if (header.textContent.trim() === columna) {
+            if (ascendente) {
+                header.classList.add('ascendente');
+                header.classList.remove('descendente');
+            } else {
+                header.classList.add('descendente');
+                header.classList.remove('ascendente');
+            }
+        } else {
+            header.classList.remove('ascendente', 'descendente');
         }
     });
 }
 
-        function abrirModalRenovacion(btn) {
+
+   function abrirModalRenovacion(btn) {
             const dniPropietario = btn.dataset.dniPropietario || "No disponible";
             const nombrePropietario = btn.dataset.nombrePropietario || "No disponible";
             const dniInquilino = btn.dataset.dniInquilino || "No disponible";
@@ -520,9 +576,6 @@
             const modal = new bootstrap.Modal(document.getElementById("modalRenovacion"));
             modal.show();
         }
-
-
-
 
         // Escuchar clic en el botón Renovación
         document.addEventListener("DOMContentLoaded", function () {
@@ -586,198 +639,267 @@
             }
         });
 
+//------------------------------------- FUNCIONES DE PAGOS -------------------
 
+// FUNCIONES PRINCIPALES
+document.addEventListener('DOMContentLoaded', function () {
+    let idContrato = document.getElementById('idContrato').value;
 
-
-
-
-
-    function crearPago(event) {
-        event.preventDefault();
-
-        const nuevoPago = {
-            IdContrato: document.getElementById("idContrato").value,
-            NroPago: document.getElementById("nuevoNroPago").value,
-            FechaPago: document.getElementById("nuevoFecha").value,
-            Importe: document.getElementById("nuevoImporte").value,
-            Detalle: document.getElementById("nuevoDetalle").value,
-            Estado: document.getElementById("estadoPago").value
-        };
-
-        console.log("Voy a enviar:", nuevoPago);
-
-        fetch('/Contratos/AgregarPago', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(nuevoPago)
-        })
-            .then(async response => {
-                const contentType = response.headers.get("content-type");
-                if (contentType && contentType.includes("application/json")) {
-                    const data = await response.json();
-                    console.log("Respuesta del servidor:", data);
-
-                    if (data.success) {
-                        location.reload();
-                    } else {
-                        alert("No se pudo agregar el pago");
-                    }
-                } else {
-                    throw new Error("Respuesta no es JSON válida");
-                }
-            })
-            .catch(error => {
-                console.error("Error:", error);
-                alert("Ocurrió un error al agregar el pago: " + error.message);
-            });
+    if (!idContrato) {
+        console.error('idContrato no tiene un valor válido');
+        return;
     }
+});
 
-    async function cargarPagos(idContrato) {
-        const response = await fetch(`/Pagos/GetByContrato/${idContrato}`);
-        let pagos = await response.json();
+async function cargarPagos(idContrato) {
+    try {
+        const response = await fetch(`/Contratos/GetByContrato/${idContrato}`);
+        if (!response.ok) {
+            throw new Error('Error al obtener los pagos');
+        }
 
+        const data = await response.json();
+        
+        if (!data.success) {
+            console.error("Error en la respuesta:", data.message);
+            return;
+        }
+
+        const pagos = data.pagos;
         pagos.sort((a, b) => a.nroPago - b.nroPago);
 
         const tablaPagos = document.getElementById('tablaPagos');
         tablaPagos.innerHTML = '';
 
         pagos.forEach(pago => {
+            const esAnulado = pago.estado === 'Anulado'; // Suponiendo que 'Anulado' es el estado para deshabilitar botones
+
             const fila = document.createElement('tr');
             fila.innerHTML = `
-        <td>${pago.nroPago}</td>
-        <td>${new Date(pago.fecha).toLocaleDateString()}</td>
-        <td>$${pago.importe.toFixed(2)}</td>
-        <td>${pago.detalle || ''}</td>
-        <td>${pago.estado}</td>
-    `;
+                <td>${pago.nroPago}</td>
+                <td>${new Date(pago.fechaPago).toLocaleDateString()}</td>
+                <td>$${pago.importe.toFixed(2)}</td>
+                <td>${pago.detalle || ''}</td>
+                <td>${pago.estado}</td>
+                <td>
+                    <button class="btn btn-sm btn-primary me-1" 
+                        onclick="editarPago(${pago.nroPago})"
+                        data-id="${pago.nroPago}"
+                        ${esAnulado ? "disabled" : ""}>
+                        Editar
+                    </button>
+                    <button class="btn btn-sm btn-danger eliminar-btn"
+                        onclick="eliminarPago(${pago.nroPago})"
+                        ${esAnulado ? "disabled" : ""}>
+                        Eliminar
+                    </button>
+                </td>
+            `;
             tablaPagos.appendChild(fila);
         });
+    } catch (error) {
+        console.error("Error al cargar pagos:", error);
+    }
+}
+
+
+function mostrarPagos(pagos) {
+    const pagosContainer = document.getElementById('pagosContainer');
+    pagosContainer.innerHTML = ""; // Limpiar antes de agregar nuevos
+    pagos.forEach(pago => {
+        const pagoElemento = document.createElement('div');
+        pagoElemento.textContent = `Pago #${pago.NroPago}, Importe: ${pago.Importe}, Estado: ${pago.Estado}`;
+        pagosContainer.appendChild(pagoElemento);
+    });
+}
+
+async function crearPago(event) {
+    event.preventDefault();
+
+    if (!document.getElementById("idContrato").value || 
+        !document.getElementById("nuevoNroPago").value || 
+        !document.getElementById("nuevoFecha").value || 
+        !document.getElementById("nuevoImporte").value || 
+        !document.getElementById("estadoPago").value) {
+        alert("Por favor complete todos los campos.");
+        return;
     }
 
-    function eliminarPago(idPago) {
-        if (confirm("¿Estás seguro que querés anular este pago")) {
-            fetch('@Url.Action("AnularPago", "Pagos")', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ idPago: idPago }),
-            })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        const fila = document.querySelector(`#fila-pago-${idPago}`);
-                        if (fila) {
-                            const celdas = fila.getElementsByTagName("td");
-                            celdas[4].innerText = "Anulado";
+    const nuevoPago = {
+        IdContrato: document.getElementById("idContrato").value,
+        NroPago: document.getElementById("nuevoNroPago").value,
+        FechaPago: document.getElementById("nuevoFecha").value,
+        Importe: document.getElementById("nuevoImporte").value,
+        Detalle: document.getElementById("nuevoDetalle").value,
+        Estado: document.getElementById("estadoPago").value
+    };
 
-                            const btns = fila.querySelectorAll("button");
-                            btns.forEach(btn => {
-                                btn.disabled = true;
-                                btn.classList.add("btn-secondary");
-                                btn.classList.remove("btn-primary", "btn-danger");
-                            });
-                        }
+    console.log("Voy a enviarlos:", nuevoPago);
 
-                        alert("Pago anulado exitosamente");
-                    } else {
-                        alert("No se pudo anular: " + data.message);
-                    }
-                })
-                .catch(error => {
-                    console.error("Error:", error);
-                    alert("Ups, algo falló!! ");
-                });
-        }
-    }
-
-    function editarPago(idPago) {
-        let boton = document.querySelector(`button[data-id="${idPago}"]`);
-        if (!boton) {
-            alert("No se encontró el botón para editar 😢");
-            return;
-        }
-        let fila = boton.closest('tr');
-
-        let detalleCell = fila.querySelector('td:nth-child(4)');
-
-        let detalleText = detalleCell.innerText;
-        detalleCell.innerHTML = `<input type="text" class="form-control" value="${detalleText}">`;
-
-        let botonEditar = fila.querySelector('button');
-        botonEditar.innerText = 'Guardar';
-        botonEditar.setAttribute('onclick', `guardarPago(${idPago})`);
-    }
-
-    function guardarPago(idPago) {
-        let fila = document.querySelector(`button[data-id="${idPago}"]`).closest('tr');
-        let detalleInput = fila.querySelector('td:nth-child(4) input');
-        let nuevoDetalle = detalleInput.value;
-
-        fetch('/Pagos/ActualizarDetalle', {
+    try {
+        const response = await fetch('/Contratos/AgregarPago', {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ idPago: idPago, detalle: nuevoDetalle })
-        })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    fila.querySelector('td:nth-child(4)').innerText = nuevoDetalle;
-                    let botonGuardar = fila.querySelector('button');
-                    botonGuardar.innerText = 'Editar';
-                    botonGuardar.setAttribute('onclick', `editarPago(${idPago})`);
-                } else {
-                    alert('Hubo un problema al actualizar el detalle.');
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('Ups, algo falló al guardar el detalle.');
-            });
-    }
-
-    // ORDENAMIENTO DE TABLA
-    document.addEventListener("DOMContentLoaded", () => {
-        const tabla = document.querySelector("table");
-        const headers = tabla.querySelectorAll("th");
-        let ordenAscendente = true;
-
-        headers.forEach((header, indice) => {
-            header.addEventListener("click", () => {
-                ordenarTabla(indice);
-                ordenAscendente = !ordenAscendente;
-            });
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(nuevoPago)
         });
 
-        function ordenarTabla(columna) {
-            const tbody = tabla.querySelector("tbody");
-            const filas = Array.from(tbody.querySelectorAll("tr"));
-
-            filas.sort((a, b) => {
-                let celdaA = a.children[columna].innerText.trim();
-                let celdaB = b.children[columna].innerText.trim();
-
-                let valorA = isNaN(celdaA) ? celdaA.toLowerCase() : parseFloat(celdaA);
-                let valorB = isNaN(celdaB) ? celdaB.toLowerCase() : parseFloat(celdaB);
-
-                if (valorA < valorB) return ordenAscendente ? -1 : 1;
-                if (valorA > valorB) return ordenAscendente ? 1 : -1;
-                return 0;
-            });
-
-            tbody.innerHTML = '';
-            filas.forEach(fila => tbody.appendChild(fila));
+        if (!response.ok) {
+            throw new Error("Error en la respuesta del servidor");
         }
+
+        const data = await response.json();
+        console.log("Respuesta del servidor:", data);
+
+        if (data.success) {
+            alert("Pago agregado exitosamente");
+
+            // ✨ Vaciar los campos
+            document.getElementById("nuevoNroPago").value = "";
+            document.getElementById("nuevoFecha").value = "";
+            document.getElementById("nuevoImporte").value = "";
+            document.getElementById("nuevoDetalle").value = "";
+            document.getElementById("estadoPago").value = "";
+
+            // ✨ Refrescar la tabla de pagos
+            cargarPagos(nuevoPago.IdContrato);
+
+        } else {
+            console.error("Error al agregar el pago:", data.message);
+            alert("Ocurrió un error al agregar el pago.");
+        }
+    } catch (error) {
+        console.error("Error en la solicitud:", error);
+        alert("Error inesperado al conectar con el servidor.");
+    }
+}
+
+
+function eliminarPago(idPago) {
+    if (confirm("¿Estás seguro que querés anular este pago?")) {
+        fetch('@Url.Action("AnularPago", "Pagos")', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ idPago: idPago }),
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                const fila = document.querySelector(`#fila-pago-${idPago}`);
+                if (fila) {
+                    const celdas = fila.getElementsByTagName("td");
+                    celdas[4].innerText = "Anulado";
+
+                    fila.classList.add("bg-light");
+
+                    const btns = fila.querySelectorAll("button");
+                    btns.forEach(btn => {
+                        btn.disabled = true;
+                        btn.classList.add("btn-secondary");
+                        btn.classList.remove("btn-primary", "btn-danger");
+                    });
+                }
+                alert("Pago anulado exitosamente");
+            } else {
+                alert("No se pudo anular: " + data.message);
+            }
+        })
+        .catch(error => {
+            console.error("Error:", error);
+            alert("Ups, algo falló!!");
+        });
+    }
+}
+
+function editarPago(idPago) {
+    const boton = document.querySelector(`button[data-id="${idPago}"]`);
+    if (!boton) {
+        alert("No se encontró el botón para editar ");
+        return;
+    }
+    const fila = boton.closest('tr');
+    const detalleCell = fila.querySelector('td:nth-child(4)');
+
+    const detalleText = detalleCell.innerText;
+    detalleCell.innerHTML = `<input type="text" class="form-control" value="${detalleText}">`;
+
+    boton.innerText = 'Guardar';
+    boton.setAttribute('onclick', `guardarPago(${idPago})`);
+}
+
+function guardarPago(idPago) {
+    let fila = document.querySelector(`button[data-id="${idPago}"]`).closest('tr');
+    let detalleInput = fila.querySelector('td:nth-child(4) input');
+    let nuevoDetalle = detalleInput.value;
+
+    console.log('ID del pago enviado:', idPago); // Verifica si el idPago es correcto
+
+    fetch('/Pagos/ActualizarDetalle', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ idPago: idPago, detalle: nuevoDetalle })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            fila.querySelector('td:nth-child(4)').innerText = nuevoDetalle;
+            let botonGuardar = fila.querySelector('button');
+            botonGuardar.innerText = 'Editar';
+            botonGuardar.setAttribute('onclick', `editarPago(${idPago})`);
+        } else {
+            alert('Hubo un problema al actualizar el detalle.');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Ups, algo falló al guardar el detalle.');
+    });
+}
+
+
+
+
+// ORDENAMIENTO DE TABLA
+function inicializarOrdenamiento() {
+    const tabla = document.querySelector("table");
+    if (!tabla) return;
+
+    const headers = tabla.querySelectorAll("th");
+    let ordenAscendente = true;
+
+    headers.forEach((header, indice) => {
+        header.addEventListener("click", () => {
+            ordenarTabla(indice);
+            ordenAscendente = !ordenAscendente;
+        });
     });
 
-    </script>
+    function ordenarTabla(columna) {
+        const tbody = tabla.querySelector("tbody");
+        const filas = Array.from(tbody.querySelectorAll("tr"));
+
+        filas.sort((a, b) => {
+            let celdaA = a.children[columna].innerText.trim();
+            let celdaB = b.children[columna].innerText.trim();
+
+            let valorA = isNaN(celdaA) ? celdaA.toLowerCase() : parseFloat(celdaA);
+            let valorB = isNaN(celdaB) ? celdaB.toLowerCase() : parseFloat(celdaB);
+
+            if (valorA < valorB) return ordenAscendente ? -1 : 1;
+            if (valorA > valorB) return ordenAscendente ? 1 : -1;
+            return 0;
+        });
+
+        tbody.innerHTML = '';
+        filas.forEach(fila => tbody.appendChild(fila));
+    }
+} 
+
+
+</script>
 
 
 
 
-
-</body>
+</body>  

@@ -23,7 +23,7 @@ builder.Services.AddSession(options =>
     options.Cookie.IsEssential = true;
 });
 
-// 💘 Registramos ConexionDB como servicio con su cadena de conexión
+//  Registramos ConexionDB como servicio con su cadena de conexión
 string cadenaConexion = builder.Configuration.GetConnectionString("MiConexion");
 builder.Services.AddScoped<ConexionDB>(provider => new ConexionDB(cadenaConexion));
 
@@ -49,5 +49,7 @@ app.UseAuthorization();
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
+
+
 
 app.Run();

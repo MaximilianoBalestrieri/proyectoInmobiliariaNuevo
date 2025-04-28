@@ -143,9 +143,8 @@
 
 @if (Model != null && Model.Count > 0)
 {
-    <table class="tabla-personalizada table table-bordered">
-
-        <thead>
+    <table class="tabla-personalizada table table-bordered table-striped">
+    <thead class="table-dark">
             <tr>
                 <th onclick="ordenarPor('DniPropietario')" class="text-center" style="width: 80px;">DNI Propietario</th>
                 <th onclick="ordenarPor('Calle')">Calle</th>
@@ -242,30 +241,34 @@ else
 
 @section Scripts {
     <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            const checkbox = document.getElementById("checkHabilitado");
+     document.addEventListener("DOMContentLoaded", function () {
+    const checkbox = document.getElementById("checkHabilitado");
 
-            if (checkbox) {
-                checkbox.addEventListener("change", function () {
-                    const mostrarSoloHabilitados = this.checked;
-                    const filas = document.querySelectorAll(".tabla-personalizada tbody tr");
+    if (checkbox) {
+        checkbox.addEventListener("change", function () {
+            const mostrarSoloHabilitados = this.checked;
+            const filas = document.querySelectorAll(".tabla-personalizada tbody tr");
+
+            filas.forEach(fila => {
+                const celdaVigente = fila.children[8]; // columna 9
+                const textoVigente = celdaVigente ? celdaVigente.textContent.trim().toLowerCase() : '';
+
+                console.log("Texto en la celda vigente:", textoVigente);
+
+                const esHabilitado = textoVigente === "sí"; // con tilde
 
 
-                    filas.forEach(fila => {
-                        const celdaVigente = fila.children[8];
-                        const textoVigente = celdaVigente ? celdaVigente.textContent.trim().toLowerCase() : '';
-
-                        const esHabilitado = textoVigente === "sí";
-
-                        if (mostrarSoloHabilitados && !esHabilitado) {
-                            fila.style.display = "none";
-                        } else {
-                            fila.style.display = "";
-                        }
-                    });
-                });
-            }
+                if (mostrarSoloHabilitados && !esHabilitado) {
+                    fila.style.display = "none";
+                } else {
+                    fila.style.display = "";
+                }
+            });
         });
+    }
+});
+
+
 
 
 
@@ -304,18 +307,18 @@ else
                         data.forEach(inmueble => {
                             tabla += `
                         <tr>
-                            <td class="text-center">${inmueble.DniPropietario}</td>
-                            <td>${inmueble.Calle}</td>
-                            <td class="text-center">${inmueble.Nro}</td>
-                            <td class="text-center">${inmueble.Piso}</td>
-                            <td class="text-center">${inmueble.Dpto}</td>
-                            <td class="text-center">${inmueble.Localidad}</td>
-                            <td class="text-center">${inmueble.Provincia}</td>
-                            <td class="text-end">$${inmueble.Precio}</td>
-                            <td class="text-center">${inmueble.Vigente ? "Sí" : "No"}</td>
+                            <td class="text-center">${inmueble.dniPropietario}</td>
+                            <td>${inmueble.calle}</td>
+                            <td class="text-center">${inmueble.nro}</td>
+                            <td class="text-center">${inmueble.piso}</td>
+                            <td class="text-center">${inmueble.dpto}</td>
+                            <td class="text-center">${inmueble.localidad}</td>
+                            <td class="text-center">${inmueble.provincia}</td>
+                            <td class="text-end">$${inmueble.precio}</td>
+                            <td class="text-center">${inmueble.vigente ? "Sí" : "No"}</td>
                             <td class="text-center">
-                                <a href="/Inmuebles/Edit/${inmueble.IdInmueble}" class="btn btn-warning btn-sm">Editar</a>
-                                <a href="/Inmuebles/Delete/${inmueble.IdInmueble}" class="btn btn-danger btn-sm">Eliminar</a>
+                                <a href="/Inmuebles/Edit/${inmueble.idInmueble}" class="btn btn-warning btn-sm">Editar</a>
+                                <a href="/Inmuebles/Delete/${inmueble.idInmueble}" class="btn btn-danger btn-sm">Eliminar</a>
                             </td>
                         </tr>
                     `;
@@ -399,54 +402,76 @@ else
             });
         });
 
-        // 💖 NUEVO BLOQUE: búsqueda + paginación
+       
         document.addEventListener("DOMContentLoaded", function () {
-            const rows = Array.from(document.querySelectorAll("#tablaInmuebles tr"));
-            const buscador = document.getElementById("buscadorInmuebles");
-            const paginacion = document.getElementById("paginacionInmuebles");
+    const rows = Array.from(document.querySelectorAll("#tablaInmuebles tr"));
+    const buscador = document.getElementById("buscadorInmuebles");
+    const paginacion = document.getElementById("paginacionInmuebles");
+    const checkbox = document.getElementById("checkHabilitado");
 
-            let filasPorPagina = 5;
-            let paginaActual = 1;
+    let filasPorPagina = 8;
+    let paginaActual = 1;
 
-            function renderTabla() {
-                let filtro = buscador.value.toLowerCase();
-                let filasFiltradas = rows.filter(row =>
-                    row.innerText.toLowerCase().includes(filtro)
-                );
+    function renderTabla() {
+        let filtro = buscador.value.toLowerCase();
+        let mostrarSoloHabilitados = checkbox?.checked; // 🌟 chequeamos si existe el checkbox y si está activado
 
-                let inicio = (paginaActual - 1) * filasPorPagina;
-                let fin = inicio + filasPorPagina;
+        let filasFiltradas = rows.filter(row => {
+            let textoFila = row.innerText.toLowerCase();
+            let coincideConBusqueda = textoFila.includes(filtro);
 
-                rows.forEach(row => row.style.display = "none");
-                filasFiltradas.slice(inicio, fin).forEach(row => row.style.display = "");
+            if (!coincideConBusqueda) return false;
 
-                generarBotonesPaginacion(filasFiltradas.length);
+            if (mostrarSoloHabilitados) {
+                let celdaVigente = row.children[8];
+                let textoVigente = celdaVigente ? celdaVigente.textContent.trim().toLowerCase() : '';
+                return textoVigente === "sí"; // 🌟 solo mostrar si está habilitado
             }
 
-            function generarBotonesPaginacion(totalFiltradas) {
-                paginacion.innerHTML = "";
-                let totalPaginas = Math.ceil(totalFiltradas / filasPorPagina);
+            return true; // mostrar todas si no se filtra por habilitados
+        });
 
-                for (let i = 1; i <= totalPaginas; i++) {
-                    let btn = document.createElement("button");
-                    btn.textContent = i;
-                    btn.classList.add("btn", "btn-sm", "btn-outline-primary");
-                    if (i === paginaActual) btn.classList.add("active");
-                    btn.addEventListener("click", function () {
-                        paginaActual = i;
-                        renderTabla();
-                    });
-                    paginacion.appendChild(btn);
-                }
-            }
+        let inicio = (paginaActual - 1) * filasPorPagina;
+        let fin = inicio + filasPorPagina;
 
-            buscador.addEventListener("input", () => {
-                paginaActual = 1;
+        rows.forEach(row => row.style.display = "none");
+        filasFiltradas.slice(inicio, fin).forEach(row => row.style.display = "");
+
+        generarBotonesPaginacion(filasFiltradas.length);
+    }
+
+    function generarBotonesPaginacion(totalFiltradas) {
+        paginacion.innerHTML = "";
+        let totalPaginas = Math.ceil(totalFiltradas / filasPorPagina);
+
+        for (let i = 1; i <= totalPaginas; i++) {
+            let btn = document.createElement("button");
+            btn.textContent = i;
+            btn.classList.add("btn", "btn-sm", "btn-outline-primary");
+            if (i === paginaActual) btn.classList.add("active");
+            btn.addEventListener("click", function () {
+                paginaActual = i;
                 renderTabla();
             });
+            paginacion.appendChild(btn);
+        }
+    }
 
+    buscador.addEventListener("input", () => {
+        paginaActual = 1;
+        renderTabla();
+    });
+
+    if (checkbox) {
+        checkbox.addEventListener("change", () => {
+            paginaActual = 1;
             renderTabla();
         });
+    }
+
+    renderTabla();
+});
+
 
         //  BLOQUE ACTUAL QUE TENÉS FUNCIONANDO
         $(document).ready(function () {

@@ -18,7 +18,7 @@ namespace proyectoInmobiliariaNuevo.Models
         public int IdInmueble { get; set; }
         public string Direccion { get; set; }
         public bool Vigente { get; set; }
-        public string DireccionSeleccionada { get; set; }
+        public string? DireccionSeleccionada { get; set; }
 
 
     }

@@ -36,109 +36,123 @@
     }
 </style>
 
+<body>
+    <h2>Contratos</h2>
 
-<h2>Contratos</h2>
+    <!-- Botón para agregar un nuevo Contrato -->
+    <a href="@Url.Action("Create", "Contratos")" class="btn btn-primary">Crear Contratos</a>
 
-<!-- Botón para agregar un nuevo Contrato -->
-<a href="@Url.Action("Create", "Contratos")" class="btn btn-primary">Crear Contratos</a>
+    @* Mostrar mensaje si hay algún error o éxito *@
+    @if (ViewBag.Mensaje != null)
+    {
+        <div class="alert alert-info">@ViewBag.Mensaje</div>
+    }
 
-@* Mostrar mensaje si hay algún error o éxito *@
-@if (ViewBag.Mensaje != null)
-{
-    <div class="alert alert-info">@ViewBag.Mensaje</div>
-}
-
-<div class="row mb-3">
-    <div class="col-md-3">
-        <label for="fechaInicioContrato">Desde:</label>
-        <input type="date" id="fechaInicioContrato" class="form-control" />
-    </div>
-    <div class="col-md-3">
-        <label for="fechaFinContrato">Hasta:</label>
-        <input type="date" id="fechaFinContrato" class="form-control" />
-    </div>
-    <div class="col-md-3 d-flex align-items-end">
-        <button class="btn btn-primary" onclick="buscarContratos()">Buscar Contratos</button>
-    </div>
-
-</div>
-
-<div class="filtro-dias-contrato rounded p-3" style="border: 1px solid #ccc; position: absolute; top: 80px; right: 110px; background-color: #f8f9fa;">
-    <h5 style="text-align: center; background-color: black; color: white; padding: 5px; border-radius: 10px;">
-        Filtro por días de vencimiento
-    </h5>
-    <div style="text-align: center;">
-        <label><input type="radio" name="diasFiltro" class="radio-dias" value="30"> Menos de 30 días</label><br>
-        <label><input type="radio" name="diasFiltro" class="radio-dias" value="60"> Menos de 60 días</label><br>
-        <label><input type="radio" name="diasFiltro" class="radio-dias" value="90"> Menos de 90 días</label>
-        <div style="text-align: center; margin-top: 10px;">
-            <button id="mostrarTodosBtn" class="btn btn-secondary">Mostrar todos</button>
+    <div class="row mb-3">
+        <div class="col-md-3">
+            <label for="fechaInicioContrato">Desde:</label>
+            <input type="date" id="fechaInicioContrato" class="form-control" />
+        </div>
+        <div class="col-md-3">
+            <label for="fechaFinContrato">Hasta:</label>
+            <input type="date" id="fechaFinContrato" class="form-control" />
+        </div>
+        <div class="col-md-3 d-flex align-items-end">
+            <button class="btn btn-primary" onclick="buscarContratos()">Buscar Contratos</button>
         </div>
     </div>
-</div>
 
-
-
-
-
-@if (Model != null && Model.Count > 0)
-{
-    <input type="text" id="buscador" class="form-control mt-3 mb-3" placeholder="Buscar en la tabla...">
-
-    <table class="table" id="tablaContratos">
-
-        <thead>
-            <tr>
-                <th onclick="ordenarTabla(0)" style="cursor: pointer;">ID</th>
-                <th onclick="ordenarTabla(1)" style="cursor: pointer;">Propietario</th>
-                <th onclick="ordenarTabla(2)" style="cursor: pointer;">Inquilino</th>
-                <th onclick="ordenarTabla(3)" style="cursor: pointer;">Dirección</th>
-                <th onclick="ordenarTabla(4)" style="cursor: pointer;">Inicio</th>
-                <th onclick="ordenarTabla(5)" style="cursor: pointer;">Fin</th>
-                <th onclick="ordenarTabla(6)" style="cursor: pointer;">Monto</th>
-                <th class="col-vigente" style="display: none;">Vigente</th>
-
-                <th>Acciones</th>
-            </tr>
-        </thead>
-        <tbody id="tablaDatos">
-            @foreach (var contrato in Model)
-            {
-               <tr class="fila-contrato" data-fecha-final="@contrato.FechaFinal.ToString("yyyy-MM-dd")">
-                   <td>@contrato.IdContrato</td>
-                   <td>@contrato.NombrePropietario</td>
-                   <td>@contrato.NombreInquilino</td>
-                   <td>@contrato.Direccion</td>
-                   <td>@contrato.FechaInicio.ToString("dd/MM/yyyy")</td>
-                   <td data-fecha-final="@contrato.FechaFinal.ToString("yyyy-MM-dd")">
-                       @contrato.FechaFinal.ToString("dd/MM/yyyy")
-                   </td>
-                   <td>@contrato.Monto</td>
-                   <td class="col-vigente" style="display: none;">@(contrato.Vigente ? "Sí" : "No")</td>
-
-                   <td>
-                       <a href="@Url.Action("Edit", "Contratos", new { id = contrato.IdContrato })" class="btn btn-warning btn-sm">Ver/Editar</a>
-                       <a href="@Url.Action("Delete", "Contratos", new { id = contrato.IdContrato })" class="btn btn-danger btn-sm">Eliminar</a>
-                   </td>
-               </tr>
-            }
-        </tbody>
-    </table>
-
-    <div id="paginacion" class="d-flex justify-content-between mt-3">
-        <button id="prevPagina" class="btn btn-secondary">Anterior</button>
-        <span id="numPagina"></span>
-        <button id="nextPagina" class="btn btn-secondary">Siguiente</button>
+    <div class="filtro-dias-contrato rounded p-3" style="border: 1px solid #ccc; position: absolute; top: 80px; right: 110px; background-color: #f8f9fa;">
+        <h5 style="text-align: center; background-color: black; color: white; padding: 5px; border-radius: 10px;">
+            Filtro por días de vencimiento
+        </h5>
+        <div style="text-align: center;">
+            <label><input type="radio" name="diasFiltro" class="radio-dias" value="30"> Menos de 30 días</label><br>
+            <label><input type="radio" name="diasFiltro" class="radio-dias" value="60"> Menos de 60 días</label><br>
+            <label><input type="radio" name="diasFiltro" class="radio-dias" value="90"> Menos de 90 días</label>
+            <div style="text-align: center; margin-top: 10px;">
+                <button id="mostrarTodosBtn" class="btn btn-secondary">Mostrar todos</button>
+            </div>
+        </div>
     </div>
 
+    @if (Model != null && Model.Count > 0)
+    {
+       <input type="text" id="buscador" class="form-control mt-3 mb-3" placeholder="Buscar en la tabla..." style="width: 400px;">
+
+
+        <table class="table" id="tablaContratos">
+            <thead>
+                <tr>
+                    <th onclick="ordenarTabla(0)" style="cursor: pointer;">ID</th>
+                    <th onclick="ordenarTabla(1)" style="cursor: pointer;">Propietario</th>
+                    <th onclick="ordenarTabla(2)" style="cursor: pointer;">Inquilino</th>
+                    <th onclick="ordenarTabla(3)" style="cursor: pointer;">Dirección</th>
+                    <th onclick="ordenarTabla(4)" style="cursor: pointer;">Inicio</th>
+                    <th onclick="ordenarTabla(5)" style="cursor: pointer;">Fin</th>
+                    <th onclick="ordenarTabla(6)" style="cursor: pointer;">Monto</th>
+                    <th class="col-vigente" style="display: none;">Vigente</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody id="tablaDatos">
+                @foreach (var contrato in Model)
+                {
+                    <tr class="fila-contrato" data-fecha-final="@contrato.FechaFinal.ToString("yyyy-MM-dd")">
+                        <td>@contrato.IdContrato</td>
+                        <td>@contrato.NombrePropietario</td>
+                        <td>@contrato.NombreInquilino</td>
+                        <td>@contrato.Direccion</td>
+                        <td>@contrato.FechaInicio.ToString("dd/MM/yyyy")</td>
+                        <td data-fecha-final="@contrato.FechaFinal.ToString("yyyy-MM-dd")">
+                            @contrato.FechaFinal.ToString("dd/MM/yyyy")
+                        </td>
+                        <td>@contrato.Monto</td>
+                        <td class="col-vigente" style="display: none;">@(contrato.Vigente ? "Sí" : "No")</td>
+                        <td>
+                            <a href="@Url.Action("Edit", "Contratos", new { id = contrato.IdContrato })" class="btn btn-warning btn-sm">Ver/Editar</a>
+                            <a href="@Url.Action("Delete", "Contratos", new { id = contrato.IdContrato })" class="btn btn-danger btn-sm">Eliminar</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+        <div id="paginacion" class="d-flex justify-content-between mt-3">
+            <button id="prevPagina" class="btn btn-secondary">Anterior</button>
+            <span id="numPagina"></span>
+            <button id="nextPagina" class="btn btn-secondary">Siguiente</button>
+        </div>
+    }
+    else
+    {
+        <p>No hay contratos disponibles para mostrar.</p>
+    }
 
 
 
     <script>
-        function formatearFecha(fechaJson) {
+       /* function formatearFecha(fechaJson) {
             const fecha = new Date(parseInt(fechaJson.replace("/Date(", "").replace(")/", "")));
             return fecha.toLocaleDateString("es-AR");
-        }
+        } */
+
+   function formatearFecha(fechaString) {
+    if (!fechaString) return "No disponible";
+
+    const fecha = new Date(fechaString);
+
+    if (isNaN(fecha.getTime())) {
+        return "No disponible";
+    }
+
+    const dia = fecha.getDate().toString().padStart(2, '0');
+    const mes = (fecha.getMonth() + 1).toString().padStart(2, '0');
+    const anio = fecha.getFullYear();
+
+    return `${dia}/${mes}/${anio}`;
+}
+
 
         document.addEventListener("DOMContentLoaded", function () {
             const radios = document.querySelectorAll('.radio-dias');
@@ -211,74 +225,120 @@
         }
 
 
-        function buscarContratos() {
-            const fechaInicio = document.getElementById('fechaInicioContrato').value;
-            const fechaFin = document.getElementById('fechaFinContrato').value;
+ function buscarContratos() {
+    const fechaInicio = document.getElementById('fechaInicioContrato').value;
+    const fechaFin = document.getElementById('fechaFinContrato').value;
 
-            if (fechaFin < fechaInicio) {
-                alert("La fecha 'Hasta' no puede ser menor que la fecha 'Desde'");
-                return;
-            }
 
-            if (fechaInicio && fechaFin) {
-                const url = `/Contratos/BuscarContratos?desde=${fechaInicio}&hasta=${fechaFin}`;
 
-                fetch(url)
-                    .then(response => response.json())
-                    .then(data => {
-                        console.log("Contratos filtrados:", data);
-                        // Aquí puedes actualizar la tabla con los contratos filtrados
-                        actualizarTablaContratos(data);
-                    })
-                    .catch(error => {
-                        console.error("Error al obtener contratos:", error);
+    if (fechaFin && fechaInicio && fechaFin < fechaInicio) {
+        alert("La fecha 'Hasta' no puede ser menor que la fecha 'Desde'");
+        return;
+    }
+
+    if (fechaInicio && fechaFin) {
+        const url = `/Contratos/BuscarContratos?desde=${fechaInicio}&hasta=${fechaFin}`;
+
+        fetch(url)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error("Error en la respuesta del servidor");
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log("Contratos filtrados:", data);
+
+                // Verificamos si hay contratos
+                if (data && Array.isArray(data)) {
+                    data.forEach(c => {
+                        // Asegurándonos de que los datos son válidos
+                       console.log(`FechaInicio: ${c.fechaInicio ? c.fechaInicio : 'No disponible'}, FechaFinal: ${c.fechaFinal ? c.fechaFinal : 'No disponible'}`);
+
                     });
-            } else {
-                alert("Por favor, selecciona ambas fechas.");
-            }
-        }
-        function actualizarTablaContratos(contratos) {
-            const tbody = document.querySelector("#tablaContratos tbody");
 
-            if (!tbody) {
-                console.error("No se encontró la tabla de contratos.");
-                return;
-            }
-
-            // Verificamos si vino un error
-            if (contratos.error) {
-                alert("Error desde el servidor: " + contratos.error);
-                return;
-            }
-
-            tbody.innerHTML = "";
-
-            contratos.forEach(contrato => {
-                const fila = `
-                        <tr>
-                            <td>${contrato.IdContrato}</td>
-                            <td>${contrato.NombrePropietario || ''}</td>
-                            <td>${contrato.NombreInquilino || ''}</td>
-                            <td>${contrato.Direccion}</td>
-                            <td>${formatearFecha(contrato.FechaInicio)}</td>
-                            <td>${formatearFecha(contrato.FechaFinal)}</td>
-                            <td>${contrato.Monto}</td>
-                            <td>
-                                <a href="/Contratos/Edit/${contrato.IdContrato}" class="btn btn-warning btn-sm">Editar</a>
-                                <a href="/Contratos/Delete/${contrato.IdContrato}" class="btn btn-danger btn-sm">Eliminar</a>
-                            </td>
-                        </tr>
-                        `;
-                tbody.innerHTML += fila;
+                    if (data.error) {
+                        alert(data.error); // Si hubo un error, lo mostramos
+                    } else if (data.mensaje) {
+                        // Si no hay contratos, mostramos el mensaje de "sin resultados"
+                        actualizarTablaContratos([]);
+                        mostrarMensajeSinContratos(data.mensaje);
+                    } else {
+                        // Si hay contratos, los mostramos en la tabla
+                        actualizarTablaContratos(data);
+                    }
+                } else {
+                    alert("No se encontraron contratos.");
+                }
+            })
+            .catch(error => {
+                console.error("Error al obtener contratos:", error);
+                alert("Ocurrió un error al buscar los contratos.");
             });
-        }
+    } else {
+        alert("Por favor, seleccioná ambas fechas.");
+    }
+}
+
+
+
+function mostrarMensajeSinContratos(mensaje) {
+    const tbody = document.querySelector("#tablaContratos tbody");
+    tbody.innerHTML = "";  // Limpiamos la tabla para mostrar el mensaje
+
+    const fila = `
+        <tr>
+            <td colspan="8" style="text-align: center; color: red;">
+                ${mensaje}
+            </td>
+        </tr>
+    `;
+    tbody.innerHTML = fila;
+}
+
+
+       
+      function actualizarTablaContratos(contratos) {
+    const tbody = document.querySelector("#tablaContratos tbody");
+
+    if (!tbody) {
+        console.error("No se encontró la tabla de contratos.");
+        return;
+    }
+
+    // Verificamos si vino un error
+    if (contratos.error) {
+        alert("Error desde el servidor: " + contratos.error);
+        return;
+    }
+
+    tbody.innerHTML = "";
+
+    contratos.forEach(contrato => {
+        const fila = `
+            <tr>
+                <td>${contrato.idContrato}</td>
+                <td>${contrato.nombrePropietario || ''}</td>
+                <td>${contrato.nombreInquilino || ''}</td>
+                <td>${contrato.direccion || ''}</td>
+                <td>${contrato.fechaInicio ? formatearFecha(contrato.fechaInicio) : ''}</td>
+                <td>${contrato.fechaFinal ? formatearFecha(contrato.fechaFinal) : ''}</td>
+                <td>${contrato.monto || ''}</td>
+                <td>
+                    <a href="/Contratos/Edit/${contrato.idContrato}" class="btn btn-warning btn-sm">Editar</a>
+                    <a href="/Contratos/Delete/${contrato.idContrato}" class="btn btn-danger btn-sm">Eliminar</a>
+                </td>
+            </tr>
+        `;
+        tbody.innerHTML += fila;
+    });
+}
+
 
 
 
         document.addEventListener("DOMContentLoaded", function () {
             // Búsqueda
-
-
 
             function actualizarTablaContratos(contratos) {
                 const tablaContratos = document.getElementById('tablaContratos');
@@ -365,10 +425,6 @@
             tabla.setAttribute("data-orden", ordenAscendente ? "asc" : "desc");
         }
     </script>
-}
-else
-{
-    <p>No hay contratos disponibles para mostrar.</p>
-}
+</body>
 
 

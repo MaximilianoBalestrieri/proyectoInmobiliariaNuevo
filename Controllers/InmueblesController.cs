@@ -32,6 +32,66 @@ namespace proyectoInmobiliariaNuevo.Controllers
       return View();
   }
 
+        // POST: Inmuebles/Create
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+
+public async Task<IActionResult> Create(Inmueble inmueble, IFormFile FotoPortada, List<IFormFile> fotosCarrusel)
+{
+    if (ModelState.IsValid)
+    {
+        // Guardar la imagen de portada
+        if (FotoPortada != null && FotoPortada.Length > 0)
+        {
+            // Obtiene la ruta del directorio para las imágenes
+            var pathPortada = Path.Combine(_env.WebRootPath, "Uploads", "Portadas", FotoPortada.FileName);
+
+            // Guarda el archivo de la portada
+            using (var stream = new FileStream(pathPortada, FileMode.Create))
+            {
+                await FotoPortada.CopyToAsync(stream);
+            }
+
+            // Asigna la ruta relativa para almacenar en la base de datos
+            inmueble.ImagenPortada = "/Uploads/Portadas/" + FotoPortada.FileName;
+        }
+
+        // Guardar imágenes del carrusel
+        List<string> rutasCarrusel = new List<string>();
+        if (fotosCarrusel != null && fotosCarrusel.Count > 0)
+        {
+            foreach (var foto in fotosCarrusel)
+            {
+                if (foto != null && foto.Length > 0)
+                {
+                    // Obtiene la ruta para cada imagen del carrusel
+                    var pathCarrusel = Path.Combine(_env.WebRootPath, "Uploads", "Carrusel", foto.FileName);
+
+                    // Guarda el archivo de la imagen del carrusel
+                    using (var stream = new FileStream(pathCarrusel, FileMode.Create))
+                    {
+                        await foto.CopyToAsync(stream);
+                    }
+
+                    // Agrega la ruta de la imagen al listado
+                    rutasCarrusel.Add("/Uploads/Carrusel/" + foto.FileName);
+                }
+            }
+
+            // Asigna las rutas del carrusel (si es necesario)
+            // inmueble.FotosCarrusel = string.Join(";", rutasCarrusel);  // Descomentar si lo usas
+        }
+
+        // Inserta el inmueble y obtiene el ID generado
+        int idGenerado = conexionDB.AgregarInmueble(inmueble);
+
+        return RedirectToAction("Index");
+    }
+
+    // Si el modelo no es válido, regresa a la vista con los errores
+    return View(inmueble);
+}
+
 
   public ActionResult Edit(int id)
   {
@@ -47,90 +107,101 @@ namespace proyectoInmobiliariaNuevo.Controllers
       return View(viewModel);
   }
 
+   [HttpPost]
+[ValidateAntiForgeryToken]
+public async Task<IActionResult> Edit(InmuebleEditViewModel model, IFormFile FotoPortada, List<IFormFile> FotosCarrusel)
+{
+    // Eliminamos validación automática de FotoPortada y RutasCarrusel porque los manejamos aparte
+    ModelState.Remove("FotoPortada");
+    ModelState.Remove("RutasCarrusel");
 
+    foreach (var error in ModelState)
+    {
+        foreach (var subError in error.Value.Errors)
+        {
+            Console.WriteLine($"Error en el campo '{error.Key}': {subError.ErrorMessage}");
+        }
+    }
 
-
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(InmuebleEditViewModel model, IFormFile FotoPortada, List<IFormFile> FotosCarrusel)
+    if (ModelState.IsValid)
     {
         ViewBag.Mensaje = "🏡 entro al edit de inmueble.";
-        if (ModelState.IsValid)
+        try
         {
-            try
+            string rutaOriginalPortada = model.Inmueble.ImagenPortada;
+
+            // ✅ Procesar imagen de portada
+            if (FotoPortada != null && FotoPortada.Length > 0)
             {
-                string rutaOriginalPortada = model.Inmueble.ImagenPortada;
-
-                // ✅ Procesar imagen de portada
-                if (FotoPortada != null && FotoPortada.Length > 0)
+                // Eliminar imagen anterior si existe
+                if (!string.IsNullOrEmpty(rutaOriginalPortada))
                 {
-                    if (!string.IsNullOrEmpty(model.Inmueble.ImagenPortada))
+                    string rutaAnterior = Path.Combine(_env.WebRootPath, rutaOriginalPortada.TrimStart('/').Replace("/", Path.DirectorySeparatorChar.ToString()));
+                    if (System.IO.File.Exists(rutaAnterior))
                     {
-                        string rutaAnterior = Path.Combine(_env.WebRootPath, model.Inmueble.ImagenPortada.TrimStart('/').Replace("/", Path.DirectorySeparatorChar.ToString()));
-                        if (System.IO.File.Exists(rutaAnterior))
-                        {
-                            System.IO.File.Delete(rutaAnterior);
-                        }
-                    }
-
-                    string extension = Path.GetExtension(FotoPortada.FileName);
-                    string nombreArchivo = Path.GetFileNameWithoutExtension(FotoPortada.FileName);
-                    string nombreUnico = $"{nombreArchivo}_{Guid.NewGuid()}{extension}";
-                    string rutaRelativa = Path.Combine("Imagenes", "Inmuebles", nombreUnico);
-                    string rutaFisica = Path.Combine(_env.WebRootPath, rutaRelativa);
-
-                    Directory.CreateDirectory(Path.GetDirectoryName(rutaFisica));
-
-                    using (var stream = new FileStream(rutaFisica, FileMode.Create))
-                    {
-                        await FotoPortada.CopyToAsync(stream);
-                    }
-
-                    model.Inmueble.ImagenPortada = "/" + rutaRelativa.Replace("\\", "/");
-                }
-                else
-                {
-                    model.Inmueble.ImagenPortada = rutaOriginalPortada;
-                }
-
-                // ✅ Guardar imágenes del carrusel
-                if (FotosCarrusel != null)
-                {
-                    foreach (var foto in FotosCarrusel)
-                    {
-                        if (foto != null && foto.Length > 0)
-                        {
-                            string extension = Path.GetExtension(foto.FileName);
-                            string nombreArchivo = Path.GetFileNameWithoutExtension(foto.FileName);
-                            string nombreUnico = $"{nombreArchivo}_{Guid.NewGuid()}{extension}";
-                            string rutaRelativa = Path.Combine("Imagenes", "Carrusel", nombreUnico);
-                            string rutaFisica = Path.Combine(_env.WebRootPath, rutaRelativa);
-
-                            Directory.CreateDirectory(Path.GetDirectoryName(rutaFisica));
-
-                            using (var stream = new FileStream(rutaFisica, FileMode.Create))
-                            {
-                                await foto.CopyToAsync(stream);
-                            }
-
-                            conexionDB.InsertarFotoCarrusel(model.Inmueble.IdInmueble, "/" + rutaRelativa.Replace("\\", "/"));
-                        }
+                        System.IO.File.Delete(rutaAnterior);
                     }
                 }
 
-                conexionDB.ActualizarInmueble(model.Inmueble);
-                return RedirectToAction("Index");
+                string extension = Path.GetExtension(FotoPortada.FileName);
+                string nombreArchivo = Path.GetFileNameWithoutExtension(FotoPortada.FileName);
+                string nombreUnico = $"{nombreArchivo}_{Guid.NewGuid()}{extension}";
+                string rutaRelativa = Path.Combine("imagenes", "inmuebles", nombreUnico);
+                model.Inmueble.ImagenPortada = "/" + rutaRelativa.Replace("\\", "/");
+                string rutaFisica = Path.Combine(_env.WebRootPath, rutaRelativa);
+
+                Directory.CreateDirectory(Path.GetDirectoryName(rutaFisica));
+
+                using (var stream = new FileStream(rutaFisica, FileMode.Create))
+                {
+                    await FotoPortada.CopyToAsync(stream);
+                }
             }
-            catch (Exception ex)
+            else
             {
-                System.Diagnostics.Debug.WriteLine("Error al guardar imagen: " + ex.Message);
-                ModelState.AddModelError("", "Ocurrió un error al guardar las imágenes.");
-                return View(model);
+                model.Inmueble.ImagenPortada = rutaOriginalPortada;
             }
+
+            // ✅ Guardar imágenes del carrusel
+            if (FotosCarrusel != null && FotosCarrusel.Any())
+            {
+                foreach (var foto in FotosCarrusel)
+                {
+                    if (foto != null && foto.Length > 0)
+                    {
+                        string extension = Path.GetExtension(foto.FileName);
+                        string nombreArchivo = Path.GetFileNameWithoutExtension(foto.FileName);
+                        string nombreUnico = $"{nombreArchivo}_{Guid.NewGuid()}{extension}";
+                        string rutaRelativa = Path.Combine("Imagenes", "Carrusel", nombreUnico);
+                        string rutaFisica = Path.Combine(_env.WebRootPath, rutaRelativa);
+
+                        Directory.CreateDirectory(Path.GetDirectoryName(rutaFisica));
+
+                        using (var stream = new FileStream(rutaFisica, FileMode.Create))
+                        {
+                            await foto.CopyToAsync(stream);
+                        }
+
+                        conexionDB.InsertarFotoCarrusel(model.Inmueble.IdInmueble, "/" + rutaRelativa.Replace("\\", "/"));
+                    }
+                }
+            }
+
+            // ✅ Actualizar el inmueble
+            conexionDB.ActualizarInmueble(model.Inmueble);
+
+            return RedirectToAction("Index");
         }
-
-        return View(model);
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine("Error al guardar imagen: " + ex.Message);
+            ModelState.AddModelError("", "Ocurrió un error al guardar las imágenes.");
+            return View(model);
+        }
     }
+
+    return View(model);
+}
 
 
 
@@ -187,70 +258,7 @@ public IActionResult DeleteConfirmed(int id)
 }
 
 
-      public int AgregarInmueble(Inmueble inmueble)
-{
-    int idInmueble = 0;
-
-    using (MySqlConnection conexion = new MySqlConnection(ConexionDB))
-    {
-        string query = @"
-        INSERT INTO Inmueble 
-            (DniPropietario, Calle, Nro, Piso, Dpto, Localidad, Provincia, Uso, Tipo, Ambientes, Precio, Latitud, Longitud, Pileta, Parrilla, Garage, ImagenPortada, vigente)
-        VALUES 
-            (@DniPropietario, @Calle, @Nro, @Piso, @Dpto, @Localidad, @Provincia, @Uso, @Tipo, @Ambientes, @Precio, @Latitud, @Longitud, @Pileta, @Parrilla, @Garage, @ImagenPortada, @vigente);
-        SELECT LAST_INSERT_ID();";
-
-        MySqlCommand cmd = new MySqlCommand(query, conexion);
-
-        cmd.Parameters.AddWithValue("@DniPropietario", inmueble.DniPropietario);
-        cmd.Parameters.AddWithValue("@Calle", inmueble.Calle);
-        cmd.Parameters.AddWithValue("@Nro", inmueble.Nro);
-        cmd.Parameters.AddWithValue("@Piso", inmueble.Piso);
-        cmd.Parameters.AddWithValue("@Dpto", inmueble.Dpto);
-        cmd.Parameters.AddWithValue("@Localidad", inmueble.Localidad);
-        cmd.Parameters.AddWithValue("@Provincia", inmueble.Provincia);
-        cmd.Parameters.AddWithValue("@Uso", inmueble.Uso);
-        cmd.Parameters.AddWithValue("@Tipo", inmueble.Tipo);
-        cmd.Parameters.AddWithValue("@Ambientes", inmueble.Ambientes);
-        cmd.Parameters.AddWithValue("@Precio", inmueble.Precio);
-        cmd.Parameters.AddWithValue("@Latitud", inmueble.Latitud);
-        cmd.Parameters.AddWithValue("@Longitud", inmueble.Longitud);
-        cmd.Parameters.AddWithValue("@Pileta", inmueble.Pileta);
-        cmd.Parameters.AddWithValue("@Parrilla", inmueble.Parrilla);
-        cmd.Parameters.AddWithValue("@Garage", inmueble.Garage);
-        cmd.Parameters.AddWithValue("@ImagenPortada", inmueble.ImagenPortada);
-        cmd.Parameters.AddWithValue("@vigente", inmueble.Vigente);
-
-        conexion.Open();
-        idInmueble = Convert.ToInt32(cmd.ExecuteScalar());
-
-        // Guardar fotos del carrusel si hay
-        if (!string.IsNullOrEmpty(inmueble.FotosCarrusel))
-        {
-            var rutas = inmueble.FotosCarrusel.Split(';');
-
-            foreach (var ruta in rutas)
-            {
-                if (!string.IsNullOrWhiteSpace(ruta))
-                {
-                    var cmdCarrusel = new MySqlCommand(
-                        "INSERT INTO InmuebleFotoCarrusel (IdInmueble, RutaFoto) VALUES (@IdInmueble, @RutaFoto)",
-                        conexion);
-
-                    cmdCarrusel.Parameters.AddWithValue("@IdInmueble", idInmueble);
-                    cmdCarrusel.Parameters.AddWithValue("@RutaFoto", ruta);
-                    cmdCarrusel.ExecuteNonQuery();
-                }
-            }
-        }
-    }
-
-    return idInmueble;
-}
-
-
-
-        [HttpGet]
+         [HttpGet]
         public JsonResult BuscarPorDni(string dni)
         {
             var inmuebles = conexionDB.ObtenerInmuebles()
@@ -283,6 +291,7 @@ public JsonResult Ocupados(DateTime desde, DateTime hasta)
     try
     {
         var lista = conexionDB.ObtenerInmueblesOcupados(desde, hasta);
+                    
         return Json(lista ?? new List<Models.Inmueble>());
     }
     catch (Exception ex)

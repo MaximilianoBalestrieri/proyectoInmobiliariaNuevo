@@ -1,125 +1,97 @@
 using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
+using Microsoft.Extensions.Configuration;
 using proyectoInmobiliariaNuevo.Models;
+using System;
+using System.Linq;
 
 namespace proyectoInmobiliariaNuevo.Controllers
 {
-   
-   
-
+    [Route("Contratos")]
     public class ContratosController : Controller
     {
-        ConexionDB db = new ConexionDB();
+        private readonly IConfiguration _configuration;
+        private readonly ConexionDB db;
 
+        public ContratosController(IConfiguration configuration)
+        {
+            _configuration = configuration;
+            db = new ConexionDB();
+        }
+
+        // Listar contratos
+        [HttpGet("")]
         public ActionResult Index()
         {
             var contratos = db.ObtenerTodosLosContratos();
             return View(contratos);
         }
 
-        // GET: Contratos/Create
+        // Crear contrato - GET
+        [HttpGet("Crear")]
         public ActionResult Create()
         {
             return View();
         }
 
-        [HttpPost]
+        // Crear contrato - POST
+        [HttpPost("Crear")]
         [ValidateAntiForgeryToken]
         public ActionResult Create(Contrato contrato)
         {
             if (!db.VerificarDisponibilidad(contrato))
-            {
                 ModelState.AddModelError("", "El inmueble ya tiene un contrato en esas fechas.");
-            }
 
             if (ModelState.IsValid)
             {
-                db.AgregarContrato(contrato); // Asegurate de tener este método en ConexionDB
+                db.AgregarContrato(contrato);
                 return RedirectToAction("Index");
             }
 
             return View(contrato);
         }
 
-
-
-
-        public ActionResult BuscarPropietarios(string termino)
-        {
-            var propietarios = db.BuscarPropietarios(termino);  // Método para buscar propietarios
-            return PartialView("_ListaPropietarios", propietarios); // Vista parcial que muestra los resultados
-        }
-
-        // Acción para buscar inquilinos
-        public ActionResult BuscarInquilinos(string termino)
-        {
-            var inquilinos = db.BuscarInquilinos(termino);  // Método para buscar inquilinos
-            return PartialView("_ListaInquilinos", inquilinos); // Vista parcial que muestra los resultados
-        }
-
-        [HttpGet]
-        public JsonResult BuscarInmueblesPorDni(string dniPropietario)
-        {
-            var conexion = new ConexionDB();
-            var lista = conexion.ObtenerInmuebles()
-                .Where(i => i.DniPropietario == dniPropietario)
-                .ToList();
-            return Json(lista);
-        }
-        [HttpGet]
+        // Editar contrato - GET
+        [HttpGet("Editar/{id}")]
         public ActionResult Edit(int id)
         {
             var contrato = db.ObtenerContratoPorId(id);
             if (contrato == null)
-            {
-               return NotFound();
+                return NotFound();
 
-            }
-
-            var pagos = db.ObtenerPagosPorContrato(id); // asegurate de tener este método en ConexionDB
-            ViewBag.Pagos = pagos;
-
+            ViewBag.Pagos = db.ObtenerPagosPorContrato(id);
             return View(contrato);
         }
 
-
-
-        [HttpPost]
-        public ActionResult Edit(Contrato contrato)
+        // Editar contrato - POST
+        [HttpPost("Editar/{id}")]
+        [ValidateAntiForgeryToken]
+        public ActionResult Edit(int id, Contrato contrato)
         {
             if (ModelState.IsValid)
             {
-                var exito = db.EditarContrato(
-                    contrato.IdContrato,
-                    contrato.FechaInicio,
-                    contrato.FechaFinal,
-                    contrato.Monto
-                );
-
-                if (exito)
-                {
+                foreach (var error in ModelState.Values.SelectMany(v => v.Errors))
+    {
+        Console.WriteLine(error.ErrorMessage);
+    }
+                if (db.EditarContrato(contrato.IdContrato, contrato.FechaInicio, contrato.FechaFinal, contrato.Monto))
                     return RedirectToAction("Index");
-                }
             }
-
-            // Si hay error, se vuelve a mostrar el formulario con los datos ingresados
             return View(contrato);
         }
 
+        // Eliminar contrato - GET
+        [HttpGet("Eliminar/{id}")]
         public ActionResult Delete(int id)
         {
             var contrato = db.ObtenerContratoPorId(id);
             if (contrato == null)
                 return NotFound();
 
-
             return View(contrato);
         }
 
-        [HttpPost]
+        // Eliminar contrato - POST
+        [HttpPost("Eliminar/{id}")]
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
@@ -127,29 +99,71 @@ namespace proyectoInmobiliariaNuevo.Controllers
             return RedirectToAction("Index");
         }
 
-
-        public JsonResult AgregarPago(Pago pago)
+        // Buscar propietarios
+        [HttpGet("BuscarPropietarios")]
+        public ActionResult BuscarPropietarios(string termino)
         {
-            bool exito = false;
-
-            try
-            {
-                exito = db.AgregarPago(pago); // Tu método para guardar
-                return Json(new { success = exito });
-            }
-            catch (Exception ex)
-            {
-                // Enviar el mensaje de error completo
-                return Json(new { success = false, message = "Error: " + ex.Message });
-            }
+            var propietarios = db.BuscarPropietarios(termino);
+            return PartialView("_ListaPropietarios", propietarios);
         }
 
+        // Buscar inquilinos
+        [HttpGet("BuscarInquilinos")]
+        public ActionResult BuscarInquilinos(string termino)
+        {
+            var inquilinos = db.BuscarInquilinos(termino);
+            return PartialView("_ListaInquilinos", inquilinos);
+        }
+
+        // Buscar inmuebles por DNI de propietario
+        [HttpGet("BuscarInmueblesPorDni")]
+        public JsonResult BuscarInmueblesPorDni(string dniPropietario)
+        {
+            var lista = db.ObtenerInmuebles()
+                          .Where(i => i.DniPropietario == dniPropietario)
+                          .ToList();
+            return Json(lista);
+        }
+[HttpPost("AgregarPago")]
+public JsonResult AgregarPago([FromBody] Pago pago)
+{
+    try
+    {
+        Console.WriteLine("Datos recibidos para agregar pago:");
+        Console.WriteLine($"IdContrato: {pago.IdContrato}");
+        Console.WriteLine($"NroPago: {pago.NroPago}");
+        Console.WriteLine($"FechaPago: {pago.FechaPago}");
+        Console.WriteLine($"Importe: {pago.Importe}");
+        Console.WriteLine($"Detalle: {pago.Detalle}");
+        Console.WriteLine($"Estado: {pago.Estado}");
+
+        bool exito = db.AgregarPago(pago);
+
+        if (exito)
+        {
+            return Json(new { success = true, message = "Pago agregado correctamente." });
+        }
+        else
+        {
+            return Json(new { success = false, message = "No se pudo agregar el pago." });
+        }
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine("Error en AgregarPago: " + ex.Message);
+        return Json(new { success = false, message = "Error interno: " + ex.Message });
+    }
+}
+
+
+
+        // Anular pago
+        [HttpPost("AnularPago")]
         public JsonResult AnularPago(int idPago)
         {
             try
             {
-                var db = new ConexionDB();
-                db.AnularPago(idPago); // Aquí llamamos al método AnularPago
+                db.AnularPago(idPago);
                 return Json(new { success = true });
             }
             catch (Exception ex)
@@ -158,106 +172,110 @@ namespace proyectoInmobiliariaNuevo.Controllers
             }
         }
 
-        [HttpPost]
-        public JsonResult ActualizarDetalle(int idPago, string detalle)
-        {
-            try
-            {
-                ConexionDB db = new ConexionDB();
-                db.ActualizarDetalle(idPago, detalle);
+     [HttpPost ("ActualizarDetalle")]
+public JsonResult ActualizarDetalle(int idPago, string detalle)
+{
+    Console.WriteLine($"ID Pago recibido: {idPago}");  
+    try
+ {
+     ConexionDB db = new ConexionDB();
+     db.ActualizarDetalle(idPago, detalle);
 
-                return Json(new { success = true });
-            }
-            catch (Exception ex)
-            {
-                return Json(new { success = false, error = ex.Message });
-            }
-        }
+     return Json(new { success = true });
+ }
+ catch (Exception ex)
+ {
+     return Json(new { success = false, error = ex.Message });
+ }
+}
 
-        [HttpGet]
+
+
+        // Buscar contratos entre fechas
+        [HttpGet("BuscarContratos")]
         public JsonResult BuscarContratos(DateTime desde, DateTime hasta)
         {
             try
             {
                 if (hasta < desde)
-                {
-                 return Json(new { error = "La fecha 'hasta' no puede ser menor que la fecha 'desde'." });
-                }
+                    return Json(new { error = "La fecha 'hasta' no puede ser menor que la fecha 'desde'." });
 
-                ConexionDB conexionDB = new ConexionDB();
-                var contratos = conexionDB.BuscarContratos(desde, hasta);
+                var contratos = db.BuscarContratos(desde, hasta);
 
                 foreach (var contrato in contratos)
                 {
-                    var propietario = conexionDB.ObtenerPropietarioPorDni(contrato.DniPropietario);
-                    var inquilino = conexionDB.ObtenerInquilinoPorDni(contrato.DniInquilino);
+                    var propietario = db.ObtenerPropietarioPorDni(contrato.DniPropietario);
+                    var inquilino = db.ObtenerInquilinoPorDni(contrato.DniInquilino);
 
-                    contrato.NombrePropietario = propietario?.NombrePropietario + " " + propietario?.ApellidoPropietario;
-                    contrato.NombreInquilino = inquilino?.NombreInquilino + " " + inquilino?.ApellidoInquilino;
+                    contrato.NombrePropietario = $"{propietario?.NombrePropietario} {propietario?.ApellidoPropietario}";
+                    contrato.NombreInquilino = $"{inquilino?.NombreInquilino} {inquilino?.ApellidoInquilino}";
                 }
 
                 return Json(contratos);
-
             }
             catch (Exception ex)
             {
                 return Json(new { error = ex.Message });
-
             }
         }
 
-
-        [HttpPost]
+        // Renovar contrato (simple)
+        [HttpPost("Renovar")]
         public ActionResult Renovar(Contrato nuevoContrato)
         {
             try
             {
-                ConexionDB db = new ConexionDB();
                 nuevoContrato.Vigente = true;
-                db.AgregarContrato(nuevoContrato); // Asumiendo que tenés un método así
+                db.AgregarContrato(nuevoContrato);
                 return Json(new { success = true });
             }
             catch (Exception ex)
             {
-               return StatusCode(500, ex.Message);
-
+                return StatusCode(500, ex.Message);
             }
         }
 
-
-        [HttpPost]
+        // Guardar renovación
+        [HttpPost("GuardarRenovacion")]
         public ActionResult GuardarRenovacion(NuevaRenovacionModel datos)
         {
-            var nuevo = new Contrato
+            try
             {
-                DniPropietario = datos.NuevoContrato.DniPropietario,
-                NombrePropietario = datos.NuevoContrato.NombrePropietario,
-                DniInquilino = datos.NuevoContrato.DniInquilino,
-                NombreInquilino = datos.NuevoContrato.NombreInquilino,
-                FechaInicio = datos.NuevoContrato.FechaInicio,
-                FechaFinal = datos.NuevoContrato.FechaFinal,
-                Monto = datos.NuevoContrato.Monto,
-                IdInmueble = datos.NuevoContrato.IdInmueble,
-                Direccion = datos.NuevoContrato.Direccion,
-                Vigente = true
-            };
+                var nuevo = new Contrato
+                {
+                    DniPropietario = datos.NuevoContrato.DniPropietario,
+                    NombrePropietario = datos.NuevoContrato.NombrePropietario,
+                    DniInquilino = datos.NuevoContrato.DniInquilino,
+                    NombreInquilino = datos.NuevoContrato.NombreInquilino,
+                    FechaInicio = datos.NuevoContrato.FechaInicio,
+                    FechaFinal = datos.NuevoContrato.FechaFinal,
+                    Monto = datos.NuevoContrato.Monto,
+                    IdInmueble = datos.NuevoContrato.IdInmueble,
+                    Direccion = datos.NuevoContrato.Direccion,
+                    Vigente = true
+                };
 
-            var db = new ConexionDB();
-            db.AgregarContrato(nuevo);
-            db.MarcarComoNoVigente(datos.ContratoAnteriorId); // Método que deberías tener para actualizar
+                db.MarcarComoNoVigente(datos.ContratoAnteriorId);
+                db.AgregarContrato(nuevo);
 
-            return Ok();
-
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
         }
 
-        [HttpPost]
+        // Crear renovación desde vista
+        [HttpPost("CrearRenovacion")]
         [ValidateAntiForgeryToken]
         public ActionResult CrearRenovacion(RenovacionContratoViewModel data)
         {
             try
             {
-                int idAnterior = data.IdContratoAnterior;
-                Contrato nuevoContrato = new Contrato
+                db.MarcarContratoComoNoVigente(data.IdContratoAnterior);
+
+                var nuevoContrato = new Contrato
                 {
                     DniPropietario = data.DniPropietario,
                     NombrePropietario = data.NombrePropietario,
@@ -271,17 +289,41 @@ namespace proyectoInmobiliariaNuevo.Controllers
                     Vigente = true
                 };
 
-                db.MarcarContratoComoNoVigente(idAnterior);
                 db.AgregarContrato(nuevoContrato);
 
                 return Json(new { success = true });
             }
             catch (Exception ex)
             {
-               return StatusCode(500, "Error al renovar: " + ex.Message);
-
+                return StatusCode(500, "Error al renovar: " + ex.Message);
             }
         }
+
+
+[HttpGet]
+    [Route("Contratos/Index/{idContrato}")]
+    public IActionResult Index(int idContrato)
+    {
+        var contratos = db.ObtenerContratos(); // Ejemplo de llamada a tu base de datos
+        return View(contratos);
+    }
+
+
+
+        // Obtener pagos por contrato
+ [HttpGet("GetByContrato/{idContrato}")]
+public IActionResult GetByContrato(int idContrato)
+{
+    // Aquí obtienes los pagos desde la base de datos
+    var pagos = db.ObtenerPagosPorContrato(idContrato);
+    
+    if (pagos == null || pagos.Count == 0)
+    {
+        return Json(new { success = false, message = "No se encontraron pagos." });
+    }
+    
+    return Json(new { success = true, pagos });
+}
 
 
 
