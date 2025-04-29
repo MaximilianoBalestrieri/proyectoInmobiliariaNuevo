@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 28-04-2025 a las 23:05:34
+-- Tiempo de generación: 29-04-2025 a las 19:53:33
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -223,6 +223,27 @@ INSERT INTO `propietario` (`idPropietario`, `dniPropietario`, `apellidoPropietar
 (8, '27344555', 'Balestrieri', 'Maria Celeste ', '354438887'),
 (9, '20922882', 'Farias', 'Analia', '1169761345');
 
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `usuarios`
+--
+
+CREATE TABLE `usuarios` (
+  `idUsuario` int(11) NOT NULL,
+  `Usuario` varchar(50) NOT NULL,
+  `contraseña` varchar(255) NOT NULL,
+  `rol` varchar(50) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `usuarios`
+--
+
+INSERT INTO `usuarios` (`idUsuario`, `Usuario`, `contraseña`, `rol`) VALUES
+(1, 'Admin', '123', 'Administrador'),
+(2, 'Maxi', '123', 'Usuario');
+
 --
 -- Índices para tablas volcadas
 --
@@ -266,6 +287,12 @@ ALTER TABLE `propietario`
   ADD PRIMARY KEY (`idPropietario`);
 
 --
+-- Indices de la tabla `usuarios`
+--
+ALTER TABLE `usuarios`
+  ADD PRIMARY KEY (`idUsuario`);
+
+--
 -- AUTO_INCREMENT de las tablas volcadas
 --
 
@@ -304,6 +331,12 @@ ALTER TABLE `pagos`
 --
 ALTER TABLE `propietario`
   MODIFY `idPropietario` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+
+--
+-- AUTO_INCREMENT de la tabla `usuarios`
+--
+ALTER TABLE `usuarios`
+  MODIFY `idUsuario` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- Restricciones para tablas volcadas

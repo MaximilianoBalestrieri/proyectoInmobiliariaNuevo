@@ -38,6 +38,41 @@ namespace proyectoInmobiliariaNuevo.Models
 
 
 
+public Usuario BuscarUsuario(string usuario, string contraseña)
+{
+    Usuario encontrado = null;
+    using (MySqlConnection conn = new MySqlConnection(_connectionString))
+    {
+        conn.Open();
+        
+        string sql = "SELECT * FROM Usuarios WHERE Usuario = @usuario AND contraseña = @contraseña";
+
+        using (MySqlCommand cmd = new MySqlCommand(sql, conn))
+        {
+            cmd.Parameters.AddWithValue("@usuario", usuario);
+            cmd.Parameters.AddWithValue("@contraseña", contraseña);
+
+            using (var reader = cmd.ExecuteReader())
+            {
+                if (reader.Read())
+                {
+                    encontrado = new Usuario
+                    {
+                         Id = reader.GetInt32(reader.GetOrdinal("idUsuario")),
+                         UsuarioNombre = reader.GetString(reader.GetOrdinal("Usuario")),
+                         Rol = reader.GetString(reader.GetOrdinal("rol"))
+                    };
+                }
+            }
+        }
+    }
+    return encontrado;
+}
+
+
+
+
+
         // Método para obtener todos los propietarios desde la base de datos
         public List<Propietario> ObtenerPropietarios()
         {
