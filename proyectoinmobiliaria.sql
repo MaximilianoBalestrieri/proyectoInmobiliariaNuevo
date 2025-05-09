@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 29-04-2025 a las 19:53:33
+-- Tiempo de generación: 09-05-2025 a las 03:40:05
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -54,7 +54,8 @@ INSERT INTO `contrato` (`idContrato`, `dniPropietario`, `nombrePropietario`, `dn
 (8, '20922882', 'Analia Farias', '33488655', 'Mariano Ríos', '2025-04-09', '2025-04-15', 100000, 23, 'Pública 0 Dto. 0 , La Paz', 0),
 (9, '27344555', 'Maria Celeste  Balestrieri', '33488655', 'Mariano Ríos', '2025-04-21', '2025-06-21', 244000, 25, 'Pje Bianchi 45 Dto. 0 , Villa Dolores', 0),
 (10, '20922882', 'Analia Farias', '22321456', 'Jorge Suarez', '2025-04-25', '2025-04-26', 120000, 23, 'Pública 0 Dto. 0 , La Paz', 1),
-(11, '20922882', 'Analia Farias', '27444236', 'Paula Fernanda Gonzalez', '2026-01-01', '2027-04-01', 255000, 9, 'Thorne 1439 Piso 10 Dto. 0 , Ituzaingo', 1);
+(11, '20922882', 'Analia Farias', '27444236', 'Paula Fernanda Gonzalez', '2026-01-01', '2027-04-01', 255000, 9, 'Thorne 1439 Piso 10 Dto. 0 , Ituzaingo', 1),
+(12, '33456788', 'Selene Nicole Farias', '27444236', 'Paula Fernanda Gonzalez', '2025-05-05', '2025-08-01', 258000, 4, 'Pte. Perón 4552 Piso 4 Dto. 0 , Capital Federal', 0);
 
 -- --------------------------------------------------------
 
@@ -90,12 +91,12 @@ CREATE TABLE `inmueble` (
 
 INSERT INTO `inmueble` (`idInmueble`, `dniPropietario`, `calle`, `nro`, `piso`, `dpto`, `localidad`, `provincia`, `uso`, `tipo`, `ambientes`, `pileta`, `parrilla`, `garage`, `latitud`, `longitud`, `precio`, `ImagenPortada`, `vigente`) VALUES
 (4, '33456788', 'Pte. Perón', 4552, 4, '0', 'Capital Federal', 'Buenos Aires', 'Residencial', 'Casa', 2, '1', '1', '1', 15, 13, 38000, '/imagenes/inmuebles/casa1_79ea2193-86e5-445e-b706-48eda8870f16.jpg', 1),
-(6, '10884239', 'Rivadavia', 10200, 10, 'A', 'Merlo', 'San Luis', 'Residencial', 'Casa', 2, '0', '1', '1', 25, 44, 98000, NULL, 1),
+(6, '10884239', 'Rivadavia', 10200, 10, 'A', 'Merlo', 'San Luis', 'Residencial', 'Casa', 2, '0', '1', '1', 25, 44, 98000, '/imagenes/inmuebles/casa22_cc7ae036-1c53-4706-9c13-768fa1770979.webp', 1),
 (8, '25748654', 'Republica del Líbano', 450, 1, 'A', 'San Martin', 'Buenos Aires', 'Residencial', 'Casa', 4, '0', '0', '1', 35, 44, 105000, NULL, 0),
 (9, '20922882', 'Thorne', 1439, 10, '0', 'Ituzaingo', 'Buenos Aires', 'Residencial', 'Casa', 3, '1', '1', '1', 33, 13, 85000, '/imagenes/inmuebles/casa22_18650972-8a05-4686-bf09-8427c78e9269.webp', 1),
 (16, '20922882', 'Europa', 321, 2, 'A', 'Ituzaingó', 'Buenos Aires', 'Comercial', 'Casa', 3, '1', '0', '1', 35, 32, 89000, NULL, 0),
 (18, '20922882', 'Chacabuco', 648, 0, NULL, 'Buenos Aires', 'Buenos Aires', 'Residencial', 'Casa', 2, '0', '0', '0', 12, 321, 33000, NULL, 0),
-(21, '25748654', 'Perú', 456, 6, 'A', 'Merlo', 'San Luis', '5', '5', 2, '0', '0', '0', 5, 511, 33000, NULL, 0),
+(21, '25748654', 'Perú', 456, 6, 'A', 'Merlo', 'San Luis', '5', '5', 2, '0', '0', '0', 5, 511, 33000, '/imagenes/inmuebles/casa22_4ab8d66a-e92e-449f-8a0f-4d53294b01bb.webp', 0),
 (22, '25748654', 'Belgrano', 12, 0, NULL, 'Villa Dolores', 'Córdoba', 'Comercial', 'Casa', 6, '1', '1', '0', 25, 125, 74000, NULL, 1),
 (23, '20922882', 'Pública', 0, 0, '0', 'La Paz', 'Córdoba', 'Residencial', 'Casa', 4, '1', '1', '1', 123, 25, 100000, NULL, 1),
 (24, '22666454', 'Av. España', 1250, 1, 'a', 'Villa Dolores', 'Córdoba', 'Residencial', 'Casa', 3, '1', '1', '1', 25, 125, 88000, NULL, 1),
@@ -120,20 +121,15 @@ CREATE TABLE `inmueblefotocarrusel` (
 --
 
 INSERT INTO `inmueblefotocarrusel` (`Id`, `IdInmueble`, `RutaFoto`) VALUES
-(15, 22, NULL),
-(17, 6, NULL),
-(20, 21, NULL),
-(21, 21, NULL),
-(23, 6, NULL),
-(25, 23, NULL),
-(26, 8, NULL),
-(28, 8, NULL),
-(29, 8, NULL),
-(31, 24, NULL),
-(33, 25, NULL),
-(34, 25, NULL),
 (35, 4, '/Imagenes/Carrusel/casa4Interior1_2efe818c-60ef-4535-bb6c-815198027170.jpg'),
-(36, 4, '/Imagenes/Carrusel/casa4Interior2_31e951b9-947a-4fb2-a020-7b35dc15fa61.jpg');
+(36, 4, '/Imagenes/Carrusel/casa4Interior2_31e951b9-947a-4fb2-a020-7b35dc15fa61.jpg'),
+(37, 26, '/Imagenes/Carrusel/casa1Interior2_ff581d6b-bcae-457c-a25d-ad16ec22578c.jpg'),
+(38, 9, '/Imagenes/Carrusel/casa1Interior2_8feba3ea-c2b0-49d8-885f-0263655b4cbe.jpg'),
+(39, 6, '/Imagenes/Carrusel/casa3Interior2_9b305656-682d-4c89-ad5f-f5b1b155acf7.jpg'),
+(40, 21, '/Imagenes/Carrusel/casa2Interior2_adbfeb80-c6a3-4f3f-a978-b7b14961df00.jpg'),
+(41, 21, '/Imagenes/Carrusel/casa3Interior1_2507877f-e1a5-4159-9f70-bfbb362083ec.jpg'),
+(42, 21, '/Imagenes/Carrusel/casa3Interior2_3027a55c-aa50-40a2-bb27-5fddc3b874b8.jpg'),
+(43, 6, '/Imagenes/Carrusel/casa1Interior2_e968e7bb-0f97-44ef-abb3-1d491520b55d.jpg');
 
 -- --------------------------------------------------------
 
@@ -171,31 +167,36 @@ CREATE TABLE `pagos` (
   `fechaPago` date NOT NULL,
   `importe` decimal(15,0) NOT NULL,
   `detalle` varchar(255) NOT NULL,
-  `estado` varchar(50) DEFAULT NULL
+  `estado` varchar(50) DEFAULT NULL,
+  `pagadoPor` varchar(50) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Volcado de datos para la tabla `pagos`
 --
 
-INSERT INTO `pagos` (`idPago`, `idContrato`, `nroPago`, `fechaPago`, `importe`, `detalle`, `estado`) VALUES
-(2, 7, 1, '2025-05-06', 20000, 'mes de mayo', 'Pagado'),
-(3, 1, 2, '2025-04-15', 120000, 'mes de abril 2025.', 'Pagado'),
-(7, 1, 3, '2025-04-29', 11000, 'mes de mayo 2025', 'Anulado'),
-(8, 5, 1, '2025-04-19', 150000, 'Abril de 2025', 'Pagado'),
-(9, 5, 2, '2025-04-25', 150500, 'mes de mayo 2025', 'Anulado'),
-(10, 7, 2, '2025-04-22', 125000, 'Abono por un mes.', 'Pagado'),
-(11, 1, 1, '2025-03-01', 120000, 'Mes de marzo 2025..', 'Pagado'),
-(12, 1, 4, '2025-05-20', 120000, 'mes de junio 2025.', 'Anulado'),
-(13, 7, 3, '2025-06-01', 125000, 'Mes de junio de 2025', 'Pagado'),
-(15, 1, 5, '2025-04-21', 1200000, 'Mes de abril', 'Pagado'),
-(16, 1, 6, '2025-04-28', 12444, 'Abono por un mes', 'Pagado'),
-(17, 5, 2, '2025-05-01', 150000, 'Mayo 2025', 'Pagado'),
-(86, 7, 4, '2025-07-28', 125500, 'julio.', 'Pagado'),
-(87, 11, 1, '2025-04-27', 255000, 'mes de abril 2025', 'Pagado'),
-(88, 11, 2, '2025-05-27', 255000, 'mes de mayo 2025', 'Pagado'),
-(89, 10, 1, '2025-04-28', 120000, 'Abono por un mes', 'Pagado'),
-(90, 4, 1, '2025-04-28', 110000, 'mes de junio de 2025', 'Pagado');
+INSERT INTO `pagos` (`idPago`, `idContrato`, `nroPago`, `fechaPago`, `importe`, `detalle`, `estado`, `pagadoPor`) VALUES
+(2, 7, 1, '2025-05-06', 20000, 'mes de mayo', 'Pagado', ''),
+(3, 1, 2, '2025-04-15', 120000, 'mes de abril 2025.', 'Pagado', ''),
+(7, 1, 3, '2025-04-29', 11000, 'mes de mayo 2025', 'Anulado', ''),
+(8, 5, 1, '2025-04-19', 150000, 'Abril de 2025', 'Pagado', ''),
+(9, 5, 2, '2025-04-25', 150500, 'mes de mayo 2025', 'Anulado', ''),
+(10, 7, 2, '2025-04-22', 125000, 'Abono por un mes.', 'Pagado', ''),
+(11, 1, 1, '2025-03-01', 120000, 'Mes de marzo 2025..', 'Pagado', ''),
+(12, 1, 4, '2025-05-20', 120000, 'mes de junio 2025.', 'Anulado', ''),
+(13, 7, 3, '2025-06-01', 125000, 'Mes de junio de 2025', 'Pagado', ''),
+(15, 1, 5, '2025-04-21', 1200000, 'Mes de abril', 'Pagado', ''),
+(16, 1, 6, '2025-04-28', 12444, 'Abono por un mes', 'Pagado', ''),
+(17, 5, 2, '2025-05-01', 150000, 'Mayo 2025', 'Pagado', ''),
+(86, 7, 4, '2025-07-28', 125500, 'julio.', 'Pagado', ''),
+(87, 11, 1, '2025-04-27', 255000, 'mes de abril 2025', 'Pagado', ''),
+(88, 11, 2, '2025-05-27', 255000, 'mes de mayo 2025', 'Pagado', ''),
+(89, 10, 1, '2025-04-28', 120000, 'Abono por un mes', 'Pagado', 'Mbalestrieri'),
+(90, 4, 1, '2025-04-28', 110000, 'mes de abril 2025', 'Pagado', 'Mbalestrieri'),
+(91, 6, 1, '2025-05-01', 120000, 'Mayo 2025', 'Pagado', 'Mbalestrieri'),
+(96, 4, 2, '2025-05-01', 115000, 'mes de mayo 2025', 'Anulado', 'Jose Garcia Hernandez'),
+(98, 4, 3, '2025-05-08', 117000, 'mes del año', 'Anulado', 'Jose Garcia Hernandez'),
+(99, 4, 4, '2025-05-08', 117500, 'mes de abono.', 'Anulado', 'Jose Garcia Hernandez');
 
 -- --------------------------------------------------------
 
@@ -233,16 +234,21 @@ CREATE TABLE `usuarios` (
   `idUsuario` int(11) NOT NULL,
   `Usuario` varchar(50) NOT NULL,
   `contraseña` varchar(255) NOT NULL,
-  `rol` varchar(50) NOT NULL
+  `rol` varchar(50) NOT NULL,
+  `nombreyApellido` varchar(50) NOT NULL,
+  `FotoPerfil` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Volcado de datos para la tabla `usuarios`
 --
 
-INSERT INTO `usuarios` (`idUsuario`, `Usuario`, `contraseña`, `rol`) VALUES
-(1, 'Admin', '123', 'Administrador'),
-(2, 'Maxi', '123', 'Usuario');
+INSERT INTO `usuarios` (`idUsuario`, `Usuario`, `contraseña`, `rol`, `nombreyApellido`, `FotoPerfil`) VALUES
+(1, 'Admin', '123', 'Administrador', 'Jose Garcia Hernandez', '/imagenes/usuarios/e601a709-ae06-4778-912a-38d08d9d3ce3.jpg'),
+(2, 'Mbalestrieri', '123', 'Usuario', 'Maximiliano Balestrieri', '/imagenes/usuarios/f3890a2e-ceb5-45b1-b616-ff38e740ec11.PNG'),
+(3, 'Selene', '123', 'Administrador', 'Selene Balestrieri', '/imagenes/usuarios/34c1d0e8-6eab-4331-9549-af5b5adc751c.jpg'),
+(4, 'Solcy', '123', 'Usuario', 'Sol Anabela Balestrieri', '/imagenes/usuarios/8540677f-2554-4148-aef8-2625ebcf4d17.jpeg'),
+(6, 'ADFarias', '123', 'Usuario', 'Analia Dina Farias', '/imagenes/usuarios/300ab345-0ba3-46a0-b17d-16089bc5609e.jpg');
 
 --
 -- Índices para tablas volcadas
@@ -300,7 +306,7 @@ ALTER TABLE `usuarios`
 -- AUTO_INCREMENT de la tabla `contrato`
 --
 ALTER TABLE `contrato`
-  MODIFY `idContrato` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+  MODIFY `idContrato` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
 -- AUTO_INCREMENT de la tabla `inmueble`
@@ -312,7 +318,7 @@ ALTER TABLE `inmueble`
 -- AUTO_INCREMENT de la tabla `inmueblefotocarrusel`
 --
 ALTER TABLE `inmueblefotocarrusel`
-  MODIFY `Id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=37;
+  MODIFY `Id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=44;
 
 --
 -- AUTO_INCREMENT de la tabla `inquilino`
@@ -324,7 +330,7 @@ ALTER TABLE `inquilino`
 -- AUTO_INCREMENT de la tabla `pagos`
 --
 ALTER TABLE `pagos`
-  MODIFY `idPago` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=91;
+  MODIFY `idPago` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=102;
 
 --
 -- AUTO_INCREMENT de la tabla `propietario`
@@ -336,7 +342,7 @@ ALTER TABLE `propietario`
 -- AUTO_INCREMENT de la tabla `usuarios`
 --
 ALTER TABLE `usuarios`
-  MODIFY `idUsuario` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `idUsuario` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- Restricciones para tablas volcadas
