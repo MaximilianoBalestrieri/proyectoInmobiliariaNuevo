@@ -20,7 +20,7 @@
             <ul>
                 @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
                 {
-                    <li>@error.ErrorMessage</li>
+                  //  <li>@error.ErrorMessage</li>
                 }
             </ul>
         </div>
@@ -252,14 +252,14 @@
                                     const row = document.createElement("tr");
                                     const direccionEscapada = d.direccion.replace(/'/g, "\\'");
                                     row.innerHTML = `
-                                                                                            <td>${d.id}</td>
-                                                                                            <td>${d.direccion}</td>
-                                                                                            <td>
-                                                                                                <button class="btn btn-success" onclick="seleccionarDireccion(${d.id}, '${direccionEscapada}')">
-                                                                                                    Seleccionar
-                                                                                                </button>
-                                                                                            </td>
-                                                                                        `;
+                                                     <td>${d.id}</td>
+                                                     <td>${d.direccion}</td>
+                                                     <td>
+                                                     <button class="btn btn-success" onclick="seleccionarDireccion(${d.id}, '${direccionEscapada}')">
+                                                     Seleccionar
+                                                     </button>
+                                                     </td>
+                                                      `;
                                     lista.appendChild(row);
                                 });
                             })
@@ -332,15 +332,15 @@
                                     data.forEach(p => {
                                         const row = document.createElement("tr");
                                         row.innerHTML = `
-                                                                                                   <td>${p.DniPropietario}</td>
-                                                                                                   <td>${p.ApellidoPropietario}</td>
-                                                                                                   <td>${p.NombrePropietario}</td>
-                                                                                                   <td>
-                                                                                                      <button class="btn btn-success" onclick="seleccionarPropietario('${p.DniPropietario}', '${p.NombrePropietario}', '${p.ApellidoPropietario}')">
-                                                                                                              Seleccionar
-                                                                                                      </button>
-                                                                                                   </td>
-                                                                                                          `;
+                                                           <td>${p.dniPropietario}</td>
+                                                           <td>${p.apellidoPropietario}</td>
+                                                           <td>${p.nombrePropietario}</td>
+                                                           <td>
+                                                             <button class="btn btn-success" onclick="seleccionarPropietario('${p.dniPropietario}', '${p.nombrePropietario}', '${p.apellidoPropietario}')">
+                                                              Seleccionar
+                                                             </button>
+                                                            </td>
+                                                            `;
                                         lista.appendChild(row);
                                     });
                                 })
@@ -390,11 +390,11 @@
                                     data.forEach(p => {
                                         const row = document.createElement("tr");
                                         row.innerHTML = `
-                                                                                                            <td>${p.Dni}</td>
-                                                                                                            <td>${p.Apellido}</td>
-                                                                                                            <td>${p.Nombre}</td>
+                                                                                                            <td>${p.dni}</td>
+                                                                                                            <td>${p.apellido}</td>
+                                                                                                            <td>${p.nombre}</td>
                                                                                                             <td>
-                                                                                                                <button class="btn btn-success" onclick="seleccionarInquilino('${p.Dni}', '${p.Nombre}', '${p.Apellido}')">
+                                                                                                                <button class="btn btn-success" onclick="seleccionarInquilino('${p.dni}', '${p.nombre}', '${p.apellido}')">
                                                                                                                     Seleccionar
                                                                                                                 </button>
                                                                                                             </td>

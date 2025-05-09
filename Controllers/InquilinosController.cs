@@ -3,6 +3,7 @@ using proyectoInmobiliariaNuevo.Models;
 using System.Collections.Generic;
 using System.Linq;
 using System;
+using Microsoft.AspNetCore.Http;
 
 namespace proyectoInmobiliariaNuevo.Controllers
 {
@@ -20,6 +21,8 @@ namespace proyectoInmobiliariaNuevo.Controllers
         // Acción que obtiene los inquilinos y los pasa a la vista
         public IActionResult Index()
         {
+            var rol = HttpContext.Session.GetString("Rol");
+            ViewBag.Rol = rol ?? "Usuario";
             List<Inquilino> inquilinos = _db.ObtenerInquilinos();  // Obtén los inquilinos de la base de datos
 
             // Depuración: Verifica los datos

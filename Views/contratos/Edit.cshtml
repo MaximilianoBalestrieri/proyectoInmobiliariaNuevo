@@ -1,8 +1,11 @@
 ﻿@model proyectoInmobiliariaNuevo.Models.Contrato
+@using System.Text.Json
 
 
  @{
     ViewBag.Title = "Editar Contrato";
+     string pagado = ViewBag.Usuario as string;
+     Layout = "~/Views/Shared/_Layout.cshtml";
  }
 
  <head>
@@ -152,7 +155,10 @@
     <div class="row align-items-center mb-3">
         <div class="col-auto">
             <h2>Editar Contrato</h2>
+             <p>Usuario Logueado: @ViewBag.NombreyApellido</p> 
         </div>
+                   
+
         <div class="col-auto">
             <button type="button" class="btn btn-primary btn-sm btn-renovar"
                     onclick="abrirModalRenovacion(this)"
@@ -272,7 +278,10 @@
         <!-- Botones Guardar y Cancelar del Editar  -->
         <div class="d-flex justify-content-end mt-4" style="margin-right: 800px;">
             <input type="submit" value="Guardar Cambios" class="btn btn-success me-2" />
-            @Html.ActionLink("Cancelar", "Index", null, new { @class = "btn btn-secondary" })
+            <button class="btn btn-secondary" onclick="window.location.href='@Url.Action("Index")'">Cancelar</button>
+        <!-- 
+            @Html.ActionLink("Cancelar", "Index", null, new { @class = "btn btn-secondary" }) 
+              -->
         </div>
     </div>
 
@@ -388,43 +397,51 @@
             <!-- Detalles del pago -->
             <div id="detalle-pago"></div>
 
-            <!-- Formulario de pago -->
-            <form id="formularioPagos" onsubmit="crearPago(event)" novalidate>
-                <input type="hidden" id="idContrato" name="idContrato" value="@Model.IdContrato" />
+          <!-- Formulario de pago -->
+<form id="formularioPagos" onsubmit="crearPago(event)" novalidate>
+    <input type="hidden" id="idContrato" name="idContrato" value="@Model.IdContrato" />
 
-                <div class="d-flex gap-2 mb-2">
-                    <div>
-                        <label for="nuevoNroPago" class="form-label mb-1" style="font-size: 0.75rem;">N° Pago</label>
-                        <input type="number" id="nuevoNroPago" name="nuevoNroPago" class="form-control" style="width: 120px; font-size: 0.75rem;" required>
-                    </div>
-                    <div>
-                        <label for="nuevoFecha" class="form-label mb-1" style="font-size: 0.75rem;">Fecha</label>
-                        <input type="date" id="nuevoFecha" name="nuevoFecha" class="form-control" style="width: 120px; font-size: 0.75rem;" required>
-                    </div>
-                    <div>
-                        <label for="nuevoImporte" class="form-label mb-1" style="font-size: 0.75rem;">Importe</label>
-                        <input type="number" step="0.01" id="nuevoImporte" name="nuevoImporte" class="form-control" style="width: 120px; font-size: 0.75rem;" required>
-                    </div>
-                    <div>
-                        <label for="estadoPago" class="form-label mb-1" style="font-size: 0.75rem;">Estado</label>
-                        <select id="estadoPago" name="estadoPago" class="form-control" style="width: 80px; font-size: 0.75rem;">
-                            <option value="Pagado">Pagado</option>
-                            <option value="Pendiente">Pendiente</option>
-                            <option value="Anulado">Anulado</option>
-                        </select>
-                    </div>
-                </div>
+   <!--------------  Mostrar al usuario logueado --------->
+    <div class="mb-3 d-none">
+    <label for="pagadoPor" class="form-label mb-1" style="font-size: 0.75rem;">Pagado por:</label>
+    <input type="text" id="pagadoPor" name="pagadoPor" class="form-control" style="font-size: 0.75rem;" value="@ViewBag.NombreyApellido" readonly />
+</div>
 
-                <div class="mb-3">
-                    <label for="nuevoDetalle" class="form-label mb-1" style="font-size: 0.75rem;">Detalle</label>
-                    <div class="d-flex" style="gap: 8px;">
-                        <input type="text" id="nuevoDetalle" name="nuevoDetalle" class="form-control" style="font-size: 0.75rem;">
-                        <button type="submit" class="btn btn-success btn-sm">Agregar</button>
-                    </div>
-                </div>
-            </form>
 
-            <div id="contenedorTabla">
+    <div class="d-flex gap-2 mb-2">
+        <div>
+            <label for="nuevoNroPago" class="form-label mb-1" style="font-size: 0.75rem;">N° Pago</label>
+            <input type="number" id="nuevoNroPago" name="nuevoNroPago" class="form-control" style="width: 120px; font-size: 0.75rem;" required>
+        </div>
+        <div>
+            <label for="nuevoFecha" class="form-label mb-1" style="font-size: 0.75rem;">Fecha</label>
+            <input type="date" id="nuevoFecha" name="nuevoFecha" class="form-control" style="width: 120px; font-size: 0.75rem;" required>
+        </div>
+        <div>
+            <label for="nuevoImporte" class="form-label mb-1" style="font-size: 0.75rem;">Importe</label>
+            <input type="number" step="0.01" id="nuevoImporte" name="nuevoImporte" class="form-control" style="width: 120px; font-size: 0.75rem;" required>
+        </div>
+        <div>
+            <label for="estadoPago" class="form-label mb-1" style="font-size: 0.75rem;">Estado</label>
+            <select id="estadoPago" name="estadoPago" class="form-control" style="width: 80px; font-size: 0.75rem;">
+                <option value="Pagado">Pagado</option>
+                <option value="Pendiente">Pendiente</option>
+                <option value="Anulado">Anulado</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="mb-3">
+        <label for="nuevoDetalle" class="form-label mb-1" style="font-size: 0.75rem;">Detalle</label>
+        <div class="d-flex" style="gap: 8px;">
+            <input type="text" id="nuevoDetalle" name="nuevoDetalle" class="form-control" style="font-size: 0.75rem;">
+            <button type="submit" class="btn btn-success btn-sm">Agregar</button>
+        </div>
+    </div>
+</form>
+
+<!-- EstA ES la TABLA DE LOS PAGOS  -->
+   <div id="contenedorTabla">
     @if (ViewBag.Pagos != null && ((List<proyectoInmobiliariaNuevo.Models.Pago>)ViewBag.Pagos).Count > 0)
     {
        <table class="table table-striped mt-4">
@@ -438,23 +455,29 @@
             <th>Acciones</th>
         </tr>
     </thead>
-    <tbody id="tablaPagos">
-        @foreach (var pago in (List<proyectoInmobiliariaNuevo.Models.Pago>)ViewBag.Pagos)
-        {
-            bool esAnulado = pago.Estado == "Anulado";
-            <tr id="fila-pago-@pago.IdPago">
-                <td class="text-center">@pago.NroPago</td>
-                <td>@pago.FechaPago.ToString("dd-MM-yyyy")</td>
-                <td class="text-end">@pago.Importe</td>
-                <td>@pago.Detalle</td>
-                <td class="estado">@pago.Estado</td>
-                <td>
-                    <button class="btn btn-sm btn-primary me-1" onclick="editarPago(@pago.IdPago)" data-id="@pago.IdPago" @(esAnulado ? "disabled" : "")>Editar</button>
-                    <button class="btn btn-sm btn-danger eliminar-btn" onclick="eliminarPago(@pago.IdPago)" @(esAnulado ? "disabled" : "")>Eliminar</button>
-                </td>
-            </tr>
-        }
-    </tbody>
+ <tbody id="tablaPagos">
+    @foreach (var pago in (List<proyectoInmobiliariaNuevo.Models.Pago>)ViewBag.Pagos)
+    {
+        bool esAnulado = pago.Estado == "Anulado";
+        <tr id="fila-pago-@pago.IdPago">
+            <td class="text-center">@pago.NroPago</td>
+            <td>@pago.FechaPago.ToString("dd-MM-yyyy")</td>
+            <td class="text-end">@pago.Importe</td>
+            <td>@pago.Detalle</td>
+            <td class="estado">@pago.Estado</td>
+           
+            <td>
+                <button class="btn btn-sm btn-primary me-1" onclick="editarPago(@pago.IdPago)" data-id="@pago.IdPago" @(esAnulado ? "disabled" : "")>Editar</button>
+                <button class="btn btn-sm btn-danger eliminar-btn" onclick="eliminarPago(@pago.IdPago)" @(esAnulado ? "disabled" : "")>Eliminar</button>
+                <button class="btn btn-sm btn-info ver-detalles"
+        onclick="verPago(@pago.IdPago, '@pago.Estado', @pago.Importe, '@pago.FechaPago.ToString("yyyy-MM-dd")', '@pago.PagadoPor'); actualizarTablaPagos();">
+    Ver Detalle
+</button>
+            </td>
+        </tr>
+    }
+</tbody>
+
 </table>
     }
     else
@@ -468,9 +491,74 @@
     </div> <!-- cierre de card -->
 </div> <!-- cierre de divPagos -->
 
-<!------------------------------------------- Script  ------------------------------------------------> 
 
+<!-- Modal de detalle de pagos-->
+<div class="modal fade" id="modalDetalles" tabindex="-1" aria-labelledby="modalDetallesLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalDetallesLabel">Detalles del Pago</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="modalBody">
+                <!-- Aquí se llenará el contenido dinámicamente con JS -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!------------------------------------------- Script  ------------------------------------------------> 
+ 
  <script>
+
+
+
+
+
+function verPago(id, estado, importe, fechaPago, pagadoPor) {
+    const modalBody = document.getElementById('modalBody');
+
+    // Convertir la fecha al formato dd/mm/yyyy
+    const fecha = new Date(fechaPago);
+    const fechaFormateada = fecha.toLocaleDateString('es-AR', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric'
+    });
+
+    // Formatear el importe con dos decimales y símbolo de pesos
+    const importeFormateado = `$${importe.toFixed(2)}`;
+
+    // Generar contenido dinámico dependiendo del estado
+    const contenido = `
+        <div class="mb-2">
+            <strong>${estado === "Pagado" ? "Pago cobrado por" : "Pago anulado por"}:</strong>
+            <span>${pagadoPor}</span>
+        </div>
+        <div class="mb-2">
+            <strong>Fecha de Pago:</strong>
+            <span>${fechaFormateada}</span>
+        </div>
+        <div class="mb-2">
+            <strong>Importe:</strong>
+            <span class="text-success">${importeFormateado}</span>
+        </div>
+    `;
+
+    modalBody.innerHTML = contenido;
+
+    // Mostrar el modal
+    const modal = new bootstrap.Modal(document.getElementById('modalDetalles'));
+    modal.show();
+}
+
+
+
+
 let ordenAscendente = true;  // Empezamos en orden ascendente
 
 function ordenarPor(columna) {
@@ -674,28 +762,35 @@ async function cargarPagos(idContrato) {
         pagos.forEach(pago => {
             const esAnulado = pago.estado === 'Anulado'; // Suponiendo que 'Anulado' es el estado para deshabilitar botones
 
-            const fila = document.createElement('tr');
-            fila.innerHTML = `
-                <td>${pago.nroPago}</td>
-                <td>${new Date(pago.fechaPago).toLocaleDateString()}</td>
-                <td>$${pago.importe.toFixed(2)}</td>
-                <td>${pago.detalle || ''}</td>
-                <td>${pago.estado}</td>
-                <td>
-                    <button class="btn btn-sm btn-primary me-1" 
-                        onclick="editarPago(${pago.nroPago})"
-                        data-id="${pago.nroPago}"
-                        ${esAnulado ? "disabled" : ""}>
-                        Editar
-                    </button>
-                    <button class="btn btn-sm btn-danger eliminar-btn"
-                        onclick="eliminarPago(${pago.nroPago})"
-                        ${esAnulado ? "disabled" : ""}>
-                        Eliminar
-                    </button>
-                </td>
-            `;
-            tablaPagos.appendChild(fila);
+  const fila = document.createElement('tr');
+fila.id = `fila-pago-${pago.idPago}`;
+fila.innerHTML = `
+    <td class="text-center">${pago.nroPago}</td>
+    <td>${new Date(pago.fechaPago).toLocaleDateString()}</td>
+    <td class="text-end">$${pago.importe.toFixed(2)}</td>
+    <td>${pago.detalle || ''}</td>
+    <td class="estado">${pago.estado}</td>
+    <td>
+        <button class="btn btn-sm btn-primary me-1" 
+            onclick="editarPago(${pago.idPago})"
+            data-id="${pago.idPago}"
+            ${esAnulado ? "disabled" : ""}>
+            Editar
+        </button>
+        <button class="btn btn-sm btn-danger eliminar-btn"
+            onclick="eliminarPago(${pago.idPago})"
+            ${esAnulado ? "disabled" : ""}>
+            Eliminar
+        </button>
+        <button class="btn btn-sm btn-info"
+            onclick="verPago(${pago.idPago}, '${pago.estado}', ${pago.importe}, '${pago.fechaPago}', '${pago.pagadoPor}')">
+            Ver Detalle
+        </button>
+    </td>
+`;
+
+tablaPagos.appendChild(fila);
+
         });
     } catch (error) {
         console.error("Error al cargar pagos:", error);
@@ -731,7 +826,8 @@ async function crearPago(event) {
         FechaPago: document.getElementById("nuevoFecha").value,
         Importe: document.getElementById("nuevoImporte").value,
         Detalle: document.getElementById("nuevoDetalle").value,
-        Estado: document.getElementById("estadoPago").value
+        Estado: document.getElementById("estadoPago").value,
+        pagadoPor: document.getElementById("pagadoPor").value
     };
 
     console.log("Voy a enviarlos:", nuevoPago);
@@ -773,42 +869,64 @@ async function crearPago(event) {
     }
 }
 
+//var nombreyApellido = '@ViewBag.NombreyApellido';
+const nombreyApellido = '@ViewBag.NombreyApellido';
 
-function eliminarPago(idPago) {
+//------------------------------------------------------------------------------------
+//-------------------------------------   ELIMINAR PAGO ------------------------------
+//------------------------------------------------------------------------------------
+   function eliminarPago(idPago) {
+    console.log("ID que se envía:", idPago);
+    console.log("Usuario que se envía:", nombreyApellido);
+ console.log("Anulando el pago:", idPago, "- Pagado por:", nombreyApellido);
+
     if (confirm("¿Estás seguro que querés anular este pago?")) {
-        fetch('@Url.Action("AnularPago", "Pagos")', {
+        fetch('/Contratos/AnularPago', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ idPago: idPago }),
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            
+            body: JSON.stringify({
+                IdPago: idPago,
+                PagadoPor: nombreyApellido
+            })
         })
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) {
+                throw new Error("No se encontró la ruta");
+            }
+            return response.json();
+        })
         .then(data => {
             if (data.success) {
                 const fila = document.querySelector(`#fila-pago-${idPago}`);
                 if (fila) {
-                    const celdas = fila.getElementsByTagName("td");
-                    celdas[4].innerText = "Anulado";
-
-                    fila.classList.add("bg-light");
-
-                    const btns = fila.querySelectorAll("button");
-                    btns.forEach(btn => {
+                    const botones = fila.querySelectorAll("button:not(.ver-detalles)");
+                    botones.forEach(btn => {
                         btn.disabled = true;
                         btn.classList.add("btn-secondary");
                         btn.classList.remove("btn-primary", "btn-danger");
                     });
+
+                    const estadoCelda = fila.querySelector(".estado");
+                    if (estadoCelda) estadoCelda.innerText = "Anulado";
+                    location.reload();
                 }
-                alert("Pago anulado exitosamente");
+
+                alert("Pago anulado exitosamente ");
             } else {
-                alert("No se pudo anular: " + data.message);
+                alert("No se pudo anular: " + (data.message ?? 'Error desconocido'));
             }
         })
         .catch(error => {
             console.error("Error:", error);
-            alert("Ups, algo falló!!");
+            alert("Ups, hubo un error ");
         });
     }
 }
+
+//--------------------------------------------------------------------------------
 
 function editarPago(idPago) {
     const boton = document.querySelector(`button[data-id="${idPago}"]`);
@@ -858,6 +976,65 @@ function guardarPago(idPago) {
 }
 
 
+function actualizarPago(idPago, nuevoEstado, nuevoPagadoPor) {
+    console.log("Actualizando el pago:", idPago);
+
+    // Enviar solicitud al servidor para actualizar el pago
+    fetch(`/Contratos/ActualizarPago`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            IdPago: idPago,
+            Estado: nuevoEstado,
+            PagadoPor: nuevoPagadoPor
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            console.log("Pago actualizado correctamente");
+
+            // Actualizar la fila de la tabla con los nuevos valores
+            const fila = document.querySelector(`#fila-pago-${idPago}`);
+            if (fila) {
+                const estadoCelda = fila.querySelector(".estado");
+                const pagadoPorCelda = fila.querySelector(".pagado-por");
+
+                if (estadoCelda) estadoCelda.innerText = nuevoEstado;
+                if (pagadoPorCelda) pagadoPorCelda.innerText = nuevoPagadoPor;
+
+                // Opcional: Inhabilitar los botones de editar y eliminar si es necesario
+                fila.querySelector(".editar-btn").disabled = true;
+                fila.querySelector(".eliminar-btn").disabled = true;
+
+                // Aquí llamamos a la función para actualizar el modal
+                actualizarModalDetalles(idPago, nuevoEstado, nuevoPagadoPor);
+            }
+
+            alert("Pago actualizado exitosamente");
+        } else {
+            alert("Error al actualizar el pago: " + data.message);
+        }
+    })
+    .catch(error => {
+        console.error("Error al actualizar el pago:", error);
+        alert("Hubo un problema al actualizar el pago.");
+    });
+}
+
+
+function actualizarModalDetalles(idPago, nuevoEstado, nuevoPagadoPor) {
+    // Si ya tienes un modal abierto, actualiza los valores de los campos correspondientes
+    const modalEstado = document.querySelector("#modalEstado");
+    const modalPagadoPor = document.querySelector("#modalPagadoPor");
+
+    if (modalEstado) modalEstado.innerText = nuevoEstado;
+    if (modalPagadoPor) modalPagadoPor.innerText = nuevoPagadoPor;
+
+    // Si tienes otros campos en el modal, actualízalos de manera similar
+}
 
 
 // ORDENAMIENTO DE TABLA

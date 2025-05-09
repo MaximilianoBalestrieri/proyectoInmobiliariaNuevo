@@ -1,4 +1,6 @@
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using MySql.Data.MySqlClient;
 using proyectoInmobiliariaNuevo.Models;
 using System;
 using System.Linq;
@@ -9,7 +11,6 @@ namespace proyectoInmobiliariaNuevo.Controllers
     //-----------------PAGOS CONTROLLER -----------------
     public class PagosController : Controller
     {
-       
         private readonly ConexionDB _db;
 
         // Constructor con inyección de dependencias
@@ -22,28 +23,20 @@ namespace proyectoInmobiliariaNuevo.Controllers
         public IActionResult Index(int idContrato)
         {
             var pagos = _db.ObtenerPagosPorContrato(idContrato)
-                           .OrderBy(p => p.NroPago) // ordenamos por número de pago
+                           .OrderBy(p => p.NroPago) // Ordenamos por número de pago
                            .ToList();
 
             ViewBag.idContrato = idContrato; // Asegúrate de que idContrato tenga un valor válido
-    return View();
+            
+            return View(pagos);  // Pasamos la lista de pagos a la vista
         }
 
         // Acción para anular un pago
-        [HttpPost]
-        public JsonResult AnularPago(int idPago)
-        {
-            try
-            {
-                _db.AnularPago(idPago);  // Método en tu clase ConexionDB
-                return Json(new { success = true });
-            }
-            catch (Exception ex)
-            {
-                return Json(new { success = false, message = ex.Message });
-            }
-        }
+       [HttpPost]
+  
 
+
+    
         // Acción para actualizar el detalle de un pago
         
         [HttpPost("ActualizarDetalle")]
@@ -63,7 +56,7 @@ public JsonResult ActualizarDetalle([FromBody] PagoUpdateRequest request)
 
 
 
-        [HttpGet("GetByContrato/{idContrato}")]
+[HttpGet("GetByContrato/{idContrato}")]
 public IActionResult GetByContrato(int idContrato)
 {
     var pagos = _db.ObtenerPagosPorContrato(idContrato);

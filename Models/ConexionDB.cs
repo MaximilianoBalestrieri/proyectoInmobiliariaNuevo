@@ -37,6 +37,186 @@ namespace proyectoInmobiliariaNuevo.Models
 }
 
 
+//---- USUARIOS ------
+
+public Usuario ObtenerUsuarioPorNombre(string nombreUsuario)
+{
+    Usuario u = null;
+
+    using (var connection = new MySqlConnection(_connectionString))
+    {
+        connection.Open();
+        var query = "SELECT * FROM Usuarios WHERE Usuario = @nombre";
+        using (var command = new MySqlCommand(query, connection))
+        {
+            
+            command.Parameters.AddWithValue("@nombre", nombreUsuario);
+
+            using (var reader = command.ExecuteReader())
+            {
+                if (reader.Read())
+                {
+                    u = new Usuario
+                    {
+                        IdUsuario = reader.GetInt32("IdUsuario"),
+                        UsuarioNombre = reader.GetString("Usuario"),
+                        NombreyApellido = reader.GetString("NombreYApellido"),
+                        Rol = reader.GetString("Rol"),
+                        Contraseña = reader.GetString("Contraseña"),
+                        FotoPerfil = reader["FotoPerfil"] != DBNull.Value ? reader.GetString("FotoPerfil") : null
+                        
+                    };
+                    Console.WriteLine("Ruta de la maldita foto: " + u.FotoPerfil);
+
+                }
+            }
+        }
+    }
+
+    return u;
+}
+
+public void ActualizarRutaFoto(Usuario u)
+{
+    using (var connection = new MySqlConnection(_connectionString))
+    {
+        connection.Open();
+        var query = "UPDATE Usuarios SET FotoPerfil = @fotoperfil WHERE idUsuario = @idUsuario";
+        using (var command = new MySqlCommand(query, connection))
+        {
+            Console.WriteLine("ID del usuario: " + u.IdUsuario);
+
+            command.Parameters.AddWithValue("@fotoPerfil", (object?)u.FotoPerfil ?? DBNull.Value);
+            command.Parameters.AddWithValue("@idUsuario", u.IdUsuario);
+            command.ExecuteNonQuery();
+        }
+    }
+}
+
+
+public Usuario ObtenerUsuarioPorId(int idUsuario)
+{
+    Usuario usuario = null;
+    using (var con = ObtenerConexion())
+    {
+        con.Open();
+        var cmd = new MySqlCommand("SELECT * FROM usuarios WHERE idUsuario = @idUsuario", con);
+        cmd.Parameters.AddWithValue("@idUsuario", idUsuario);
+        var reader = cmd.ExecuteReader();
+        if (reader.Read())
+        {
+            usuario = new Usuario
+            {
+                IdUsuario = Convert.ToInt32(reader["idUsuario"]),
+                UsuarioNombre = reader["Usuario"].ToString(),
+                Contraseña = reader["contraseña"].ToString(),
+                Rol = reader["rol"].ToString(),
+                NombreyApellido = reader["nombreyApellido"].ToString(),
+                FotoPerfil = reader["FotoPerfil"] != DBNull.Value ? reader.GetString("FotoPerfil") : null
+            };
+        }
+    }
+    return usuario;
+}
+
+public void AgregarUsuario(Usuario u)
+{
+    using (var con = ObtenerConexion())
+    {
+        con.Open();
+        var cmd = new MySqlCommand("INSERT INTO usuarios (Usuario, contraseña, rol, nombreyApellido) VALUES (@nombre,  @contraseña, @rol, @nombreyApellido)", con);
+        cmd.Parameters.AddWithValue("@nombre", u.UsuarioNombre);
+        cmd.Parameters.AddWithValue("@contraseña", u.Contraseña);
+        cmd.Parameters.AddWithValue("@rol", u.Rol);
+        cmd.Parameters.AddWithValue("@nombreyApellido", u.NombreyApellido);
+        cmd.Parameters.AddWithValue("@FotoPerfil", u.FotoPerfil);
+        cmd.ExecuteNonQuery();
+    }
+}
+
+public void ActualizarUsuario(Usuario u)
+{
+    using (var con = ObtenerConexion())
+    {
+        con.Open();
+        var cmd = new MySqlCommand("UPDATE usuarios SET Usuario=@nombre, contraseña=@contraseña, rol=@rol, nombreyApellido=@nombreyApellido, FotoPerfil=@FotoPerfil WHERE idUsuario=@idUsuario", con);
+
+        cmd.Parameters.AddWithValue("@idUsuario", u.IdUsuario);
+        cmd.Parameters.AddWithValue("@nombre", u.UsuarioNombre);
+        cmd.Parameters.AddWithValue("@contraseña", u.Contraseña);
+        cmd.Parameters.AddWithValue("@rol", u.Rol);
+         cmd.Parameters.AddWithValue("@nombreyApellido", u.NombreyApellido);
+         cmd.Parameters.AddWithValue("@FotoPerfil", u.FotoPerfil);
+        cmd.ExecuteNonQuery();
+    }
+}
+
+public void EliminarUsuario(int idUsuario)
+{
+    using (var con = ObtenerConexion())
+    {
+        con.Open();
+        var cmd = new MySqlCommand("DELETE FROM usuarios WHERE idUsuario=@id", con);
+        cmd.Parameters.AddWithValue("@id", idUsuario);
+        cmd.ExecuteNonQuery();
+    }
+}
+
+
+
+public void ActualizarClave(Usuario u)
+{
+    using (var connection = new MySqlConnection(_connectionString))
+    {
+        connection.Open();
+        var query = "UPDATE Usuarios SET contraseña = @contraseña WHERE IdUsuario = @id";
+        using (var command = new MySqlCommand(query, connection))
+        {
+            command.Parameters.AddWithValue("@contraseña", u.Contraseña);
+            command.Parameters.AddWithValue("@id", u.IdUsuario);
+            command.ExecuteNonQuery();
+        }
+    }
+}
+
+
+
+public List<Usuario> ObtenerUsuarios()
+{
+    List<Usuario> lista = new List<Usuario>();
+    using (var con = ObtenerConexion())
+    {
+        con.Open();
+        var cmd = new MySqlCommand("SELECT idUsuario, Usuario, contraseña, rol, nombreyApellido, FotoPerfil FROM Usuarios", con);
+        var reader = cmd.ExecuteReader();
+        while (reader.Read())
+        {
+            lista.Add(new Usuario
+            {
+                IdUsuario = Convert.ToInt32(reader["idUsuario"]),
+                UsuarioNombre = reader["Usuario"].ToString(),
+                Contraseña = reader["contraseña"].ToString(),
+                Rol = reader["rol"].ToString(),
+                NombreyApellido = reader["nombreyApellido"].ToString(),
+                FotoPerfil = !reader.IsDBNull(reader.GetOrdinal("FotoPerfil")) ? reader["FotoPerfil"].ToString() : null
+            });
+        }
+    }
+
+    //  Asegurar la foto por defecto si está vacía
+    foreach (var u in lista)
+    {
+        if (string.IsNullOrEmpty(u.FotoPerfil))
+        {
+            u.FotoPerfil = "/imagenes/usuarios/default.png";
+        }
+    }
+
+    return lista;
+}
+
+
+
 
 public Usuario BuscarUsuario(string usuario, string contraseña)
 {
@@ -58,9 +238,11 @@ public Usuario BuscarUsuario(string usuario, string contraseña)
                 {
                     encontrado = new Usuario
                     {
-                         Id = reader.GetInt32(reader.GetOrdinal("idUsuario")),
+                         IdUsuario = reader.GetInt32(reader.GetOrdinal("idUsuario")),
                          UsuarioNombre = reader.GetString(reader.GetOrdinal("Usuario")),
-                         Rol = reader.GetString(reader.GetOrdinal("rol"))
+                         Rol = reader.GetString(reader.GetOrdinal("rol")),
+                         NombreyApellido = reader.GetString(reader.GetOrdinal("nombreyApellido")),
+                         FotoPerfil= reader.GetString(reader.GetOrdinal("fotoPerfil")),
                     };
                 }
             }
@@ -69,8 +251,33 @@ public Usuario BuscarUsuario(string usuario, string contraseña)
     return encontrado;
 }
 
+public void EditarUsuario(Usuario usuario)
+{
+    using (var conn = new MySqlConnection(_connectionString))
+    {
+        conn.Open();
+        var sql = @"UPDATE Usuario SET 
+                        UsuarioNombre = @usuario, 
+                        NombreyApellido = @nombre, 
+                        Contraseña = @pass, 
+                        Rol = @rol, 
+                        FotoPerfil = @foto
+                    WHERE IdUsuario = @id";
+        using (var cmd = new MySqlCommand(sql, conn))
+        {
+            cmd.Parameters.AddWithValue("@usuario", usuario.UsuarioNombre);
+            cmd.Parameters.AddWithValue("@nombre", usuario.NombreyApellido);
+            cmd.Parameters.AddWithValue("@pass", usuario.Contraseña);
+            cmd.Parameters.AddWithValue("@rol", usuario.Rol);
+            cmd.Parameters.AddWithValue("@foto", usuario.FotoPerfil ?? (object)DBNull.Value);
+            cmd.Parameters.AddWithValue("@id", usuario.IdUsuario);
+            cmd.ExecuteNonQuery();
+        }
+    }
+}
 
 
+//----- FIN DE USUARIOS
 
 
         // Método para obtener todos los propietarios desde la base de datos
@@ -1264,7 +1471,7 @@ public Usuario BuscarUsuario(string usuario, string contraseña)
             {
                 conexion.Open();
 
-                string query = "SELECT * FROM Pagos WHERE idContrato = @idContrato ORDER BY nroPago ASC";
+                string query = "SELECT * FROM pagos WHERE idContrato = @idContrato ORDER BY nroPago ASC";
                 MySqlCommand cmd = new MySqlCommand(query, conexion);
                 cmd.Parameters.AddWithValue("@idContrato", idContrato);
 
@@ -1279,7 +1486,8 @@ public Usuario BuscarUsuario(string usuario, string contraseña)
                         Importe = Convert.ToDecimal(reader["importe"]),
                         Detalle = reader["detalle"].ToString(),
                         Estado = reader["estado"].ToString(),
-                        IdContrato = Convert.ToInt32(reader["idContrato"])
+                        IdContrato = Convert.ToInt32(reader["idContrato"]),
+                        PagadoPor=reader.GetString("pagadoPor")
                     });
                 }
             }
@@ -1308,7 +1516,8 @@ public Usuario BuscarUsuario(string usuario, string contraseña)
                         FechaPago = reader.GetDateTime("fechaPago"),
                         Importe = reader.GetDecimal("importe"),
                         Detalle = reader.GetString("detalle"),
-                        Estado = reader.IsDBNull(reader.GetOrdinal("estado")) ? null : reader.GetString("estado")
+                        Estado = reader.IsDBNull(reader.GetOrdinal("estado")) ? null : reader.GetString("estado"),
+                        PagadoPor = reader.IsDBNull(reader.GetOrdinal("pagadoPor")) ? null : reader.GetString("pagadoPor")
                     };
                 }
             }
@@ -1320,11 +1529,11 @@ public Usuario BuscarUsuario(string usuario, string contraseña)
             using (var conn = ObtenerConexion())
             {
                 conn.Open();
-                var cmd = new MySqlCommand("UPDATE pagos SET detalle = @detalle, estado = @estado WHERE idPago = @idPago", conn);
-                cmd.Parameters.AddWithValue("@detalle", pago.Detalle);
-                cmd.Parameters.AddWithValue("@estado", pago.Estado);
-                cmd.Parameters.AddWithValue("@idPago", pago.IdPago);
-                cmd.ExecuteNonQuery();
+            var cmd = new MySqlCommand(@"UPDATE pagos SET estado = @estado, pagadoPor = @pagadoPor WHERE idPago = @id", conn);
+            cmd.Parameters.AddWithValue("@id", pago.IdPago);
+            cmd.Parameters.AddWithValue("@estado", pago.Estado);
+            cmd.Parameters.AddWithValue("@pagadoPor", pago.PagadoPor);
+            cmd.ExecuteNonQuery();
             }
         }
 
@@ -1341,15 +1550,16 @@ public Usuario BuscarUsuario(string usuario, string contraseña)
         Console.WriteLine($"Importe: {pago.Importe}");
         Console.WriteLine($"Detalle: {pago.Detalle}");
         Console.WriteLine($"Estado: {pago.Estado}");
+         Console.WriteLine($"PagadoPor: {pago.PagadoPor}");
 
                 using (var conexion = ObtenerConexion())
                 {
                     conexion.Open(); // 
 
                     var comando = new MySqlCommand(@"INSERT INTO pagos 
-                (idContrato, nroPago, fechaPago, importe, detalle, estado) 
+                (idContrato, nroPago, fechaPago, importe, detalle, estado, pagadoPor) 
                 VALUES 
-                (@idContrato, @nroPago, @fechaPago, @importe, @detalle, @estado)", conexion);
+                (@idContrato, @nroPago, @fechaPago, @importe, @detalle, @estado, @pagadoPor)", conexion);
 
                     comando.Parameters.AddWithValue("@idContrato", pago.IdContrato);
                     comando.Parameters.AddWithValue("@nroPago", pago.NroPago);
@@ -1357,6 +1567,7 @@ public Usuario BuscarUsuario(string usuario, string contraseña)
                     comando.Parameters.AddWithValue("@importe", pago.Importe);
                     comando.Parameters.AddWithValue("@detalle", pago.Detalle ?? "");
                     comando.Parameters.AddWithValue("@estado", pago.Estado ?? "Pagado");
+                    comando.Parameters.AddWithValue("@pagadoPor", pago.PagadoPor ?? "");
 
                     int filasAfectadas = comando.ExecuteNonQuery();
 
@@ -1373,19 +1584,24 @@ public Usuario BuscarUsuario(string usuario, string contraseña)
         }
 
 
-        public void AnularPago(int idPago)
+    public bool AnularPago(int idPago, string pagadoPor)
+{
+    using (var conexion = ObtenerConexion())
+    {
+        conexion.Open();
+        string query = "UPDATE pagos SET estado = 'Anulado', pagadoPor = @pagadoPor WHERE idPago = @idPago";
+        using (var comando = new MySqlCommand(query, conexion))
         {
-            using (var db = new MySqlConnection(_connectionString))
-            {
-                var query = "UPDATE Pagos SET Estado = 'Anulado' WHERE IdPago = @IdPago";
-
-                var cmd = new MySqlCommand(query, db);
-                cmd.Parameters.AddWithValue("@IdPago", idPago);
-
-                db.Open();
-                cmd.ExecuteNonQuery();
-            }
+            comando.Parameters.AddWithValue("@idPago", idPago);
+            comando.Parameters.AddWithValue("@pagadoPor", pagadoPor);
+            return comando.ExecuteNonQuery() > 0;
         }
+    }
+}
+
+
+
+
 
 public void ActualizarDetalle(int idPago, string nuevoDetalle)
 {
@@ -1394,7 +1610,7 @@ public void ActualizarDetalle(int idPago, string nuevoDetalle)
         conexion.Open();
         
         // Verificar si el idPago existe
-        string checkQuery = "SELECT COUNT(*) FROM Pagos WHERE idPago = @idPago";
+        string checkQuery = "SELECT COUNT(*) FROM pagos WHERE idPago = @idPago";
         using (MySqlCommand checkCommand = new MySqlCommand(checkQuery, conexion))
         {
             checkCommand.Parameters.AddWithValue("@idPago", idPago);
@@ -1407,7 +1623,7 @@ public void ActualizarDetalle(int idPago, string nuevoDetalle)
         }
 
         // Ejecutar la actualización
-        string query = "UPDATE Pagos SET detalle = @detalle WHERE idPago = @idPago";
+        string query = "UPDATE pagos SET detalle = @detalle WHERE idPago = @idPago";
         using (MySqlCommand comando = new MySqlCommand(query, conexion))
         {
             comando.Parameters.AddWithValue("@detalle", nuevoDetalle);

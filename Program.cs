@@ -42,7 +42,7 @@ app.UseStaticFiles(); // No olvidarse de esto para CSS/JS
 
 app.UseRouting();
 
-app.UseSession(); // 🧠 Importantísimo, activa las sesiones
+app.UseSession(); //  Importantísimo, activa las sesiones
 app.UseAuthorization();
 
 // 💡 Ruta por defecto
@@ -51,5 +51,6 @@ app.MapControllerRoute(
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
 app.MapDefaultControllerRoute();
+app.MapControllers();
 
 app.Run();

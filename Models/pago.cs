@@ -15,6 +15,7 @@ namespace proyectoInmobiliariaNuevo.Models
             public decimal Importe { get; set; }
             public string Detalle { get; set; }
             public string Estado { get; set; }
+            public string PagadoPor {get; set; }
 
         }
 
@@ -22,6 +23,13 @@ namespace proyectoInmobiliariaNuevo.Models
 {
     public int idPago { get; set; }
     public string detalle { get; set; }
+}
+
+
+public class PagoRequest
+{
+    public int IdPago { get; set; }
+    public string PagadoPor { get; set; }
 }
 
 }

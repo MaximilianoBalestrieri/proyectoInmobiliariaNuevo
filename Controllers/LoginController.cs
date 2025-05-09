@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using proyectoInmobiliariaNuevo.Models;
 
+
 public class LoginController : Controller
 {
     private ConexionDB conexionDB = new ConexionDB();
@@ -20,7 +21,11 @@ public class LoginController : Controller
         if (user != null)
         {
             HttpContext.Session.SetString("Usuario", user.UsuarioNombre);
+            HttpContext.Session.SetString("NombreyApellido", user.NombreyApellido);
             HttpContext.Session.SetString("Rol", user.Rol);
+            HttpContext.Session.SetString("FotoPerfil", user.FotoPerfil ?? "/imagenes/usuarios/default.png");
+
+
            return RedirectToAction("Index", "Home");
 
         }
@@ -33,10 +38,10 @@ public class LoginController : Controller
     }
 
     public IActionResult Logout()
-    {
-        HttpContext.Session.Clear();
-        return RedirectToAction("Login");
-    }
+{
+    HttpContext.Session.Clear();  // Limpiar la sesión
+    return RedirectToAction("Index", "Login");  // Redirigir al login
+}
 
 [HttpGet]
 public IActionResult Index()

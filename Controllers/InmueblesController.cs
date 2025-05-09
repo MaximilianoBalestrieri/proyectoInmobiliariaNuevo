@@ -20,6 +20,8 @@ namespace proyectoInmobiliariaNuevo.Controllers
 
         public IActionResult Index()
     {
+         var rol = HttpContext.Session.GetString("Rol");
+    ViewBag.Rol = rol ?? "Usuario"; 
         // Aquí puedes obtener los inmuebles desde la base de datos, por ejemplo:
         var inmuebles = conexionDB.ObtenerInmuebles();  // Suponiendo que tienes este método en ConexionDB
 

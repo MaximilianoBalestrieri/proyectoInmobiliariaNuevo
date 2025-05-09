@@ -1,24 +1,44 @@
 using Microsoft.AspNetCore.Mvc;
 using proyectoInmobiliariaNuevo.Models;
-using Microsoft.AspNetCore.Http;  // Necesario para usar HttpContext.Session
+using Microsoft.AspNetCore.Http;
+using System;  // Necesario para usar HttpContext.Session
 
 namespace proyectoInmobiliariaNuevo.Controllers
 {
     public class HomeController : Controller
     {
-        public ActionResult Index()
-        {
-            if (HttpContext.Session.GetString("Usuario") == null)
-            {
-                // Si no hay nadie logueado, lo mandamos al login
-                return RedirectToAction("Index", "Login");
-            }
+          ConexionDB db = new ConexionDB();
+    public IActionResult Index()
+{
+    var usuario = HttpContext.Session.GetString("Usuario");
+    var apellido = HttpContext.Session.GetString("NombreyApellido");
+    var rol = HttpContext.Session.GetString("Rol");
+    var fotoPeril=HttpContext.Session.GetString("FotoPerfil");
+    ViewBag.Usuario = usuario;
+    ViewBag.Rol = rol;
+    ViewBag.Apellido = apellido;
+    ViewBag.FotoPerfil= fotoPeril;
+  
 
-            // Si hay alguien logueado, pasamos su info a la vista
-            ViewBag.Usuario = HttpContext.Session.GetString("Usuario");
-            ViewBag.Rol = HttpContext.Session.GetString("Rol");
-            return View();
-        }
+    if (usuario == null)
+    {
+        return RedirectToAction("Index", "Login");
+    }
+
+    return View();
+}
+
+public IActionResult Perfil()
+{
+    var usuario = db.ObtenerUsuarioPorNombre(User.Identity.Name); // o el nombre que uses
+    ViewBag.FotoPerfil = usuario.FotoPerfil;
+    ViewBag.Usuario = usuario.UsuarioNombre;
+    ViewBag.Apellido = usuario.NombreyApellido;
+    ViewBag.Rol = usuario.Rol;
+
+    return View();
+}
+
 
         public ActionResult About()
         {

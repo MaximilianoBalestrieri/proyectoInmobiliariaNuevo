@@ -1,6 +1,11 @@
-﻿@model List<proyectoInmobiliariaNuevo.Models.Contrato>
+﻿@using Microsoft.AspNetCore.Http
+@model List<proyectoInmobiliariaNuevo.Models.Contrato>
 @{
     ViewData["Title"] = "Contratos";
+    string rol = ViewBag.Rol as string;
+    string UsuarioPagos = ViewBag.Apellido as string;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
 }
 
 <style>
@@ -37,17 +42,21 @@
 </style>
 
 <body>
-    <h2>Contratos</h2>
+ <h2>Contratos</h2>
 
-    <!-- Botón para agregar un nuevo Contrato -->
-    <a href="@Url.Action("Create", "Contratos")" class="btn btn-primary">Crear Contratos</a>
+<a href="@Url.Action("Create", "Contratos")" class="btn btn-primary mb-3">Agregar Contrato</a>
 
-    @* Mostrar mensaje si hay algún error o éxito *@
-    @if (ViewBag.Mensaje != null)
-    {
-        <div class="alert alert-info">@ViewBag.Mensaje</div>
-    }
 
+
+
+@if (ViewBag.Mensaje != null)
+{
+    <div class="alert alert-info">@ViewBag.Mensaje</div>
+}
+
+<!-- <input type="text" id="buscadorContratos" class="form-control mb-3" placeholder="Buscar contratos..."> -->
+
+<table class="table table-striped">
     <div class="row mb-3">
         <div class="col-md-3">
             <label for="fechaInicioContrato">Desde:</label>
@@ -76,47 +85,56 @@
         </div>
     </div>
 
+
     @if (Model != null && Model.Count > 0)
     {
        <input type="text" id="buscador" class="form-control mt-3 mb-3" placeholder="Buscar en la tabla..." style="width: 400px;">
 
 
-        <table class="table" id="tablaContratos">
-            <thead>
-                <tr>
-                    <th onclick="ordenarTabla(0)" style="cursor: pointer;">ID</th>
-                    <th onclick="ordenarTabla(1)" style="cursor: pointer;">Propietario</th>
-                    <th onclick="ordenarTabla(2)" style="cursor: pointer;">Inquilino</th>
-                    <th onclick="ordenarTabla(3)" style="cursor: pointer;">Dirección</th>
-                    <th onclick="ordenarTabla(4)" style="cursor: pointer;">Inicio</th>
-                    <th onclick="ordenarTabla(5)" style="cursor: pointer;">Fin</th>
-                    <th onclick="ordenarTabla(6)" style="cursor: pointer;">Monto</th>
-                    <th class="col-vigente" style="display: none;">Vigente</th>
-                    <th>Acciones</th>
-                </tr>
-            </thead>
-            <tbody id="tablaDatos">
-                @foreach (var contrato in Model)
-                {
-                    <tr class="fila-contrato" data-fecha-final="@contrato.FechaFinal.ToString("yyyy-MM-dd")">
-                        <td>@contrato.IdContrato</td>
-                        <td>@contrato.NombrePropietario</td>
-                        <td>@contrato.NombreInquilino</td>
-                        <td>@contrato.Direccion</td>
-                        <td>@contrato.FechaInicio.ToString("dd/MM/yyyy")</td>
-                        <td data-fecha-final="@contrato.FechaFinal.ToString("yyyy-MM-dd")">
-                            @contrato.FechaFinal.ToString("dd/MM/yyyy")
-                        </td>
-                        <td>@contrato.Monto</td>
-                        <td class="col-vigente" style="display: none;">@(contrato.Vigente ? "Sí" : "No")</td>
-                        <td>
-                            <a href="@Url.Action("Edit", "Contratos", new { id = contrato.IdContrato })" class="btn btn-warning btn-sm">Ver/Editar</a>
-                            <a href="@Url.Action("Delete", "Contratos", new { id = contrato.IdContrato })" class="btn btn-danger btn-sm">Eliminar</a>
-                        </td>
-                    </tr>
-                }
-            </tbody>
-        </table>
+        <table class="table table-striped" >
+
+    <thead class="table-dark">
+        <tr>
+            <th onclick="ordenarContratos(0)">#</th>
+            <th onclick="ordenarContratos(1)">Propietario</th>
+            <th onclick="ordenarContratos(2)">Inquilino</th>
+            <th onclick="ordenarContratos(3)">Inicio</th>
+            <th onclick="ordenarContratos(4)">Final</th>
+            <th onclick="ordenarContratos(5)">Monto</th>
+            <th onclick="ordenarContratos(6)">Dirección</th>
+            <th onclick="ordenarContratos(7)">Vigente</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody id="tablaContratos">
+    @foreach (var contrato in Model)
+    {
+      <tr class="fila-contrato" data-fecha-final="@contrato.FechaFinal.ToString("yyyy-MM-dd")">
+        <td>@contrato.IdContrato</td>
+        <td>@contrato.NombrePropietario</td>
+        <td>@contrato.NombreInquilino</td>
+        <td>@contrato.FechaInicio.ToShortDateString()</td>
+        <td>@contrato.FechaFinal.ToShortDateString()</td>
+        <td>$@contrato.Monto</td>
+        <td>@contrato.Direccion</td>
+        <td>@(contrato.Vigente ? "Sí" : "No")</td>
+        <td>
+            <a href="@Url.Action("Edit", "Contratos", new { id = contrato.IdContrato })" class="btn btn-warning btn-sm">Editar</a>
+
+            @if (rol == "Administrador")
+            {
+                <a href="@Url.Action("Delete", "Contratos", new { id = contrato.IdContrato })" class="btn btn-danger btn-sm">Eliminar</a>
+            }
+            else
+            {
+                <button class="btn btn-danger btn-sm" disabled>Eliminar</button>
+            }
+        </td>
+      </tr>
+   }
+
+    </tbody>
+</table>
 
         <div id="paginacion" class="d-flex justify-content-between mt-3">
             <button id="prevPagina" class="btn btn-secondary">Anterior</button>
@@ -360,18 +378,22 @@ function mostrarMensajeSinContratos(mensaje) {
 
 
 
-            document.getElementById("buscador").addEventListener("keyup", function () {
-                var valor = this.value.toLowerCase();
-                var filas = document.querySelectorAll("#tablaDatos tr");
+  document.getElementById("buscador").addEventListener("keyup", function () {
+    var valor = this.value.toLowerCase();
+    var filas = document.querySelectorAll("#tablaContratos tr");
 
-                filas.forEach(function (fila) {
-                    var textoFila = Array.from(fila.querySelectorAll("td:not(:last-child)")).map(td => td.innerText.toLowerCase()).join(" ");
-                    fila.style.display = textoFila.includes(valor) ? "" : "none";
-                });
-            });
+    filas.forEach(function (fila) {
+        var textoFila = Array.from(fila.querySelectorAll("td:not(:last-child)"))
+                             .map(td => td.innerText.toLowerCase())
+                             .join(" ");
+        fila.style.display = textoFila.includes(valor) ? "" : "none";
+    });
+});
+
 
             // Paginación
-            const filas = Array.from(document.querySelectorAll("#tablaDatos tr"));
+           const filas = Array.from(document.querySelectorAll("#tablaContratos tr"));
+
             const filasPorPagina = 5;
             let paginaActual = 1;
 

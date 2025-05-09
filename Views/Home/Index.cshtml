@@ -1,7 +1,10 @@
-﻿@{
+﻿@using Microsoft.AspNetCore.Http
+
+
+@{
     ViewData["Title"] = "Página Principal";
 }
-<head>
+
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" />
     
 
@@ -37,14 +40,87 @@
             background-repeat: no-repeat;
            /* color: #fff; /* Esto es opcional, solo si quieres que el texto sea blanco para mayor contraste */
         }
+    
+
+    #menu-admin {
+    position: fixed;
+    top: 60px;
+    right: 40px;
+    width: 280px;
+    height: 90px; /* Podés ajustar el alto según necesites */
+    background-color: rgba(255, 255, 255, 0.6);
+    border: 1px solid #ccc;
+    padding: 15px;
+    border-radius: 10px;
+    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.15);
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+
+    #menu-bienvenido {
+    position: fixed;
+    top: 60px;
+    left: 40px;
+    width: 280px;
+    height: 90px; /* Podés ajustar el alto según necesites */
+    background-color: rgba(255, 255, 255, 0.6);
+    border: 1px solid #ccc;
+    padding: 15px;
+    border-radius: 10px;
+    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.15);
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
     </style>
                                                  <!--  PAGINA PRINCIPAL -->
-</head>
+
 <body>
     <main>
         <section class="row" aria-labelledby="aspnetTitle">
             <h1 id="title" style="text-align: center; margin-right: auto; margin-left: auto;">INMOBILIARIA.NET</h1>
             <p class="lead">Proyecto Inmobiliaria para la Universidad de la Punta.</p>
+          
+
+            @if (ViewBag.Rol == "Administrador")
+              {   
+                <div id="menu-admin">
+                    <p><strong>ROL:</strong> @ViewBag.Rol</p>
+                    <a href="/Usuarios/Index" class="btn btn-primary">Administrar Usuarios</a>
+                </div>
+              } else {
+                <div id="menu-admin">
+                    <p><strong>ROL:</strong> @ViewBag.Rol</p>
+                    <a href="#" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalPerfil">Administrar Perfil</a>
+
+                </div>
+              }
+
+
+@if (ViewBag.Apellido != null)
+      {
+        <div id="menu-bienvenido">
+        <div class="d-flex align-items-center">
+            <img src="@(!string.IsNullOrEmpty(ViewBag.FotoPerfil) ? ViewBag.FotoPerfil : Url.Content("~/imagenes/usuarios/default.png"))"
+                 alt="Foto de perfil"
+                 style="width:50px; height:50px; object-fit:cover; border-radius:50%; border:1px solid #ccc; margin-right:10px;" />
+            <p class="mb-0"><strong>Bienvenido</strong> @ViewBag.Apellido</p>
+        </div>
+    </div>
+               
+}
+
+<!-- para ver que viaja -->
+<!--<p>Usuario actual: @ViewBag.Usuario</p>
+<p>Rol actual: @ViewBag.Rol</p>  -->
+
 
         </section>
 
@@ -105,4 +181,125 @@
             </section>
         </div>
     </main>
+
+<!-- MODAL USUARIO -->
+<div class="modal fade" id="modalPerfil" tabindex="-1" aria-labelledby="modalPerfilLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-sm">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalPerfilLabel">Modificar Perfil</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+
+
+      <div class="modal-body">
+
+        <input type="hidden" id="usuarioHidden" value="@ViewBag.Usuario" />
+
+        <div class="mb-3 text-center">
+         <img id="fotoPerfil" src="@(!string.IsNullOrEmpty(ViewBag.FotoPerfil) ? ViewBag.FotoPerfil : Url.Content("~/imagenes/usuarios/default.png"))"
+     alt="Foto de perfil"
+     style="width:80px; height:80px; object-fit:cover; border-radius:50%; border:1px solid #ccc;" />
+
+
+
+          <div class="mt-2">
+            <!-- FORMULARIO EXTERNO SOLO PARA FOTO -->
+            <form id="formFoto" enctype="multipart/form-data">
+              <input type="file" name="FotoNueva" id="inputFoto" accept="image/*" class="form-control form-control-sm mb-2" />
+              <div class="d-flex justify-content-center gap-2">
+                <button type="button" class="btn btn-success btn-sm" onclick="cargarFoto()">Cargar</button>
+                <button type="button" class="btn btn-danger btn-sm" onclick="eliminarFoto()">Eliminar</button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <!-- FORMULARIO PARA GUARDAR PERFIL -->
+        <form method="post" enctype="multipart/form-data" action="/Usuarios/ActualizarPerfil">
+          <input type="hidden" name="Usuario" value="@ViewBag.Usuario" />
+
+          <div class="mb-2">
+            <label class="form-label">Usuario</label>
+            <input type="text" class="form-control form-control-sm" value="@ViewBag.Usuario" readonly />
+          </div>
+
+          <div class="mb-2">
+            <label class="form-label">Nombre y Apellido</label>
+            <input type="text" class="form-control form-control-sm" value="@ViewBag.Apellido" readonly />
+          </div>
+
+          <div class="mb-2">
+            <label class="form-label">Rol</label>
+            <input type="text" class="form-control form-control-sm" value="@ViewBag.Rol" readonly />
+          </div>
+
+          <div class="mb-2">
+            <label class="form-label">Nueva Contraseña</label>
+            <input type="password" name="NuevaContrasena" class="form-control form-control-sm" />
+          </div>
+
+          <div class="modal-footer p-2">
+            <button type="submit" name="accion" value="guardarPerfil" class="btn btn-primary btn-sm">Guardar</button>
+            <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancelar</button>
+          </div>
+        </form>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<script>
+function cargarFoto() {
+    const form = document.getElementById("formFoto");
+    if (!form) {
+        alert("No se encontró el formulario con id 'formFoto'");
+        return;
+    }
+
+    const formData = new FormData(form);
+    formData.append("accion", "cargar");
+    formData.append("Usuario", document.querySelector('input[name="Usuario"]').value);
+
+    fetch("/Usuarios/ActualizarPerfil", {
+        method: "POST",
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.ok) {
+            document.getElementById("fotoPerfil").src = data.nuevaRuta + "?t=" + new Date().getTime();
+        } else {
+            alert("Error al cargar la foto: " + (data.error || "desconocido"));
+        }
+    })
+    .catch(error => {
+        console.error("Error al guardar la foto:", error);
+        alert("Error al guardar la foto: " + error);
+    });
+}
+
+
+
+  function eliminarFoto() {
+    const formData = new FormData();
+    formData.append('accion', 'eliminar');
+    formData.append('Usuario', '@ViewBag.Usuario');
+
+    fetch('/Usuarios/ActualizarPerfil', {
+      method: 'POST',
+      body: formData
+    })
+    .then(resp => resp.json())
+    .then(data => {
+      if (data.ok) {
+        document.getElementById('fotoPerfil').src = '/img/usuarios/default.png';
+      }
+    });
+  }
+</script>
+
+
 </body>

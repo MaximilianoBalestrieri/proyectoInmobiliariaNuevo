@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using proyectoInmobiliariaNuevo.Models;
@@ -22,9 +23,35 @@ namespace proyectoInmobiliariaNuevo.Controllers
         [HttpGet("")]
         public ActionResult Index()
         {
+            var rol = HttpContext.Session.GetString("Rol");
+            ViewBag.Rol = rol ?? "Usuario";
+            ViewBag.NombreyApellido = HttpContext.Session.GetString("NombreyApellido");
             var contratos = db.ObtenerTodosLosContratos();
             return View(contratos);
         }
+
+
+//---------------------------- ANULAR PAGO ------------------------
+
+[HttpPost("/Contratos/AnularPago")]
+public JsonResult AnularPago([FromBody] PagoRequest request)
+{
+    Console.WriteLine($"Se aNUló el pago ID {request.IdPago} por {request.PagadoPor}");
+    try
+    {
+        ConexionDB conexion = new ConexionDB();
+        bool resultado = conexion.AnularPago(request.IdPago, request.PagadoPor);
+        return Json(new { success = resultado });
+    }
+    catch (Exception ex)
+    {
+        return Json(new { success = false, message = ex.Message });
+    }
+}
+
+
+
+
 
         // Crear contrato - GET
         [HttpGet("Crear")]
@@ -58,6 +85,7 @@ namespace proyectoInmobiliariaNuevo.Controllers
             if (contrato == null)
                 return NotFound();
 
+             ViewBag.NombreyApellido = HttpContext.Session.GetString("NombreyApellido");
             ViewBag.Pagos = db.ObtenerPagosPorContrato(id);
             return View(contrato);
         }
@@ -67,6 +95,7 @@ namespace proyectoInmobiliariaNuevo.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Edit(int id, Contrato contrato)
         {
+             ViewBag.NombreyApellido = HttpContext.Session.GetString("NombreyApellido");
             if (ModelState.IsValid)
             {
                 foreach (var error in ModelState.Values.SelectMany(v => v.Errors))
@@ -156,21 +185,29 @@ public JsonResult AgregarPago([FromBody] Pago pago)
 }
 
 
+[HttpPost("/Contratos/ActualizarPago")]
+public JsonResult ActualizarPago(Pago pago)
+{
+    try
+    {
+        // Actualizar pago en la base de datos
+        ConexionDB conexion = new ConexionDB();
+        conexion.ActualizarPago(pago);
 
-        // Anular pago
-        [HttpPost("AnularPago")]
-        public JsonResult AnularPago(int idPago)
-        {
-            try
-            {
-                db.AnularPago(idPago);
-                return Json(new { success = true });
-            }
-            catch (Exception ex)
-            {
-                return Json(new { success = false, message = ex.Message });
-            }
-        }
+        // Obtener el pago actualizado desde la base de datos (opcional, pero te da los datos completos)
+        var pagoActualizado = conexion.ObtenerPagoPorId(pago.IdPago);
+
+        // Devolver la respuesta con los nuevos valores
+        return Json(new { success = true, pago = pagoActualizado });
+    }
+    catch (Exception ex)
+    {
+        return Json(new { success = false, message = ex.Message });
+    }
+}
+
+
+
 
      [HttpPost ("ActualizarDetalle")]
 public JsonResult ActualizarDetalle(int idPago, string detalle)

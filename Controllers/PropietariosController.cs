@@ -4,6 +4,8 @@ using proyectoInmobiliariaNuevo.Models;
 using System.Collections.Generic;
 using System.Linq;
 using System;
+using Microsoft.AspNetCore.Http;
+
 
 namespace proyectoInmobiliariaNuevo.Controllers
 {
@@ -19,6 +21,8 @@ namespace proyectoInmobiliariaNuevo.Controllers
         // Acción que obtiene los propietarios y los pasa a la vista
         public ActionResult Index()
         {
+            var rol = HttpContext.Session.GetString("Rol");
+            ViewBag.Rol = rol ?? "Usuario"; 
             List<Propietario> propietarios = _db.ObtenerPropietarios(); // Obtén los propietarios de la base de datos
             return View(propietarios); // Pasa la lista de propietarios a la vista
         }
