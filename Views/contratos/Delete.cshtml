@@ -40,17 +40,13 @@
     </dl>
 </div>
 
-@using (Html.BeginForm("DeleteConfirmed", "Contratos", FormMethod.Post))
-{
+<form action="@Url.Action("Eliminar", "Contratos", new { id = Model.IdContrato })" method="post">
     @Html.AntiForgeryToken()
-
-    <!-- Campo oculto para pasar correctamente el ID al controlador -->
-    @Html.HiddenFor(model => model.IdContrato)
-    <!-- Alternativa segura adicional -->
     <input type="hidden" name="id" value="@Model.IdContrato" />
-
     <div class="d-flex gap-2">
         <input type="submit" value="Eliminar" class="btn btn-danger" />
         @Html.ActionLink("Cancelar", "Index", null, new { @class = "btn btn-secondary" })
     </div>
-}
+</form>
+
+

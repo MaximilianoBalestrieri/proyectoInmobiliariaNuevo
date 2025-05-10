@@ -57,6 +57,8 @@ public JsonResult AnularPago([FromBody] PagoRequest request)
         [HttpGet("Crear")]
         public ActionResult Create()
         {
+            ViewBag.NombreyApellido = HttpContext.Session.GetString("NombreyApellido");
+            
             return View();
         }
 
@@ -65,6 +67,13 @@ public JsonResult AnularPago([FromBody] PagoRequest request)
         [ValidateAntiForgeryToken]
         public ActionResult Create(Contrato contrato)
         {
+            Console.WriteLine("Realizado por: " + contrato.RealizadoPor);
+
+            if (string.IsNullOrEmpty(contrato.RealizadoPor))
+    {
+        // Opcionalmente forzás acá el valor también:
+        contrato.RealizadoPor = ViewBag.NombreyApellido as string;
+    }
             if (!db.VerificarDisponibilidad(contrato))
                 ModelState.AddModelError("", "El inmueble ya tiene un contrato en esas fechas.");
 

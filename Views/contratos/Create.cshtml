@@ -2,35 +2,33 @@
 
 @{
     ViewBag.Title = "Crear Contrato";
+     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
 <h2>Crear Contrato</h2>
+<p>Usuario Logueado: @ViewBag.NombreyApellido</p> 
+
+@{
+    string nombreUsuario = ViewBag.NombreyApellido as string ?? "";
+}
+
+<!-- Input oculto que guarda el valor del ViewBag -->
+<input type="hidden" id="backupNombreUsuario" value="@nombreUsuario" />
+
+<!-- Este es el input que queremos que se llene con ese nombre -->
+
 
 
 @using (Html.BeginForm("Create", "Contratos", FormMethod.Post, new { @class = "needs-validation", novalidate = "novalidate" }))
 {
-
-
     @Html.AntiForgeryToken()
-<div>
-    <!-- Mostrar errores si los hay -->
-    @if (!ViewData.ModelState.IsValid)
-    {
-        <div class="alert alert-danger">
-            <ul>
-                @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
-                {
-                  //  <li>@error.ErrorMessage</li>
-                }
-            </ul>
-        </div>
-    }
 
+<div class="mb-3">
+ <!-- #region     <label class="form-label">Realizado por</label>-->
+    <input type="hidden" id="realizadoPorInput" name="RealizadoPor" class="form-control form-control-sm" readonly value="@nombreUsuario" />
 </div>
     <div class="form-horizontal">
         <hr />
-
-
         <!-- Buscar y seleccionar PROPIETARIO -->
         <div class="row align-items-end mb-3">
             <div class="col-md-3">
@@ -77,8 +75,12 @@
                 <button type="button" class="btn btn-outline-primary btn-sm w-100" id="btnBuscarDireccion" style="max-width: 140px;">
                     Buscar Dirección
                 </button>
+
+                
             </div>
         </div>
+
+       
 
         <!-- Fecha Inicio / Fecha Final / Monto / Vigente -->
         <div class="row mb-3">
@@ -105,8 +107,8 @@
 
         <!-- Botones -->
         <div class="d-flex justify-content-center mt-4">
-            <button type="button" id="btnGuardar" class="btn btn-success me-2">Guardar</button>
-            @Html.ActionLink("Cancelar", "Index", null, new { @class = "btn btn-secondary" })
+            <button type="submit" id="btnGuardar" class="btn btn-success me-2">Guardar</button>
+            @Html.Raw("<a href='" + Url.Action("Index") + "' class='btn btn-secondary'>Cancelar</a>")
         </div>
 
         <!--
@@ -193,9 +195,10 @@
 
     @section Scripts {
         <script>
-            document.addEventListener("DOMContentLoaded", function () {
 
-                //----------------- VALIDACION DE FECHAS ------------------
+
+            
+            document.addEventListener("DOMContentLoaded", function () {           
                 const form = document.querySelector("form");
                 const btnGuardar = document.getElementById("btnGuardar");
 
@@ -209,7 +212,9 @@
                         alert("La fecha final no puede ser anterior a la fecha de inicio");
                         return; // Detenemos la ejecución
                     }
-
+console.log("Se va a enviar el formulario con estos datos:");
+console.log("Fecha inicio:", fechaInicio);
+console.log("Fecha final:", fechaFinal);
                     // Si todo está bien, enviamos el formulario
                     form.submit(); // Enviar el formulario
                 });
@@ -255,7 +260,7 @@
                                                      <td>${d.id}</td>
                                                      <td>${d.direccion}</td>
                                                      <td>
-                                                     <button class="btn btn-success" onclick="seleccionarDireccion(${d.id}, '${direccionEscapada}')">
+                                                     <button type="button" class="btn btn-success" onclick="seleccionarDireccion(${d.id}, '${direccionEscapada}')">
                                                      Seleccionar
                                                      </button>
                                                      </td>
@@ -336,7 +341,8 @@
                                                            <td>${p.apellidoPropietario}</td>
                                                            <td>${p.nombrePropietario}</td>
                                                            <td>
-                                                             <button class="btn btn-success" onclick="seleccionarPropietario('${p.dniPropietario}', '${p.nombrePropietario}', '${p.apellidoPropietario}')">
+                                                             <button type="button" class="btn btn-success" onclick="seleccionarPropietario('${p.dniPropietario}', '${p.nombrePropietario}', '${p.apellidoPropietario}')">
+
                                                               Seleccionar
                                                              </button>
                                                             </td>
@@ -354,7 +360,7 @@
                 window.seleccionarPropietario = function (dni, nombre, apellido) {
                     document.getElementById("dniPropietarioInput").value = dni;
                     document.getElementById("nombrePropietarioInput").value = `${nombre} ${apellido}`;
-                    document.getElementById("nombrePropietarioSeleccionado").innerText = `Seleccionado: ${nombre} ${apellido}`;
+                    //document.getElementById("nombrePropietarioSeleccionado").innerText = `Seleccionado: ${nombre} ${apellido}`;
                     bootstrap.Modal.getInstance(document.getElementById('modalBuscarPropietario')).hide();
                 }
 
@@ -390,14 +396,14 @@
                                     data.forEach(p => {
                                         const row = document.createElement("tr");
                                         row.innerHTML = `
-                                                                                                            <td>${p.dni}</td>
-                                                                                                            <td>${p.apellido}</td>
-                                                                                                            <td>${p.nombre}</td>
-                                                                                                            <td>
-                                                                                                                <button class="btn btn-success" onclick="seleccionarInquilino('${p.dni}', '${p.nombre}', '${p.apellido}')">
-                                                                                                                    Seleccionar
-                                                                                                                </button>
-                                                                                                            </td>
+                                    <td>${p.dni}</td>
+                                    <td>${p.apellido}</td>
+                                    <td>${p.nombre}</td>
+                                    <td>
+                                      <button type="button" class="btn btn-success" onclick="seleccionarInquilino('${p.dni}', '${p.nombre}', '${p.apellido}')">
+                                        Seleccionar
+                                      </button>
+                                    </td>
                                                                                                         `;
                                         lista.appendChild(row);
                                     });

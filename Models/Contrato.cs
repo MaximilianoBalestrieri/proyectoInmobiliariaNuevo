@@ -20,6 +20,8 @@ namespace proyectoInmobiliariaNuevo.Models
         public bool Vigente { get; set; }
         public string? DireccionSeleccionada { get; set; }
 
+        public string? RealizadoPor { get; set; }
+
 
     }
 

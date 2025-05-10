@@ -1105,7 +1105,8 @@ public void EditarUsuario(Usuario usuario)
                         FechaInicio = reader.GetDateTime("fechaInicio"),
                         FechaFinal = reader.GetDateTime("fechaFinal"),
                         Monto = reader.GetDecimal("monto"),
-                        Vigente = reader.GetBoolean("vigente")
+                        Vigente = reader.GetBoolean("vigente"),
+                        RealizadoPor = reader.GetString("realizadoPor")
                     });
                 }
             }
@@ -1139,7 +1140,8 @@ public void EditarUsuario(Usuario usuario)
                         FechaInicio = reader.GetDateTime("fechaInicio"),
                         FechaFinal = reader.GetDateTime("fechaFinal"),
                         Monto = reader.GetDecimal("monto"),
-                        Vigente = reader.GetBoolean("vigente")
+                        Vigente = reader.GetBoolean("vigente"),
+                        RealizadoPor = reader.GetString("realizadoPor")
                     };
                 }
             }
@@ -1155,9 +1157,9 @@ public void EditarUsuario(Usuario usuario)
             {
                 conexion.Open();
                 var query = @"INSERT INTO Contrato 
-        (dniPropietario, nombrePropietario, dniInquilino, nombreInquilino, fechaInicio, fechaFinal, monto, idInmueble, direccion, vigente)
+        (dniPropietario, nombrePropietario, dniInquilino, nombreInquilino, fechaInicio, fechaFinal, monto, idInmueble, direccion, vigente, realizadoPor)
         VALUES 
-        (@dniPropietario, @nombrePropietario, @dniInquilino, @nombreInquilino, @fechaInicio, @fechaFinal, @monto, @idInmueble, @direccion, @vigente)";
+        (@dniPropietario, @nombrePropietario, @dniInquilino, @nombreInquilino, @fechaInicio, @fechaFinal, @monto, @idInmueble, @direccion, @vigente, @realizadoPor)";
 
                 var comando = new MySqlCommand(query, conexion);
                 comando.Parameters.AddWithValue("@dniPropietario", contrato.DniPropietario);
@@ -1169,8 +1171,8 @@ public void EditarUsuario(Usuario usuario)
                 comando.Parameters.AddWithValue("@monto", contrato.Monto);
                 comando.Parameters.AddWithValue("@idInmueble", contrato.IdInmueble);
                 comando.Parameters.AddWithValue("@direccion", contrato.Direccion);
-                comando.Parameters.AddWithValue("@vigente", contrato.Vigente);
-
+                comando.Parameters.AddWithValue("@vigente", 1);
+                comando.Parameters.AddWithValue("@realizadoPor", contrato.RealizadoPor ?? "");
                 var filasAfectadas = comando.ExecuteNonQuery();
                 return filasAfectadas > 0;
             }
@@ -1184,7 +1186,7 @@ public void EditarUsuario(Usuario usuario)
             {
                 conexion.Open();
                 var query = "UPDATE Contrato SET nombrePropietario = @nombrePropietario, nombreInquilino = @nombreInquilino, direccion = @direccion, " +
-                            "fechaInicio = @fechaInicio, fechaFinal = @fechaFinal, monto = @monto, vigente = @vigente WHERE idContrato = @idContrato";
+                            "fechaInicio = @fechaInicio, fechaFinal = @fechaFinal, monto = @monto, vigente = @vigente, realizadoPor=@realizadoPor WHERE idContrato = @idContrato";
                 var comando = new MySqlCommand(query, conexion);
                 comando.Parameters.AddWithValue("@nombrePropietario", contrato.NombrePropietario);
                 comando.Parameters.AddWithValue("@nombreInquilino", contrato.NombreInquilino);
@@ -1194,7 +1196,7 @@ public void EditarUsuario(Usuario usuario)
                 comando.Parameters.AddWithValue("@monto", contrato.Monto);
                 comando.Parameters.AddWithValue("@vigente", contrato.Vigente);
                 comando.Parameters.AddWithValue("@idContrato", contrato.IdContrato);
-
+                comando.Parameters.AddWithValue("@realizadoPor", contrato.RealizadoPor);
                 var filasAfectadas = comando.ExecuteNonQuery();
                 return filasAfectadas > 0;
             }

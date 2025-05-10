@@ -466,14 +466,31 @@
             <td>@pago.Detalle</td>
             <td class="estado">@pago.Estado</td>
            
-            <td>
-                <button class="btn btn-sm btn-primary me-1" onclick="editarPago(@pago.IdPago)" data-id="@pago.IdPago" @(esAnulado ? "disabled" : "")>Editar</button>
-                <button class="btn btn-sm btn-danger eliminar-btn" onclick="eliminarPago(@pago.IdPago)" @(esAnulado ? "disabled" : "")>Eliminar</button>
-                <button class="btn btn-sm btn-info ver-detalles"
-        onclick="verPago(@pago.IdPago, '@pago.Estado', @pago.Importe, '@pago.FechaPago.ToString("yyyy-MM-dd")', '@pago.PagadoPor'); actualizarTablaPagos();">
-    Ver Detalle
-</button>
-            </td>
+            <td class="text-nowrap">
+    <button class="btn btn-sm btn-primary px-2 py-0 me-1"
+            style="font-size: 0.75rem;"
+            onclick="editarPago(@pago.IdPago)"
+            data-id="@pago.IdPago"
+            @(esAnulado ? "disabled" : "") 
+            title="Editar">
+        <i class="bi bi-pencil-square"></i>
+    </button>
+
+    <button class="btn btn-sm btn-danger px-2 py-0 me-1 eliminar-btn"
+            style="font-size: 0.75rem;"
+            onclick="eliminarPago(@pago.IdPago)"
+            @(esAnulado ? "disabled" : "") 
+            title="Eliminar">
+        <i class="bi bi-trash"></i>
+    </button>
+
+    <button class="btn btn-sm btn-info px-2 py-0 ver-detalles"
+            style="font-size: 0.75rem;"
+            title="Ver detalle"
+            onclick="verPago(@pago.IdPago, '@pago.Estado', @pago.Importe, '@pago.FechaPago.ToString("yyyy-MM-dd")', '@pago.PagadoPor'); actualizarTablaPagos();">
+        <i class="bi bi-eye"></i>
+    </button>
+</td>
         </tr>
     }
 </tbody>
