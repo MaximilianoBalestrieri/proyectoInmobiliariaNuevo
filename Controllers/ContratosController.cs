@@ -67,7 +67,7 @@ public JsonResult AnularPago([FromBody] PagoRequest request)
         [ValidateAntiForgeryToken]
         public ActionResult Create(Contrato contrato)
         {
-            Console.WriteLine("Realizado por: " + contrato.RealizadoPor);
+            Console.WriteLine("CONTRATO Realizado por: " + contrato.RealizadoPor);
 
             if (string.IsNullOrEmpty(contrato.RealizadoPor))
     {

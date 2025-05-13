@@ -40,6 +40,7 @@ public class LoginController : Controller
     public IActionResult Logout()
 {
     HttpContext.Session.Clear();  // Limpiar la sesión
+    
     return RedirectToAction("Index", "Login");  // Redirigir al login
 }
 
