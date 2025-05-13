@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 09-05-2025 a las 03:40:05
+-- Tiempo de generación: 13-05-2025 a las 02:32:27
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -38,24 +38,29 @@ CREATE TABLE `contrato` (
   `monto` decimal(15,0) NOT NULL,
   `idInmueble` int(11) NOT NULL,
   `direccion` varchar(255) NOT NULL,
-  `vigente` tinyint(1) DEFAULT NULL
+  `vigente` tinyint(1) DEFAULT NULL,
+  `realizadoPor` varchar(50) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Volcado de datos para la tabla `contrato`
 --
 
-INSERT INTO `contrato` (`idContrato`, `dniPropietario`, `nombrePropietario`, `dniInquilino`, `nombreInquilino`, `fechaInicio`, `fechaFinal`, `monto`, `idInmueble`, `direccion`, `vigente`) VALUES
-(1, '33456788', 'Selene Nicole Farias', '22321456', 'Jorge Suarez', '2025-04-18', '2025-05-01', 118000, 4, 'Pte. Perón 4552 Dto. 0 , Capital Federal', 1),
-(4, '20922882', 'Analia Farias', '22321456', 'Jorge Suarez', '2025-04-25', '2025-05-01', 120009, 23, 'Pública 0 Dto. 0 , La Paz', 1),
-(5, '22666454', 'Cristina Diaz', '27444236', 'Paula Fernanda Gonzalez', '2025-05-01', '2025-05-03', 250000, 24, 'Av. España 1250 Piso 1 Dto. a , Villa Dolores', 0),
-(6, '20922882', 'Analia Farias', '27444236', 'Paula Fernanda Gonzalez', '2025-04-27', '2025-05-01', 100000, 23, 'Pública 0 Dto. 0 , La Paz', 0),
-(7, '20922882', 'Analia Farias', '27444236', 'Paula Fernanda Gonzalez', '2025-04-25', '2025-04-26', 245000, 9, 'Thorne 1439 Piso 10 Dto. 0 , Ituzaingo', 0),
-(8, '20922882', 'Analia Farias', '33488655', 'Mariano Ríos', '2025-04-09', '2025-04-15', 100000, 23, 'Pública 0 Dto. 0 , La Paz', 0),
-(9, '27344555', 'Maria Celeste  Balestrieri', '33488655', 'Mariano Ríos', '2025-04-21', '2025-06-21', 244000, 25, 'Pje Bianchi 45 Dto. 0 , Villa Dolores', 0),
-(10, '20922882', 'Analia Farias', '22321456', 'Jorge Suarez', '2025-04-25', '2025-04-26', 120000, 23, 'Pública 0 Dto. 0 , La Paz', 1),
-(11, '20922882', 'Analia Farias', '27444236', 'Paula Fernanda Gonzalez', '2026-01-01', '2027-04-01', 255000, 9, 'Thorne 1439 Piso 10 Dto. 0 , Ituzaingo', 1),
-(12, '33456788', 'Selene Nicole Farias', '27444236', 'Paula Fernanda Gonzalez', '2025-05-05', '2025-08-01', 258000, 4, 'Pte. Perón 4552 Piso 4 Dto. 0 , Capital Federal', 0);
+INSERT INTO `contrato` (`idContrato`, `dniPropietario`, `nombrePropietario`, `dniInquilino`, `nombreInquilino`, `fechaInicio`, `fechaFinal`, `monto`, `idInmueble`, `direccion`, `vigente`, `realizadoPor`) VALUES
+(1, '33456788', 'Selene Nicole Farias', '22321456', 'Jorge Suarez', '2025-04-18', '2025-05-01', 118000, 4, 'Pte. Perón 4552 Dto. 0 , Capital Federal', 1, 'Selene Balestrieri'),
+(4, '20922882', 'Analia Farias', '22321456', 'Jorge Suarez', '2025-04-25', '2025-05-01', 120009, 23, 'Pública 0 Dto. 0 , La Paz', 1, 'Maximiliano Balestrieri'),
+(5, '22666454', 'Cristina Diaz', '27444236', 'Paula Fernanda Gonzalez', '2025-05-01', '2025-05-03', 250000, 24, 'Av. España 1250 Piso 1 Dto. a , Villa Dolores', 1, 'Selene Balestrieri'),
+(6, '20922882', 'Analia Farias', '27444236', 'Paula Fernanda Gonzalez', '2025-04-27', '2025-05-01', 100000, 23, 'Pública 0 Dto. 0 , La Paz', 1, 'Selene Balestrieri'),
+(7, '20922882', 'Analia Farias', '27444236', 'Paula Fernanda Gonzalez', '2025-04-25', '2025-04-26', 245000, 9, 'Thorne 1439 Piso 10 Dto. 0 , Ituzaingo', 1, 'Selene Balestrieri'),
+(19, '20922882', 'Analia Farias', '27444236', 'Paula Fernanda Gonzalez', '2025-05-10', '2025-05-31', 88000, 9, 'Thorne 1439 Piso 10 Dto. 0 , Ituzaingo', 1, 'Sol Anabela Balestrieri'),
+(20, '10884239', 'Teresa Lisbon', '27444236', 'Paula Fernanda Gonzalez', '2025-05-03', '2025-05-31', 80111, 26, 'Francia 1345 Piso 1 Dto. C , Villa Mercedes', 1, 'Sol Anabela Balestrieri'),
+(21, '22666454', 'Cristina Diaz', '27444236', 'Paula Fernanda Gonzalez', '2025-05-09', '2025-05-16', 100000, 24, 'Av. España 1250 Piso 1 Dto. a , Villa Dolores', 1, 'Selene Balestrieri'),
+(22, '25748654', 'Patrick Jane', '33488655', 'Mariano Ríos', '2025-05-10', '2025-05-17', 100000, 22, 'Belgrano 12 , Villa Dolores', 1, 'Selene Balestrieri'),
+(23, '33456788', 'Selene Nicole Farias', '27444236', 'Paula Fernanda Gonzalez', '2025-05-02', '2025-06-30', 58000, 4, 'Pte. Perón 4552 Piso 4 Dto. 0 , Capital Federal', 1, 'Sol Anabela Balestrieri'),
+(24, '10884239', 'Teresa Lisbon', '27444236', 'Paula Fernanda Gonzalez', '2025-05-01', '2025-07-10', 354000, 6, 'Rivadavia 10200 Piso 10 Dto. A , Merlo', 1, 'Sol Anabela Balestrieri'),
+(25, '20922882', 'Analia Farias', '22321456', 'Jorge Suarez', '2025-05-10', '2025-08-10', 333555, 23, 'Pública 0 Dto. 0 , La Paz', 1, 'Jose Garcia Hernandez'),
+(26, '22666454', 'Cristina Diaz', '27444236', 'Paula Fernanda Gonzalez', '2025-05-10', '2025-05-31', 100000, 27, '1 1 Piso 1 Dto. 1 , 1', 1, 'Sol Anabela Balestrieri'),
+(27, '27344555', 'Maria Celeste  Balestrieri', '27444236', 'Paula Fernanda Gonzalez', '2025-05-01', '2025-12-12', 254555, 25, 'Pje Bianchi 45 Dto. 0 , Villa Dolores', 1, 'Selene Balestrieri');
 
 -- --------------------------------------------------------
 
@@ -176,27 +181,29 @@ CREATE TABLE `pagos` (
 --
 
 INSERT INTO `pagos` (`idPago`, `idContrato`, `nroPago`, `fechaPago`, `importe`, `detalle`, `estado`, `pagadoPor`) VALUES
-(2, 7, 1, '2025-05-06', 20000, 'mes de mayo', 'Pagado', ''),
-(3, 1, 2, '2025-04-15', 120000, 'mes de abril 2025.', 'Pagado', ''),
-(7, 1, 3, '2025-04-29', 11000, 'mes de mayo 2025', 'Anulado', ''),
-(8, 5, 1, '2025-04-19', 150000, 'Abril de 2025', 'Pagado', ''),
-(9, 5, 2, '2025-04-25', 150500, 'mes de mayo 2025', 'Anulado', ''),
-(10, 7, 2, '2025-04-22', 125000, 'Abono por un mes.', 'Pagado', ''),
-(11, 1, 1, '2025-03-01', 120000, 'Mes de marzo 2025..', 'Pagado', ''),
-(12, 1, 4, '2025-05-20', 120000, 'mes de junio 2025.', 'Anulado', ''),
-(13, 7, 3, '2025-06-01', 125000, 'Mes de junio de 2025', 'Pagado', ''),
-(15, 1, 5, '2025-04-21', 1200000, 'Mes de abril', 'Pagado', ''),
-(16, 1, 6, '2025-04-28', 12444, 'Abono por un mes', 'Pagado', ''),
-(17, 5, 2, '2025-05-01', 150000, 'Mayo 2025', 'Pagado', ''),
-(86, 7, 4, '2025-07-28', 125500, 'julio.', 'Pagado', ''),
-(87, 11, 1, '2025-04-27', 255000, 'mes de abril 2025', 'Pagado', ''),
-(88, 11, 2, '2025-05-27', 255000, 'mes de mayo 2025', 'Pagado', ''),
-(89, 10, 1, '2025-04-28', 120000, 'Abono por un mes', 'Pagado', 'Mbalestrieri'),
-(90, 4, 1, '2025-04-28', 110000, 'mes de abril 2025', 'Pagado', 'Mbalestrieri'),
-(91, 6, 1, '2025-05-01', 120000, 'Mayo 2025', 'Pagado', 'Mbalestrieri'),
+(2, 7, 1, '2025-05-06', 20000, 'mes de mayo', 'Pagado', 'Maximiliano Balestrieri'),
+(3, 1, 2, '2025-04-15', 120000, 'mes de abril 2025.', 'Pagado', 'Maximiliano Balestrieri'),
+(7, 1, 3, '2025-04-29', 11000, 'mes de mayo 2025', 'Anulado', 'Maximiliano Balestrieri'),
+(8, 5, 1, '2025-04-19', 150000, 'Abril de 2025', 'Pagado', 'Maximiliano Balestrieri'),
+(9, 5, 2, '2025-04-25', 150500, 'mes de mayo 2025', 'Anulado', 'Maximiliano Balestrieri'),
+(10, 7, 2, '2025-04-22', 125000, 'Abono por un mes.', 'Pagado', 'Maximiliano Balestrieri'),
+(11, 1, 1, '2025-03-01', 120000, 'Mes de marzo 2025..', 'Pagado', 'Maximiliano Balestrieri'),
+(12, 1, 4, '2025-05-20', 120000, 'mes de junio 2025.', 'Anulado', 'Maximiliano Balestrieri'),
+(13, 7, 3, '2025-06-01', 125000, 'Mes de junio de 2025', 'Pagado', 'Maximiliano Balestrieri'),
+(15, 1, 5, '2025-04-21', 1200000, 'Mes de abril', 'Pagado', 'Maximiliano Balestrieri'),
+(16, 1, 6, '2025-04-28', 12444, 'Abono por un mes', 'Pagado', 'Maximiliano Balestrieri'),
+(17, 5, 2, '2025-05-01', 150000, 'Mayo 2025', 'Pagado', 'Maximiliano Balestrieri'),
+(86, 7, 4, '2025-07-28', 125500, 'julio.', 'Pagado', 'Maximiliano Balestrieri'),
+(87, 11, 1, '2025-04-27', 255000, 'mes de abril 2025', 'Pagado', 'Maximiliano Balestrieri'),
+(88, 11, 2, '2025-05-27', 255000, 'mes de mayo 2025', 'Pagado', 'Maximiliano Balestrieri'),
+(89, 10, 1, '2025-04-28', 120000, 'Abono por un mes', 'Pagado', 'Maximiliano Balestrieri'),
+(90, 4, 1, '2025-04-28', 110000, 'mes de abril 2025.', 'Pagado', 'Maximiliano Balestrieri'),
+(91, 6, 1, '2025-05-01', 120000, 'Mayo 2025', 'Pagado', 'Maximiliano Balestrieri'),
 (96, 4, 2, '2025-05-01', 115000, 'mes de mayo 2025', 'Anulado', 'Jose Garcia Hernandez'),
 (98, 4, 3, '2025-05-08', 117000, 'mes del año', 'Anulado', 'Jose Garcia Hernandez'),
-(99, 4, 4, '2025-05-08', 117500, 'mes de abono.', 'Anulado', 'Jose Garcia Hernandez');
+(99, 4, 4, '2025-05-08', 117500, 'mes de abono.', 'Anulado', 'Jose Garcia Hernandez'),
+(102, 17, 1, '2025-05-10', 100000, 'mes de mayo 2025', 'Pagado', 'Maximiliano Balestrieri'),
+(103, 17, 2, '2025-06-10', 100000, 'mes de junio de 2025', 'Pagado', 'Maximiliano Balestrieri');
 
 -- --------------------------------------------------------
 
@@ -306,7 +313,7 @@ ALTER TABLE `usuarios`
 -- AUTO_INCREMENT de la tabla `contrato`
 --
 ALTER TABLE `contrato`
-  MODIFY `idContrato` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+  MODIFY `idContrato` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=28;
 
 --
 -- AUTO_INCREMENT de la tabla `inmueble`
@@ -330,7 +337,7 @@ ALTER TABLE `inquilino`
 -- AUTO_INCREMENT de la tabla `pagos`
 --
 ALTER TABLE `pagos`
-  MODIFY `idPago` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=102;
+  MODIFY `idPago` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=104;
 
 --
 -- AUTO_INCREMENT de la tabla `propietario`
