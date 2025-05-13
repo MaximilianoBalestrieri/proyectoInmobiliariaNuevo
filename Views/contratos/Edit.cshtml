@@ -5,6 +5,7 @@
  @{
     ViewBag.Title = "Editar Contrato";
      string pagado = ViewBag.Usuario as string;
+      string rol = ViewBag.Rol as string;
      Layout = "~/Views/Shared/_Layout.cshtml";
  }
 
@@ -156,6 +157,7 @@
         <div class="col-auto">
             <h2>Editar Contrato</h2>
              <p>Usuario Logueado: @ViewBag.NombreyApellido</p> 
+              <p>Rol del Usuario: @ViewBag.Rol</p> 
         </div>
                    
 
@@ -476,6 +478,8 @@
         <i class="bi bi-pencil-square"></i>
     </button>
 
+ @if (rol == "Administrador")
+    {
     <button class="btn btn-sm btn-danger px-2 py-0 me-1 eliminar-btn"
             style="font-size: 0.75rem;"
             onclick="eliminarPago(@pago.IdPago)"
@@ -487,9 +491,26 @@
     <button class="btn btn-sm btn-info px-2 py-0 ver-detalles"
             style="font-size: 0.75rem;"
             title="Ver detalle"
-            onclick="verPago(@pago.IdPago, '@pago.Estado', @pago.Importe, '@pago.FechaPago.ToString("yyyy-MM-dd")', '@pago.PagadoPor'); actualizarTablaPagos();">
+            onclick="verPago(@pago.IdPago, '@pago.Estado', @pago.Importe, '@pago.FechaPago.ToString("yyyy-MM-dd")', '@pago.PagadoPor'); ">
         <i class="bi bi-eye"></i>
     </button>
+    } else {
+<button class="btn btn-sm btn-danger px-2 py-0 me-1 eliminar-btn"
+            style="font-size: 0.75rem;" disabled
+            onclick="eliminarPago(@pago.IdPago)"
+            @(esAnulado ? "disabled" : "") 
+            title="Eliminar">
+        <i class="bi bi-trash"></i>
+    </button>
+
+    <button class="btn btn-sm btn-info px-2 py-0 ver-detalles"
+            style="font-size: 0.75rem;" disabled
+            title="Ver detalle"
+            onclick="verPago(@pago.IdPago, '@pago.Estado', @pago.Importe, '@pago.FechaPago.ToString("yyyy-MM-dd")', '@pago.PagadoPor'); ">
+        <i class="bi bi-eye"></i>
+    </button>
+
+    }
 </td>
         </tr>
     }

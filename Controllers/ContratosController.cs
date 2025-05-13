@@ -93,8 +93,8 @@ public JsonResult AnularPago([FromBody] PagoRequest request)
             var contrato = db.ObtenerContratoPorId(id);
             if (contrato == null)
                 return NotFound();
-
-             ViewBag.NombreyApellido = HttpContext.Session.GetString("NombreyApellido");
+            ViewBag.Rol = HttpContext.Session.GetString("Rol");
+            ViewBag.NombreyApellido = HttpContext.Session.GetString("NombreyApellido");
             ViewBag.Pagos = db.ObtenerPagosPorContrato(id);
             return View(contrato);
         }
@@ -105,6 +105,7 @@ public JsonResult AnularPago([FromBody] PagoRequest request)
         public ActionResult Edit(int id, Contrato contrato)
         {
              ViewBag.NombreyApellido = HttpContext.Session.GetString("NombreyApellido");
+             ViewBag.Rol = HttpContext.Session.GetString("Rol");
             if (ModelState.IsValid)
             {
                 foreach (var error in ModelState.Values.SelectMany(v => v.Errors))
