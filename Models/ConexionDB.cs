@@ -124,7 +124,7 @@ public void AgregarUsuario(Usuario u)
     using (var con = ObtenerConexion())
     {
         con.Open();
-        var cmd = new MySqlCommand("INSERT INTO usuarios (Usuario, contraseña, rol, nombreyApellido) VALUES (@nombre,  @contraseña, @rol, @nombreyApellido)", con);
+        var cmd = new MySqlCommand("INSERT INTO usuarios (Usuario, contraseña, rol, nombreyApellido, FotoPerfil) VALUES (@nombre,  @contraseña, @rol, @nombreyApellido, @FotoPerfil)", con);
         cmd.Parameters.AddWithValue("@nombre", u.UsuarioNombre);
         cmd.Parameters.AddWithValue("@contraseña", u.Contraseña);
         cmd.Parameters.AddWithValue("@rol", u.Rol);
