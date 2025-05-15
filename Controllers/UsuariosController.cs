@@ -99,31 +99,47 @@ public IActionResult Create()
     return View();
 }
 
-   [HttpPost]
-public async Task<IActionResult> Create(Usuario usuario, IFormFile FotoPerfil)
+ [HttpPost]
+public async Task<IActionResult> Create(Usuario usuario)
 {
+    var foto = usuario.FotoSubida;
+    
     if (!ModelState.IsValid)
-        return View(usuario);
+    {
+        var errores = ModelState.Values
+            .SelectMany(v => v.Errors)
+            .Select(e => e.ErrorMessage)
+            .ToList();
 
-    if (FotoPerfil != null && FotoPerfil.Length > 0)
+        TempData["Errores"] = string.Join("<br/>", errores);
+        return View(usuario);
+    }
+
+    if (foto != null && foto.Length > 0)
     {
         var rutaFotos = Path.Combine(_env.WebRootPath, "imagenes", "usuarios");
-        Directory.CreateDirectory(rutaFotos); // por si no existe
+        Directory.CreateDirectory(rutaFotos);
 
-        string nombreArchivo = Guid.NewGuid() + Path.GetExtension(FotoPerfil.FileName);
+        string nombreArchivo = Guid.NewGuid() + Path.GetExtension(foto.FileName);
         string rutaCompleta = Path.Combine(rutaFotos, nombreArchivo);
 
         using (var stream = new FileStream(rutaCompleta, FileMode.Create))
         {
-            await FotoPerfil.CopyToAsync(stream);
+            await foto.CopyToAsync(stream);
         }
 
         usuario.FotoPerfil = "/imagenes/usuarios/" + nombreArchivo;
+    }
+    else
+    {
+        // Si no sube nada, usamos imagen por defecto
+        usuario.FotoPerfil = "/imagenes/usuarios/default.png";
     }
 
     db.AgregarUsuario(usuario);
     return RedirectToAction("Index");
 }
+
 
     
 

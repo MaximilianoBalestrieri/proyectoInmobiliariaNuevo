@@ -1,3 +1,6 @@
+using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.AspNetCore.Http;
+
 namespace proyectoInmobiliariaNuevo.Models
 {
     public class Usuario
@@ -8,5 +11,10 @@ namespace proyectoInmobiliariaNuevo.Models
         public string Rol { get; set; }
         public string NombreyApellido { get; set; }
         public string? FotoPerfil { get; set; }
+        [NotMapped]
+        public IFormFile? FotoSubida { get; set; }
     }
+
+
+
 }
