@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 13-05-2025 a las 02:32:27
+-- Tiempo de generación: 15-05-2025 a las 22:00:53
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -53,14 +53,17 @@ INSERT INTO `contrato` (`idContrato`, `dniPropietario`, `nombrePropietario`, `dn
 (6, '20922882', 'Analia Farias', '27444236', 'Paula Fernanda Gonzalez', '2025-04-27', '2025-05-01', 100000, 23, 'Pública 0 Dto. 0 , La Paz', 1, 'Selene Balestrieri'),
 (7, '20922882', 'Analia Farias', '27444236', 'Paula Fernanda Gonzalez', '2025-04-25', '2025-04-26', 245000, 9, 'Thorne 1439 Piso 10 Dto. 0 , Ituzaingo', 1, 'Selene Balestrieri'),
 (19, '20922882', 'Analia Farias', '27444236', 'Paula Fernanda Gonzalez', '2025-05-10', '2025-05-31', 88000, 9, 'Thorne 1439 Piso 10 Dto. 0 , Ituzaingo', 1, 'Sol Anabela Balestrieri'),
-(20, '10884239', 'Teresa Lisbon', '27444236', 'Paula Fernanda Gonzalez', '2025-05-03', '2025-05-31', 80111, 26, 'Francia 1345 Piso 1 Dto. C , Villa Mercedes', 1, 'Sol Anabela Balestrieri'),
 (21, '22666454', 'Cristina Diaz', '27444236', 'Paula Fernanda Gonzalez', '2025-05-09', '2025-05-16', 100000, 24, 'Av. España 1250 Piso 1 Dto. a , Villa Dolores', 1, 'Selene Balestrieri'),
-(22, '25748654', 'Patrick Jane', '33488655', 'Mariano Ríos', '2025-05-10', '2025-05-17', 100000, 22, 'Belgrano 12 , Villa Dolores', 1, 'Selene Balestrieri'),
 (23, '33456788', 'Selene Nicole Farias', '27444236', 'Paula Fernanda Gonzalez', '2025-05-02', '2025-06-30', 58000, 4, 'Pte. Perón 4552 Piso 4 Dto. 0 , Capital Federal', 1, 'Sol Anabela Balestrieri'),
 (24, '10884239', 'Teresa Lisbon', '27444236', 'Paula Fernanda Gonzalez', '2025-05-01', '2025-07-10', 354000, 6, 'Rivadavia 10200 Piso 10 Dto. A , Merlo', 1, 'Sol Anabela Balestrieri'),
 (25, '20922882', 'Analia Farias', '22321456', 'Jorge Suarez', '2025-05-10', '2025-08-10', 333555, 23, 'Pública 0 Dto. 0 , La Paz', 1, 'Jose Garcia Hernandez'),
 (26, '22666454', 'Cristina Diaz', '27444236', 'Paula Fernanda Gonzalez', '2025-05-10', '2025-05-31', 100000, 27, '1 1 Piso 1 Dto. 1 , 1', 1, 'Sol Anabela Balestrieri'),
-(27, '27344555', 'Maria Celeste  Balestrieri', '27444236', 'Paula Fernanda Gonzalez', '2025-05-01', '2025-12-12', 254555, 25, 'Pje Bianchi 45 Dto. 0 , Villa Dolores', 1, 'Selene Balestrieri');
+(27, '27344555', 'Maria Celeste  Balestrieri', '27444236', 'Paula Fernanda Gonzalez', '2025-05-01', '2025-12-12', 254555, 25, 'Pje Bianchi 45 Dto. 0 , Villa Dolores', 1, 'Selene Balestrieri'),
+(29, '20922882', 'Analia Farias', '27444236', 'Paula Fernanda Gonzalez', '2025-05-06', '2025-05-09', 100000, 23, 'Pública 0 Dto. 0 , La Paz', 1, 'Selene Balestrieri'),
+(30, '20922882', 'Analia Farias', '27444236', 'Paula Fernanda Gonzalez', '2025-05-01', '2025-05-05', 100000, 9, 'Thorne 1439 Piso 10 Dto. 0 , Ituzaingo', 1, 'Maximiliano Balestrieri'),
+(31, '10884239', 'Teresa Lisbon', '27444236', 'Paula Fernanda Gonzalez', '2025-05-01', '2025-05-07', 100000, 26, 'Francia 1345 Piso 1 Dto. C , Villa Mercedes', 1, 'Maximiliano Balestrieri'),
+(32, '25748654', 'Patrick Jane', '33488655', 'Mariano Ríos', '2025-05-06', '2025-05-07', 100000, 22, 'Belgrano 12 , Villa Dolores', 1, 'Selene Balestrieri'),
+(33, '22666454', 'Cristina Diaz', '27444236', 'Paula Fernanda Gonzalez', '2025-05-01', '2025-05-08', 520000, 27, '1 1 Piso 1 Dto. 1 , 1', 1, 'Sol Anabela Balestrieri');
 
 -- --------------------------------------------------------
 
@@ -243,7 +246,7 @@ CREATE TABLE `usuarios` (
   `contraseña` varchar(255) NOT NULL,
   `rol` varchar(50) NOT NULL,
   `nombreyApellido` varchar(50) NOT NULL,
-  `FotoPerfil` varchar(255) NOT NULL
+  `FotoPerfil` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -255,7 +258,8 @@ INSERT INTO `usuarios` (`idUsuario`, `Usuario`, `contraseña`, `rol`, `nombreyAp
 (2, 'Mbalestrieri', '123', 'Usuario', 'Maximiliano Balestrieri', '/imagenes/usuarios/f3890a2e-ceb5-45b1-b616-ff38e740ec11.PNG'),
 (3, 'Selene', '123', 'Administrador', 'Selene Balestrieri', '/imagenes/usuarios/34c1d0e8-6eab-4331-9549-af5b5adc751c.jpg'),
 (4, 'Solcy', '123', 'Usuario', 'Sol Anabela Balestrieri', '/imagenes/usuarios/8540677f-2554-4148-aef8-2625ebcf4d17.jpeg'),
-(6, 'ADFarias', '123', 'Usuario', 'Analia Dina Farias', '/imagenes/usuarios/300ab345-0ba3-46a0-b17d-16089bc5609e.jpg');
+(6, 'ADFarias', '123', 'Usuario', 'Analia Dina Farias', '/imagenes/usuarios/300ab345-0ba3-46a0-b17d-16089bc5609e.jpg'),
+(13, 'Angie', '123', 'Usuario', 'Angie Pereyra', '/imagenes/usuarios/default.png');
 
 --
 -- Índices para tablas volcadas
@@ -313,7 +317,7 @@ ALTER TABLE `usuarios`
 -- AUTO_INCREMENT de la tabla `contrato`
 --
 ALTER TABLE `contrato`
-  MODIFY `idContrato` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=28;
+  MODIFY `idContrato` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=34;
 
 --
 -- AUTO_INCREMENT de la tabla `inmueble`
@@ -349,7 +353,7 @@ ALTER TABLE `propietario`
 -- AUTO_INCREMENT de la tabla `usuarios`
 --
 ALTER TABLE `usuarios`
-  MODIFY `idUsuario` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `idUsuario` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 
 --
 -- Restricciones para tablas volcadas
